@@ -1,6 +1,6 @@
 package pim.business;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 
@@ -13,15 +13,10 @@ public class Category implements Iterator<Attribute>{
     private List<Attribute> categoryAttributes;
     private List<Product> products;
     
-    public Category (String categoryName) {
+    public Category(String categoryName) {
         this.categoryName = categoryName;
-    }
-    
-    public Category(String categoryName, List<Attribute> categoryAttributes, 
-            List<Product> products) {
-        this.categoryName = categoryName;
-        this.categoryAttributes = categoryAttributes;
-        this.products = products;
+        this.categoryAttributes = new ArrayList<>();
+        this.products = new ArrayList<>();
     }
     
     // iterate through categoryAttributes to find the attribute?
