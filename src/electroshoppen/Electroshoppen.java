@@ -12,17 +12,16 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- *
  * @author Kasper
  */
 public class Electroshoppen extends Application {
-	
+
 	@Override
 	public void start(Stage stage) throws Exception {
 		Parent root = FXMLLoader.load(getClass().getResource("/pim/presentation/PIMView.fxml"));
-		
+
 		Scene scene = new Scene(root);
-		
+
 		stage.setScene(scene);
 		stage.show();
 	}
@@ -33,5 +32,5 @@ public class Electroshoppen extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
-	
+
 }
