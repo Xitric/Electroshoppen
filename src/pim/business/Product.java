@@ -7,19 +7,28 @@ import java.util.ArrayList;
 public class Product {
 	private String name;
 	private int id;
-	private Category category;
+	private ArrayList<Category> categories;
 	private ArrayList<Integer> images;
 
 	public Product(String name){
 		this.name = name;
 		images = new ArrayList<>();
-		category = null;
+		categories = new ArrayList<>();
 	}
 
 	public Product(String name, Category category){
-		this.name = name;
-		this.category = category;
+		categories = new ArrayList<>();
 		images = new ArrayList<>();
+		this.name = name;
+		categories.add(category);
+	}
+
+	public Product(String name, Category category, Integer image){
+		categories = new ArrayList<>();
+		images = new ArrayList<>();
+		this.name = name;
+		categories.add(category);
+		images.add(image);
 	}
 
 	public void addImage(int image){
@@ -34,8 +43,8 @@ public class Product {
 		return id;
 	}
 
-	public Category getCategory() {
-		return category;
+	public ArrayList<Category> getCategories() {
+		return categories;
 	}
 
 	public ArrayList<Integer> getImages() {
