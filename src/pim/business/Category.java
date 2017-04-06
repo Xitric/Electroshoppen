@@ -20,8 +20,16 @@ public class Category implements Iterator<Attribute>{
     }
     
     // iterate through categoryAttributes to find the attribute?
-    public void removeAttribute(Attribute attribute) {
+    public void removeAttributeFromCategory(Attribute attribute) {
         categoryAttributes.remove(attribute);
+    }
+    
+    public void addAttributeToCategory(Attribute attribute) {
+        categoryAttributes.add(attribute);
+    }
+    
+    public void addProductToCategory(Product product) {
+        products.add(product);
     }
     
     /**
