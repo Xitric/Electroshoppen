@@ -1,6 +1,5 @@
 package pim.business;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,39 +7,41 @@ import java.util.List;
  */
 public class Attribute {
 
-    private String name;
-    private List<Object> legalValues;
+	private String name;
+	private List<Object> legalValues;
 
-    public Attribute(String name) {
-        this.name = name;
-    }
+	public Attribute(String name) {
+		this.name = name;
+	}
 
-    public Attribute(String name, List<Object> legalValues) {
-        this.name = name;
-        this.legalValues = legalValues;
-    }
+	public Attribute(String name, List<Object> legalValues) {
+		this.name = name;
+		this.legalValues = legalValues;
+	}
 
-    public AttributeValue createValue(Object o) {
-        if (legalValues == null || legalValues.contains(o)) {
-            return new AttributeValue(o);
-        } throw new IllegalArgumentException("Value not allowed");
-    }
+	public AttributeValue createValue(Object o) {
+		if (legalValues == null || legalValues.contains(o)) {
+			return new AttributeValue(this, o);
+		}
+		throw new IllegalArgumentException("Value not allowed");
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public class AttributeValue {
+	public class AttributeValue {
 
-        private Object value;
+		private Attribute parent;
+		private Object value;
 
-        private AttributeValue(Object value) {
-            this.value = value;
-        }
-
-    }
+		private AttributeValue(Attribute parent, Object value) {
+			this.parent = parent;
+			this.value = value;
+		}
+	}
 }

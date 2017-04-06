@@ -4,6 +4,9 @@ import pim.business.Attribute;
 import pim.business.Category;
 import pim.business.Product;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -19,11 +22,25 @@ public class DatabaseMediator {
 	 */
 	private static DatabaseMediator instance;
 
+	/* Variables for database connection */
+	private final static String url = "jdbc:postgresql://46.101.142.251:5432/electroshop";
+	private final static String user = "postgres";
+	private final static String password = "1234";
+
+	/**
+	 * The database connection.
+	 */
+	private Connection connection;
+
 	/**
 	 * Private constructor.
 	 */
 	private DatabaseMediator() {
-
+		try {
+			connection = DriverManager.getConnection(url, user, password);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	/**
@@ -39,7 +56,12 @@ public class DatabaseMediator {
 		return instance;
 	}
 
-	//hentProdukterPåKategori(navn), hentProduk(id), hentProdukt(navn), hentProdukterMedAttribut(navn), hentProdukterMedTag(navn), hentKategorier(), hentAttributter(kategori)
+	/**
+	 * Get the product with the specified id from the database.
+	 *
+	 * @param id the id of the product
+	 * @return the product with the specified id
+	 */
 	public Product getProduct(int id) {
 		throw new UnsupportedOperationException("Not yet supported");
 	}
@@ -66,5 +88,9 @@ public class DatabaseMediator {
 
 	public List<Attribute> getAttributes() {
 		throw new UnsupportedOperationException("Not yet supported");
+	}
+
+	public static void main(String[] args) {
+		DatabaseMediator.getInstance();
 	}
 }
