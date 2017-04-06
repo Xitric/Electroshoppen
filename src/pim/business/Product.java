@@ -9,16 +9,19 @@ public class Product {
 	private int id;
 	private ArrayList<Category> categories;
 	private ArrayList<Integer> images;
+	private ArrayList<Attribute> attributtes;
 
 	public Product(String name){
 		this.name = name;
 		images = new ArrayList<>();
 		categories = new ArrayList<>();
+		attributtes = new ArrayList<>();
 	}
 
 	public Product(String name, Category category){
 		categories = new ArrayList<>();
 		images = new ArrayList<>();
+		attributtes = new ArrayList<>();
 		this.name = name;
 		categories.add(category);
 	}
@@ -26,6 +29,7 @@ public class Product {
 	public Product(String name, Category category, Integer image){
 		categories = new ArrayList<>();
 		images = new ArrayList<>();
+		attributtes = new ArrayList<>();
 		this.name = name;
 		categories.add(category);
 		images.add(image);
@@ -33,6 +37,10 @@ public class Product {
 
 	public void addImage(int image){
 		images.add(image);
+	}
+
+	public void addCategori(Category categori){
+		categories.add(categori);
 	}
 
 	public String getName() {
