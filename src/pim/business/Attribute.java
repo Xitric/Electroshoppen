@@ -1,16 +1,29 @@
 package pim.business;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Kasper on 06-04-2017.
  */
 public class Attribute {
 
     private String name;
-    private String value;
+    private List<Object> legalValues;
 
-    public Attribute(String name, String value) {
+    public Attribute(String name) {
         this.name = name;
-        this.value = value;
+    }
+
+    public Attribute(String name, List<Object> legalValues) {
+        this.name = name;
+        this.legalValues = legalValues;
+    }
+
+    public AttributeValue createValue(Object o) {
+        if (legalValues == null || legalValues.contains(o)) {
+            return new AttributeValue(o);
+        } throw new IllegalArgumentException("Value not allowed");
     }
 
     public String getName() {
@@ -21,12 +34,13 @@ public class Attribute {
         this.name = name;
     }
 
-    public String getValue() {
-        return value;
-    }
+    public class AttributeValue {
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+        private Object value;
 
+        private AttributeValue(Object value) {
+            this.value = value;
+        }
+
+    }
 }
