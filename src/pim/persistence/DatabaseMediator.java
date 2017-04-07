@@ -4,9 +4,7 @@ import pim.business.Attribute;
 import pim.business.Category;
 import pim.business.Product;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 /**
@@ -54,6 +52,25 @@ public class DatabaseMediator {
 		}
 
 		return instance;
+	}
+
+	/**
+	 * Safely run the specified query on the database.
+	 *
+	 * @param query the query to run
+	 * @return the result of the query wrapped in a {@link TableData} object
+	 */
+	private TableData runQuery(String query) {
+		TableData table = null;
+
+		//Attempt to run the specified query
+		try (Statement st = connection.createStatement(); ResultSet rs = st.executeQuery(query)) {
+			table = new TableData(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return table;
 	}
 
 	/**
