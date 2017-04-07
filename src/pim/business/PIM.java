@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 /**
- * Created by Kasper on 06-04-2017.
+ * @author Kasper
  */
 public interface PIM {
 

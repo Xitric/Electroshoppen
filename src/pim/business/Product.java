@@ -2,8 +2,10 @@ package pim.business;
 
 import java.util.ArrayList;
 
-
-
+/**
+ * @author Niels
+ * @author Kasper
+ */
 public class Product {
 	private String name;
 	private int id;
@@ -11,14 +13,14 @@ public class Product {
 	private ArrayList<Integer> images;
 	private ArrayList<Attribute> attributtes;
 
-	public Product(String name){
+	public Product(String name) {
 		this.name = name;
 		images = new ArrayList<>();
 		categories = new ArrayList<>();
 		attributtes = new ArrayList<>();
 	}
 
-	public Product(String name, Category category){
+	public Product(String name, Category category) {
 		categories = new ArrayList<>();
 		images = new ArrayList<>();
 		attributtes = new ArrayList<>();
@@ -26,7 +28,7 @@ public class Product {
 		categories.add(category);
 	}
 
-	public Product(String name, Category category, Integer image){
+	public Product(String name, Category category, Integer image) {
 		categories = new ArrayList<>();
 		images = new ArrayList<>();
 		attributtes = new ArrayList<>();
@@ -35,11 +37,11 @@ public class Product {
 		images.add(image);
 	}
 
-	public void addImage(int image){
+	public void addImage(int image) {
 		images.add(image);
 	}
 
-	public void addCategori(Category categori){
+	public void addCategori(Category categori) {
 		categories.add(categori);
 	}
 

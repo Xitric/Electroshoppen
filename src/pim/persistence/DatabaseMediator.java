@@ -10,10 +10,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Created by Kasper on 06-04-2017.
- * <p>
  * Mediator used to access the underlying database. The mediator uses the singleton pattern, so calling the method
- * {@link #getInstance()} is necessary to acquire and instance.
+ * {@link #getInstance()} is necessary to acquire an instance.
+ *
+ * @author Kasper
  */
 public class DatabaseMediator {
 
