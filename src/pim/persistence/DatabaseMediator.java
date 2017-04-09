@@ -81,7 +81,7 @@ public class DatabaseMediator {
 	 * @param id the id of the product
 	 * @return the product with the specified id
 	 */
-	public Product getProduct(int id) {
+	public Product getProduct(String id) {
 		throw new UnsupportedOperationException("Not yet supported");
 	}
 
@@ -175,29 +175,9 @@ public class DatabaseMediator {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			if (toDB != null) {
-				try {
-					toDB.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-
-			if (fromDB != null) {
-				try {
-					fromDB.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+			DBUtil.close(toDB);
+			DBUtil.close(fromDB);
+			DBUtil.close(rs);
 		}
 	}
 
