@@ -25,6 +25,11 @@ public class Attribute<T> {
 	private String name;
 
 	/**
+	 * The default value of the attribute.
+	 */
+	private T defaultValue;
+
+	/**
 	 * The list of legal values for this attribute, or null if all values are allowed.
 	 */
 	private final Set<T> legalValues;
@@ -32,10 +37,11 @@ public class Attribute<T> {
 	/**
 	 * Constructs a new attribute with the specified id and name.
 	 *
-	 * @param id   the id of the attribute
-	 * @param name the name of the attribute
+	 * @param id           the id of the attribute
+	 * @param name         the name of the attribute
+	 * @param defaultValue the default value of the attribute
 	 */
-	public Attribute(String id, String name) {
+	public Attribute(String id, String name, T defaultValue) {
 		this.id = id;
 		this.name = name;
 		this.legalValues = null;
@@ -43,15 +49,17 @@ public class Attribute<T> {
 
 	/**
 	 * Constructs a new attribute with the specified name and list of legal values. If all values are allowed, use
-	 * {@link #Attribute(String, String)} instead, or pass null as the parameter.
+	 * {@link #Attribute(String, String, Object)} instead, or pass null as the parameter.
 	 *
-	 * @param id          the id of the attribute
-	 * @param name        the name of the attribute
-	 * @param legalValues the list of legal values
+	 * @param id           the id of the attribute
+	 * @param name         the name of the attribute
+	 * @param defaultValue the default value of the attribute
+	 * @param legalValues  the list of legal values
 	 */
-	public Attribute(String id, String name, Set<T> legalValues) {
+	public Attribute(String id, String name, T defaultValue, Set<T> legalValues) {
 		this.id = id;
 		this.name = name;
+		this.defaultValue = defaultValue;
 		this.legalValues = legalValues == null ? null : new HashSet<T>(legalValues);
 	}
 
@@ -111,7 +119,7 @@ public class Attribute<T> {
 			//ID and name must be equal
 			if (id.equals(otherAttribute.getID()) && name.equals(otherAttribute.getName())) {
 				if (legalValues == null) { //If legal values are not defined, this must apply for both
-					if (otherAttribute.getLegalValues() == null){
+					if (otherAttribute.getLegalValues() == null) {
 						return true;
 					}
 				} else { //Otherwise the legal values must be equal
