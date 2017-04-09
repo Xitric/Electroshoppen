@@ -4,10 +4,9 @@ import pim.business.Attribute;
 import pim.business.Category;
 import pim.business.Product;
 
-import java.awt.*;
 import java.io.*;
 import java.sql.*;
-import java.util.List;
+import java.util.*;
 
 /**
  * Mediator used to access the underlying database. The mediator uses the singleton pattern, so calling the method
@@ -57,25 +56,6 @@ public class DatabaseMediator {
 	}
 
 	/**
-	 * Safely run the specified query on the database.
-	 *
-	 * @param query the query to run
-	 * @return the result of the query wrapped in a {@link TableData} object
-	 */
-	private TableData runQuery(String query) {
-		TableData table = null;
-
-		//Attempt to run the specified query
-		try (Statement st = connection.createStatement(); ResultSet rs = st.executeQuery(query)) {
-			table = new TableData(rs);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return table;
-	}
-
-	/**
 	 * Get the product with the specified id from the database.
 	 *
 	 * @param id the id of the product
@@ -105,8 +85,51 @@ public class DatabaseMediator {
 		throw new UnsupportedOperationException("Not yet supported");
 	}
 
-	public List<Attribute> getAttributes() {
-		throw new UnsupportedOperationException("Not yet supported");
+	/**
+	 * Get a set of all attributes stored in the database.
+	 *
+	 * @return a set of all attributes stored in the database
+	 */
+	public Set<Attribute> getAttributes() throws IOException {
+		Map<String, Set<Object>> values = new HashMap<>();
+		Set<Attribute> attributes = new HashSet<>();
+
+		//Attempt to read data from database. Throw exception if something goes wrong
+		try (PreparedStatement getLegalValues = connection.prepareStatement("select * from legalvalue;");
+		     PreparedStatement getAttributes = connection.prepareStatement("select * from attribute;")) {
+
+			//For every legal value, add it to the set of legal values for the correct attribute
+			ResultSet legalValues = getLegalValues.executeQuery();
+
+			while (legalValues.next()) {
+				String id = legalValues.getString(1);
+				Object val = bytesToObject(legalValues.getBytes(2));
+
+				Set<Object> set = values.getOrDefault(id, new HashSet<>());
+				set.add(val);
+				values.put(id, set);
+			}
+
+			//Construct all attributes and return result
+			ResultSet attributeData = getAttributes.executeQuery();
+
+			while (attributeData.next()) {
+				String id = attributeData.getString(1);
+				String name = attributeData.getString(2);
+				attributes.add(new Attribute<>(id, name, values.get(id)));
+			}
+		} catch (SQLException e) {
+			throw new IOException("Could not read attributes!", e);
+		}
+
+		return attributes;
+	}
+
+	/**
+	 * Close the database connection.
+	 */
+	public void dispose() {
+		DBUtil.close(connection);
 	}
 
 	/**
@@ -157,27 +180,31 @@ public class DatabaseMediator {
 	}
 
 	public void doObjectTest() {
-		PreparedStatement toDB = null;
-		PreparedStatement fromDB = null;
-		ResultSet rs = null;
+		try (PreparedStatement toDB = connection.prepareStatement("insert into legalvalue values (?, ?);")) {
+			//Read attributes
+			Set<Attribute> attributes = null;
+			try {
+				attributes = getAttributes();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
+			}
 
-		try {
-			toDB = connection.prepareStatement("insert into legalvalue values ('1', ?);");
-			fromDB = connection.prepareStatement("select value from legalvalue;");
+			for (Attribute a: attributes) {
+				System.out.println("Attribute (" + a.getID().trim() + ", " + a.getName().trim() + ")");
+				Set values = a.getLegalValues();
+				if (values == null) {
+					System.out.println("\tAllows all values");
+				} else {
+					for (Object o: values) {
+						System.out.println("\t[" + o.getClass().getName() + "] " + o);
+					}
+				}
 
-			toDB.setObject(1, objectToBytes(new Color(139, 180, 221)));
-			toDB.executeUpdate();
-
-			rs = fromDB.executeQuery();
-			rs.next();
-			Color c = (Color) bytesToObject(rs.getBytes(1));
-			System.out.println(c);
+				System.out.println();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			DBUtil.close(toDB);
-			DBUtil.close(fromDB);
-			DBUtil.close(rs);
 		}
 	}
 

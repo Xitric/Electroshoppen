@@ -1,7 +1,7 @@
 package pim.business;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * An attribute represents a piece of information that must be provided by all products in a category having that
@@ -15,35 +15,44 @@ import java.util.List;
 public class Attribute<T> {
 
 	/**
+	 * The id of this attribute.
+	 */
+	private final String id;
+
+	/**
 	 * The name of this attribute to be displayed to the user.
 	 */
-	private final String name;
+	private String name;
 
 	/**
 	 * The list of legal values for this attribute, or null if all values are allowed.
 	 */
-	private final List<T> legalValues;
+	private final Set<T> legalValues;
 
 	/**
-	 * Constructs a new attribute with the specified name.
+	 * Constructs a new attribute with the specified id and name.
 	 *
+	 * @param id   the id of the attribute
 	 * @param name the name of the attribute
 	 */
-	public Attribute(String name) {
+	public Attribute(String id, String name) {
+		this.id = id;
 		this.name = name;
 		this.legalValues = null;
 	}
 
 	/**
 	 * Constructs a new attribute with the specified name and list of legal values. If all values are allowed, use
-	 * {@link #Attribute(String)} instead.
+	 * {@link #Attribute(String, String)} instead.
 	 *
+	 * @param id          the id of the attribute
 	 * @param name        the name of the attribute
 	 * @param legalValues the list of legal values
 	 */
-	public Attribute(String name, List<T> legalValues) {
+	public Attribute(String id, String name, Set<T> legalValues) {
+		this.id = id;
 		this.name = name;
-		this.legalValues = legalValues;
+		this.legalValues = new HashSet<T>(legalValues);
 	}
 
 	/**
@@ -63,6 +72,15 @@ public class Attribute<T> {
 	}
 
 	/**
+	 * Get the id of this attribute.
+	 *
+	 * @return the id of this attribute
+	 */
+	public String getID() {
+		return id;
+	}
+
+	/**
 	 * Get the name of this attribute.
 	 *
 	 * @return the name of this attribute
@@ -72,13 +90,13 @@ public class Attribute<T> {
 	}
 
 	/**
-	 * Get the list of legal values for this attribute or null if all values are allowed. This will return a copy of the
-	 * internal list, so changing it will not affect this instance.
+	 * Get the set of legal values for this attribute or null if all values are allowed. This will return a copy of the
+	 * internal set, so changing it will not affect this instance.
 	 *
-	 * @return the list of legal values for this attribute or null if all values are allowed
+	 * @return the set of legal values for this attribute or null if all values are allowed
 	 */
-	public List<T> getLegalValues() {
-		return legalValues == null ? null : new ArrayList<T>(legalValues);
+	public Set<T> getLegalValues() {
+		return legalValues == null ? null : new HashSet<T>(legalValues);
 	}
 
 	/**
