@@ -4,6 +4,8 @@ import pim.business.Attribute;
 import pim.business.Category;
 import pim.business.Product;
 
+import java.awt.*;
+import java.io.*;
 import java.sql.*;
 import java.util.List;
 
@@ -107,7 +109,100 @@ public class DatabaseMediator {
 		throw new UnsupportedOperationException("Not yet supported");
 	}
 
+	/**
+	 * Serialize the specified object and get the result in a byte array for storing in the database.
+	 *
+	 * @param o the object to serialize
+	 * @return the serialized object as a byte array, or null if the object could not be serialized
+	 * @see <a href="http://www.easywayserver.com/java/save-serializable-object-in-java/">EasyWayServer - How to save
+	 * java object in database</a>
+	 */
+	private byte[] objectToBytes(Object o) {
+		try (ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+		     ObjectOutputStream oOut = new ObjectOutputStream(bOut)) {
+
+			//Use the object output stream to serialize an object and store the result in a byte array output stream
+			oOut.writeObject(o);
+			oOut.flush();
+
+			//Get the byte array from the byte array output stream
+			return bOut.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//Something went wrong, return null
+		return null;
+	}
+
+	/**
+	 * Deserialize the object stored in the specified byte array.
+	 *
+	 * @param bytes the byte array containing the serialized object
+	 * @return the deserialized object, or null if the object could not be deserialized
+	 * @see <a href="http://www.easywayserver.com/java/save-serializable-object-in-java/">EasyWayServer - How to save
+	 * java object in database</a>
+	 */
+	private Object bytesToObject(byte[] bytes) {
+		try (ObjectInputStream oIn = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
+
+			//Use an object input stream to read the object from the byte array
+			return oIn.readObject();
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		//Something went wrong, return null
+		return null;
+	}
+
+	public void doObjectTest() {
+		PreparedStatement toDB = null;
+		PreparedStatement fromDB = null;
+		ResultSet rs = null;
+
+		try {
+			toDB = connection.prepareStatement("insert into legalvalue values ('1', ?);");
+			fromDB = connection.prepareStatement("select value from legalvalue;");
+
+			toDB.setObject(1, objectToBytes(new Color(139, 180, 221)));
+			toDB.executeUpdate();
+
+			rs = fromDB.executeQuery();
+			rs.next();
+			Color c = (Color) bytesToObject(rs.getBytes(1));
+			System.out.println(c);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (toDB != null) {
+				try {
+					toDB.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (fromDB != null) {
+				try {
+					fromDB.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
 	public static void main(String[] args) {
-		DatabaseMediator.getInstance();
+		DatabaseMediator db = DatabaseMediator.getInstance();
+		db.doObjectTest();
 	}
 }
