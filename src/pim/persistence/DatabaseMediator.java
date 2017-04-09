@@ -32,6 +32,11 @@ public class DatabaseMediator {
 	private Connection connection;
 
 	/**
+	 * Cache for data read from the database.
+	 */
+	private DataCache dataCache;
+
+	/**
 	 * Private constructor.
 	 */
 	private DatabaseMediator() {
@@ -40,6 +45,8 @@ public class DatabaseMediator {
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
+
+		dataCache = new DataCache();
 	}
 
 	/**
@@ -86,9 +93,50 @@ public class DatabaseMediator {
 	}
 
 	/**
+	 * Get the attribute with the specified id.
+	 *
+	 * @param id the id of the attribute.
+	 * @return the attribute with the specified id
+	 * @throws IOException if something goes wrong
+	 */
+	public Attribute getAttributeByID(String id) throws IOException {
+		Attribute a = dataCache.getAttributeIfPresent(id);
+
+		//Read attribute if not present
+		if (a == null) {
+			try (PreparedStatement getLegalValues = connection.prepareStatement("select * from legalvalue where attributeid = ?");
+			     PreparedStatement getAttribute = connection.prepareStatement("select * from attribute where id = ?")) {
+
+				//For every legal value, add it to the set of legal values
+				Set<Object> values = new HashSet<>();
+				ResultSet legalValues = getLegalValues.executeQuery();
+
+				while (legalValues.next()) {
+					Object val = bytesToObject(legalValues.getBytes(2));
+					values.add(val);
+				}
+
+				//Read attribute data and construct. There should only be one tuple
+				ResultSet attributeData = getAttribute.executeQuery();
+
+				while (attributeData.next()) {
+					String name = attributeData.getString(2);
+					a = new Attribute<>(id, name, values);
+					dataCache.registerAttributeIfAbsent(a);
+				}
+			} catch (SQLException e) {
+				throw new IOException("Could not read attribute with id " + id + "!", e);
+			}
+		}
+
+		return a;
+	}
+
+	/**
 	 * Get a set of all attributes stored in the database.
 	 *
 	 * @return a set of all attributes stored in the database
+	 * @throws IOException if something goes wrong
 	 */
 	public Set<Attribute> getAttributes() throws IOException {
 		Map<String, Set<Object>> values = new HashMap<>();
@@ -116,7 +164,15 @@ public class DatabaseMediator {
 			while (attributeData.next()) {
 				String id = attributeData.getString(1);
 				String name = attributeData.getString(2);
-				attributes.add(new Attribute<>(id, name, values.get(id)));
+
+				//If attribute has already been read, reuse it. Otherwise register new attribute
+				Attribute a = dataCache.getAttributeIfPresent(id);
+				if (a == null) {
+					attributes.add(a = new Attribute<>(id, name, values.get(id)));
+					dataCache.registerAttributeIfAbsent(a);
+				} else {
+					attributes.add(a);
+				}
 			}
 		} catch (SQLException e) {
 			throw new IOException("Could not read attributes!", e);
@@ -190,13 +246,13 @@ public class DatabaseMediator {
 				return;
 			}
 
-			for (Attribute a: attributes) {
+			for (Attribute a : attributes) {
 				System.out.println("Attribute (" + a.getID().trim() + ", " + a.getName().trim() + ")");
 				Set values = a.getLegalValues();
 				if (values == null) {
 					System.out.println("\tAllows all values");
 				} else {
-					for (Object o: values) {
+					for (Object o : values) {
 						System.out.println("\t[" + o.getClass().getName() + "] " + o);
 					}
 				}

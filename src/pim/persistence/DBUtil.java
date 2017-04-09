@@ -7,7 +7,7 @@ import java.sql.*;
  *
  * @author Kasper
  */
-public class DBUtil {
+class DBUtil {
 
 	/**
 	 * Safely close the specified statement.
