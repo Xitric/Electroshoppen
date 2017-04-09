@@ -1,64 +1,67 @@
 package pim.business;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
+ * A category is used to group products. A category can also have attributes, that the products in the category will
+ * inherit. A product in a category must provide a value for all the attributes associated with that category.
+ *
  * @author Mads
  * @author Kasper
  */
 public class Category implements Iterator<Attribute> {
 
-	private String categoryName;
-	private List<Attribute> categoryAttributes;
-	private List<Product> products;
+	private final String name;
+	private final Set<Attribute> attributes;
 
-	public Category(String categoryName) {
-		this.categoryName = categoryName;
-		this.categoryAttributes = new ArrayList<>();
-		this.products = new ArrayList<>();
-	}
-
-	// iterate through categoryAttributes to find the attribute?
-	public void removeAttributeFromCategory(Attribute attribute) {
-		categoryAttributes.remove(attribute);
-	}
-
-	public void addAttributeToCategory(Attribute attribute) {
-		categoryAttributes.add(attribute);
-	}
-
-	public void addProductToCategory(Product product) {
-		products.add(product);
+	/**
+	 * Constructs a new category with the specified name.
+	 *
+	 * @param name the name of the category
+	 */
+	public Category(String name) {
+		this.name = name;
+		this.attributes = new HashSet<>();
 	}
 
 	/**
-	 * @return the categoryName
+	 * Constructs a new category with the specified name and set of attributes.
+	 *
+	 * @param name       the name of the category
+	 * @param attributes the attributes of the category
 	 */
-	public String getCategoryName() {
-		return categoryName;
+	public Category(String name, Set<Attribute> attributes) {
+		this.name = name;
+		this.attributes = attributes;
 	}
 
 	/**
-	 * @return the categoryAttributes
+	 * Get the name of this category.
+	 *
+	 * @return the name of this category
 	 */
-	public List<Attribute> getCategoryAttributes() {
-		return categoryAttributes;
+	public String getName() {
+		return name;
+	}
+
+	//TODO: Notify products using observer pattern
+	public void removeAttribute(Attribute attribute) {
+		attributes.remove(attribute);
+	}
+
+	public void addAttribute(Attribute attribute) {
+		attributes.add(attribute);
 	}
 
 	/**
-	 * @return the products
+	 * Get the attributes of this category.
+	 *
+	 * @return the attributes of this category
 	 */
-	public List<Product> getProducts() {
-		return products;
-	}
-
-	/**
-	 * @param categoryName the categoryName to set
-	 */
-	public void setCategoryName(String categoryName) {
-		this.categoryName = categoryName;
+	public Set<Attribute> getAttributes() {
+		return attributes;
 	}
 
 	@Override

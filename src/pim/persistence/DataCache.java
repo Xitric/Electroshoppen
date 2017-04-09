@@ -53,7 +53,7 @@ class DataCache {
 	 */
 	public Category getCategoryIfPresent(String name) {
 		for (Category c : categories) {
-			if (c.getCategoryName().equals(name)) {
+			if (c.getName().equals(name)) {
 				return c;
 			}
 		}
