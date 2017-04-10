@@ -140,7 +140,7 @@ public class Product {
 	private Set<Attribute> getAllAttributes() {
 		Set<Attribute> attribs = new HashSet<>();
 		for (Category c : categories) {
-			attribs.addAll(c.getCategoryAttributes());
+			attribs.addAll(c.getAttributes());
 		}
 		return attribs;
 	}
