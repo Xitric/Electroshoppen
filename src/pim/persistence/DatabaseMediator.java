@@ -2,11 +2,13 @@ package pim.persistence;
 
 import pim.business.Attribute;
 import pim.business.Category;
-import pim.business.Product;
 
 import java.io.*;
 import java.sql.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Mediator used to access the underlying database. The mediator uses the singleton pattern, so calling the method
@@ -63,74 +65,48 @@ public class DatabaseMediator {
 	}
 
 	/**
-	 * Get the product with the specified id from the database.
+	 * Get a set of all categories stored in the database.
 	 *
-	 * @param id the id of the product
-	 * @return the product with the specified id
+	 * @return a set of all categories stored in the database
+	 * @throws IOException if something goes wrong
 	 */
-	public Product getProduct(String id) {
-		throw new UnsupportedOperationException("Not yet supported");
-	}
+	public Set<Category> getCategories() throws IOException {
+		try (PreparedStatement getCategories = connection.prepareStatement("select * from category;")) {
 
-	public List<Product> getProductsByCategory(String categoryName) {
-		throw new UnsupportedOperationException("Not yet supported");
-	}
-
-	public List<Product> getProductsByName(String productName) {
-		throw new UnsupportedOperationException("Not yet supported");
-	}
-
-	public List<Product> getProductsByAttribute(String attributeName) {
-		throw new UnsupportedOperationException("Not yet supported");
-	}
-
-	public List<Product> getProductsByTag(String tagName) {
-		throw new UnsupportedOperationException("Not yet supported");
-	}
-
-	public List<Category> getCategories() {
-		throw new UnsupportedOperationException("Not yet supported");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
 	 * Get the attribute with the specified id.
 	 *
 	 * @param id the id of the attribute.
-	 * @return the attribute with the specified id
+	 * @return the attribute with the specified id, or null if no such attribute exists
 	 * @throws IOException if something goes wrong
 	 */
 	public Attribute getAttributeByID(String id) throws IOException {
-		Attribute a = dataCache.getAttributeIfPresent(id);
+		//Attempt to read data from database. Throw exception if something goes wrong
+		try (PreparedStatement getLegalValues = connection.prepareStatement("select * from legalvalue where attributeid = ?");
+		     PreparedStatement getAttribute = connection.prepareStatement("select * from attribute where id = ?")) {
 
-		//Read attribute if not present
-		if (a == null) {
-			try (PreparedStatement getLegalValues = connection.prepareStatement("select * from legalvalue where attributeid = ?");
-			     PreparedStatement getAttribute = connection.prepareStatement("select * from attribute where id = ?")) {
+			getLegalValues.setString(1, id);
+			ResultSet legalValues = getLegalValues.executeQuery();
+			getAttribute.setString(1, id);
+			ResultSet attributeData = getAttribute.executeQuery();
+			Set<Attribute> result =  buildAttributes(attributeData, legalValues);
 
-				//For every legal value, add it to the set of legal values
-				Set<Object> values = new HashSet<>();
-				ResultSet legalValues = getLegalValues.executeQuery();
-
-				while (legalValues.next()) {
-					Object val = bytesToObject(legalValues.getBytes(2));
-					values.add(val);
-				}
-
-				//Read attribute data and construct. There should only be one tuple
-				ResultSet attributeData = getAttribute.executeQuery();
-
-				while (attributeData.next()) {
-					String name = attributeData.getString(2);
-					Object defaultValue = bytesToObject(attributeData.getBytes(3));
-					a = new Attribute(id, name, defaultValue, values);
-					dataCache.registerAttributeIfAbsent(a);
-				}
-			} catch (SQLException e) {
-				throw new IOException("Could not read attribute with id " + id + "!", e);
+			//If the set is empty, no attribute with the specified id was found. Otherwise, the set should contain only
+			//one value, that we return
+			if (result.size() == 0) {
+				return null;
+			} else {
+				return result.toArray(new Attribute[0])[0];
 			}
+		} catch (SQLException e) {
+			throw new IOException("Could not read attributes!", e);
 		}
-
-		return a;
 	}
 
 	/**
@@ -140,44 +116,54 @@ public class DatabaseMediator {
 	 * @throws IOException if something goes wrong
 	 */
 	public Set<Attribute> getAttributes() throws IOException {
-		Map<String, Set<Object>> values = new HashMap<>();
-		Set<Attribute> attributes = new HashSet<>();
-
 		//Attempt to read data from database. Throw exception if something goes wrong
 		try (PreparedStatement getLegalValues = connection.prepareStatement("select * from legalvalue;");
 		     PreparedStatement getAttributes = connection.prepareStatement("select * from attribute;")) {
 
-			//For every legal value, add it to the set of legal values for the correct attribute
 			ResultSet legalValues = getLegalValues.executeQuery();
-
-			while (legalValues.next()) {
-				String id = legalValues.getString(1);
-				Object val = bytesToObject(legalValues.getBytes(2));
-
-				Set<Object> set = values.getOrDefault(id, new HashSet<>());
-				set.add(val);
-				values.put(id, set);
-			}
-
-			//Construct all attributes and return result
 			ResultSet attributeData = getAttributes.executeQuery();
-
-			while (attributeData.next()) {
-				String id = attributeData.getString(1);
-				String name = attributeData.getString(2);
-				Object defaultValue = bytesToObject(attributeData.getBytes(3));
-
-				//If attribute has already been read, reuse it. Otherwise register new attribute
-				Attribute a = dataCache.getAttributeIfPresent(id);
-				if (a == null) {
-					attributes.add(a = new Attribute(id, name, defaultValue, values.get(id)));
-					dataCache.registerAttributeIfAbsent(a);
-				} else {
-					attributes.add(a);
-				}
-			}
+			return buildAttributes(attributeData, legalValues);
 		} catch (SQLException e) {
 			throw new IOException("Could not read attributes!", e);
+		}
+	}
+
+	/**
+	 * Build a set of attributes from the specified data.
+	 *
+	 * @param attributeData the data describing attribute ids, names and default values
+	 * @param legalValueData the data describing legal values of attributes
+	 * @return a set of all attributes that could be build from the data
+	 * @throws SQLException if something goes wrong
+	 */
+	private Set<Attribute> buildAttributes(ResultSet attributeData, ResultSet legalValueData) throws SQLException {
+		Map<String, Set<Object>> legalValues = new HashMap<>();
+		Set<Attribute> attributes = new HashSet<>();
+
+		//For every legal value, add it to the set of legal values for the correct attribute
+		while (legalValueData.next()) {
+			String id = legalValueData.getString(1);
+			Object val = bytesToObject(legalValueData.getBytes(2));
+
+			Set<Object> set = legalValues.getOrDefault(id, new HashSet<>());
+			set.add(val);
+			legalValues.put(id, set);
+		}
+
+		//Construct all attributes and return result
+		while (attributeData.next()) {
+			String id = attributeData.getString(1);
+			String name = attributeData.getString(2);
+			Object defaultValue = bytesToObject(attributeData.getBytes(3));
+
+			//If attribute has already been read, reuse it. Otherwise register new attribute
+			Attribute a = dataCache.getAttributeIfPresent(id);
+			if (a == null) {
+				attributes.add(a = new Attribute(id, name, defaultValue, legalValues.get(id)));
+				dataCache.registerAttributeIfAbsent(a);
+			} else {
+				attributes.add(a);
+			}
 		}
 
 		return attributes;

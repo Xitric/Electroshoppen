@@ -135,7 +135,8 @@ public class Product {
 	 */
 	public void setAttribute(Attribute attribute, Object value) {
 		//Remove the existing value for this attribute
-		attributes.removeIf(attributeValue -> attributeValue.getParent() == attribute);
+		boolean attributeExists = attributes.removeIf(attributeValue -> attributeValue.getParent() == attribute);
+		if (! attributeExists) return;
 
 		//Add new value
 		attributes.add(attribute.createValue(value));
