@@ -15,7 +15,7 @@ public class Product {
 	private double price;
 	private Set<Category> categories;
 	private Set<Attribute.AttributeValue> attributes;
-	private Set<Integer> images;
+//	private Set<Integer> images;
 //	private List<Tag> tags; TODO: Add tags
 
 	/**
@@ -33,7 +33,7 @@ public class Product {
 		//Initialize lists
 		categories = new HashSet<>();
 		attributes = new HashSet<>();
-		images = new HashSet<>();
+//		images = new HashSet<>();
 //		tags = new ArrayList<>(); TODO: Add tags
 	}
 
@@ -65,15 +65,41 @@ public class Product {
 	}
 
 	/**
-	 * TODO: Default values for attributes? We must add attribute values for the new category
-	 * Add a category to this product. Adding the same category twice will have no effect.
+	 * Set the price of this product.
+	 *
+	 * @param price the price of this product
+	 */
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	/**
+	 * Get the price of this product.
+	 *
+	 * @return the price of this product
+	 */
+	public double getPrice() {
+		return price;
+	}
+
+	/**
+	 * Add a category to this product. Adding the same category twice will have no effect. When adding a new category,
+	 * default attrbute values will be added for all new attributes.
 	 *
 	 * @param category the category to add
 	 */
 	public void addCategory(Category category) {
-		categories.add(category);
+		boolean categoryWasNew = categories.add(category);
+		if (!categoryWasNew) return;
 
-		//TODO: Add new attribute values with default values. These values can be overwritten with calls to setAttribute()
+		//When adding a new category, add attribute values (default values) for all new attributes
+		Set<Attribute> newAttributes = category.getAttributes();
+		Set<Attribute> allAttributes = this.getAllAttributes();
+		for (Attribute attrib : newAttributes) {
+			if (!allAttributes.contains(attrib)) {
+				attributes.add(attrib.createValue());
+			}
+		}
 	}
 
 	/**
@@ -83,11 +109,12 @@ public class Product {
 	 * @param category the category to remove
 	 */
 	public void removeCategory(Category category) {
-		categories.remove(category);
+		boolean categoryWasRemoved = categories.remove(category);
+		if (!categoryWasRemoved) return;
 
 		//Remove attribute values that are no longer valid for this product
-		Set<Attribute> attribs = this.getAllAttributes();
-		attributes.removeIf(attributeValue -> !attribs.contains(attributeValue.getParent()));
+		Set<Attribute> allAttributes = this.getAllAttributes();
+		attributes.removeIf(attributeValue -> !allAttributes.contains(attributeValue.getParent()));
 	}
 
 	/**

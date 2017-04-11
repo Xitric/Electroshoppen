@@ -198,7 +198,7 @@ public class DatabaseMediator {
 	 * @see <a href="http://www.easywayserver.com/java/save-serializable-object-in-java/">EasyWayServer - How to save
 	 * java object in database</a>
 	 */
-	private byte[] objectToBytes(Object o) {
+	private static byte[] objectToBytes(Object o) {
 		try (ByteArrayOutputStream bOut = new ByteArrayOutputStream();
 		     ObjectOutputStream oOut = new ObjectOutputStream(bOut)) {
 
@@ -224,7 +224,7 @@ public class DatabaseMediator {
 	 * @see <a href="http://www.easywayserver.com/java/save-serializable-object-in-java/">EasyWayServer - How to save
 	 * java object in database</a>
 	 */
-	private Object bytesToObject(byte[] bytes) {
+	private static Object bytesToObject(byte[] bytes) {
 		try (ObjectInputStream oIn = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
 
 			//Use an object input stream to read the object from the byte array
