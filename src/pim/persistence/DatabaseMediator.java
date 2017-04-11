@@ -66,6 +66,7 @@ public class DatabaseMediator {
 	}
 
 	//TODO: Support tags and images
+
 	/**
 	 * Get the product with the specified id.
 	 *
@@ -436,7 +437,10 @@ public class DatabaseMediator {
 		try (PreparedStatement makeAttribute = connection.prepareStatement("INSERT INTO attribute VALUES (?, ?, ?);");
 		     PreparedStatement makeLegalValue = connection.prepareStatement("INSERT INTO legalvalue VALUES (?, ?);");
 		     PreparedStatement makeCategory = connection.prepareStatement("INSERT INTO category VALUES (?);");
-		     PreparedStatement makeCategoryAttribute = connection.prepareStatement("INSERT INTO categoryattribute VALUES (?, ?);")) {
+		     PreparedStatement makeCategoryAttribute = connection.prepareStatement("INSERT INTO categoryattribute VALUES (?, ?);");
+		     PreparedStatement makeProduct = connection.prepareStatement("INSERT INTO product VALUES (?, ?, ?);");
+		     PreparedStatement makeProductCategory = connection.prepareStatement("INSERT INTO productcategory VALUES (?, ?);");
+		     PreparedStatement makeProductValue = connection.prepareStatement("INSERT INTO attributevalue VALUES (?, ?, ?);")) {
 
 			//Make attributes
 //			makeAttribute.setString(1, "0");
@@ -495,27 +499,94 @@ public class DatabaseMediator {
 //			makeCategoryAttribute.executeUpdate();
 //			makeCategoryAttribute.setString(2, "2");
 //			makeCategoryAttribute.executeUpdate();
+//
+//			//Make products
+//			makeProduct.setString(1, "0");
+//			makeProduct.setString(2, "Logitech G500");
+//			makeProduct.setDouble(3, 99.99);
+//			makeProduct.executeUpdate();
+//
+//			makeProduct.setString(1, "1");
+//			makeProduct.setString(2, "Generic ruler");
+//			makeProduct.setDouble(3, 2.99);
+//			makeProduct.executeUpdate();
+//
+//			makeProduct.setString(1, "2");
+//			makeProduct.setString(2, "Generic ruler");
+//			makeProduct.setDouble(3, 3.99);
+//			makeProduct.executeUpdate();
+//
+//			//Make product categories
+//			makeProductCategory.setString(1, "0");
+//			makeProductCategory.setString(2, "Mice");
+//			makeProductCategory.executeUpdate();
+//
+//			makeProductCategory.setString(1, "1");
+//			makeProductCategory.setString(2, "Rulers");
+//			makeProductCategory.executeUpdate();
+//
+//			makeProductCategory.setString(1, "2");
+//			makeProductCategory.setString(2, "Rulers");
+//			makeProductCategory.executeUpdate();
+//
+//			//Make product values
+//			makeProductValue.setString(1, "1");
+//			makeProductValue.setString(2, "0");
+//			makeProductValue.setObject(3, objectToBytes("GB"));
+//			makeProductValue.executeUpdate();
+//
+//			makeProductValue.setString(1, "0");
+//			makeProductValue.setString(2, "1");
+//			makeProductValue.setObject(3, objectToBytes(new Color(0, 0, 255)));
+//			makeProductValue.executeUpdate();
+//
+//			makeProductValue.setString(1, "2");
+//			makeProductValue.setString(2, "2");
+//			makeProductValue.setObject(3, objectToBytes(30.0));
+//			makeProductValue.executeUpdate();
 
 			//Read categories and print
+//			try {
+//				Set<Category> categories = getCategories();
+//
+//				for (Category c : categories) {
+//					System.out.println(c.getName());
+//
+//					for (Attribute a : c.getAttributes()) {
+//						System.out.println("\t" + a.getName().trim() + " [default: " + a.createValue().getValue() + "]");
+//
+//						if (a.getLegalValues() == null) {
+//							System.out.println("\t\tAll values legal");
+//						} else {
+//							for (Object o : a.getLegalValues()) {
+//								System.out.println("\t\t" + o);
+//							}
+//						}
+//					}
+//
+//					System.out.println();
+//				}
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+
+			//Read products and print
 			try {
-				Set<Category> categories = getCategories();
+				Set<Product> products = getProducts();
 
-				for (Category c : categories) {
-					System.out.println(c.getName());
+				for (Product p: products) {
+					System.out.println(p.getName().trim() + ": " + p.getPrice() + "$");
 
-					for (Attribute a : c.getAttributes()) {
-						System.out.println("\t" + a.getName().trim() + " [default: " + a.createValue().getValue() + "]");
-
-						if (a.getLegalValues() == null) {
-							System.out.println("\t\tAll values legal");
-						} else {
-							for (Object o : a.getLegalValues()) {
-								System.out.println("\t\t" + o);
-							}
-						}
+					for (Category c: p.getCategories()) {
+						System.out.println("\t" + c.getName().trim());
 					}
 
 					System.out.println();
+
+					for (Attribute.AttributeValue a: p.getAttributeValues()) {
+						System.out.println("\t" + a.getParent().getName().trim() + "[default: " + a.getParent().createValue().getValue() + "]");
+						System.out.println("\t\t" + a.getValue());
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

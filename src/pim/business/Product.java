@@ -161,14 +161,14 @@ public class Product {
 //	}
 
 	/**
-	 * Get a set containing all the attributes of the categories of this product.
+	 * Get a set containing all the attributes currently registered on this product.
 	 *
 	 * @return the set of all the product's attributes
 	 */
 	private Set<Attribute> getAllAttributes() {
 		Set<Attribute> attribs = new HashSet<>();
-		for (Category c : categories) {
-			attribs.addAll(c.getAttributes());
+		for (Attribute.AttributeValue a : attributes) {
+			attribs.add(a.getParent());
 		}
 		return attribs;
 	}
