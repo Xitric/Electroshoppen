@@ -2,6 +2,7 @@ package pim.persistence;
 
 import pim.business.Attribute;
 import pim.business.Category;
+import pim.business.Product;
 
 import java.io.*;
 import java.sql.*;
@@ -64,6 +65,139 @@ public class DatabaseMediator {
 		return instance;
 	}
 
+	//TODO: Support tags and images
+	/**
+	 * Get the product with the specified id.
+	 *
+	 * @param id the id of the product
+	 * @return the product with the specified id, or null if no such product exists
+	 * @throws IOException if something goes wrong
+	 */
+	public Product getProductByID(String id) throws IOException {
+		//Attempt to read data from database. Throw exception if something goes wrong
+		try (PreparedStatement getProduct = connection.prepareStatement("SELECT * FROM product WHERE id = ?;");
+		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT * FROM productcategory WHERE productid = ?;");
+		     PreparedStatement getProductValues = connection.prepareStatement("SELECT * FROM attributevalue WHERE productid = ?;")) {
+
+			getProduct.setString(1, id);
+			ResultSet productData = getProduct.executeQuery();
+			getProductCategories.setString(1, id);
+			ResultSet productCategoryData = getProductCategories.executeQuery();
+			getProductValues.setString(1, id);
+			ResultSet productValueData = getProductValues.executeQuery();
+			Set<Product> result = buildProducts(productData, productCategoryData, productValueData);
+
+			//If the set is empty, no product with the specified id was found. Otherwise, the set should contain only
+			//one value, that we return
+			if (result.size() == 0) {
+				return null;
+			} else {
+				return result.toArray(new Product[0])[0];
+			}
+		} catch (SQLException e) {
+			throw new IOException("Could not read product with id " + id + "!", e);
+		}
+	}
+
+	/**
+	 * Get a set of all products with the specified name stored in the database.
+	 *
+	 * @param name the name of the products
+	 * @return a set of all products with the specified name stored in the database
+	 * @throws IOException if something goes wrong
+	 */
+	public Set<Product> getProductsByName(String name) throws IOException {
+		try (PreparedStatement getProducts = connection.prepareStatement("SELECT * FROM product WHERE name = ?;");
+		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT productid, categoryName FROM productcategory, product WHERE productID = id AND name = ?;");
+		     PreparedStatement getProductValues = connection.prepareStatement("SELECT attributeid, productid, value FROM attributevalue, product WHERE productid = id AND name = ?;")) {
+
+			getProducts.setString(1, name);
+			ResultSet productData = getProducts.executeQuery();
+			getProductCategories.setString(1, name);
+			ResultSet productCategoryData = getProductCategories.executeQuery();
+			getProductValues.setString(1, name);
+			ResultSet productValueData = getProductValues.executeQuery();
+			return buildProducts(productData, productCategoryData, productValueData);
+		} catch (SQLException e) {
+			throw new IOException("Could not read products with name " + name + "!", e);
+		}
+	}
+
+	//TODO: Support tags
+	public Set<Product> getProductsByTag(String productTag) {
+		return null;
+	}
+
+	/**
+	 * Get a set of all products stored in the database.
+	 *
+	 * @return a set of all products stored in the database
+	 * @throws IOException if something goes wrong
+	 */
+	public Set<Product> getProducts() throws IOException {
+		try (PreparedStatement getProducts = connection.prepareStatement("SELECT * FROM product;");
+		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT * FROM productcategory;");
+		     PreparedStatement getProductValues = connection.prepareStatement("SELECT * FROM attributevalue;")) {
+
+			ResultSet productData = getProducts.executeQuery();
+			ResultSet productCategoryData = getProductCategories.executeQuery();
+			ResultSet productValueData = getProductValues.executeQuery();
+			return buildProducts(productData, productCategoryData, productValueData);
+		} catch (SQLException e) {
+			throw new IOException("Could not read products!", e);
+		}
+	}
+
+	/**
+	 * Build a set of products from the specified data.
+	 *
+	 * @param productData         the data describing product ids, names and prices
+	 * @param productCategoryData the data describing product categories
+	 * @param productValueData    the data describing attribute values on products
+	 * @return a set of all products that could be built from the data
+	 * @throws SQLException if something goes wrong
+	 */
+	private Set<Product> buildProducts(ResultSet productData, ResultSet productCategoryData, ResultSet productValueData) throws SQLException {
+		Map<String, Product> products = new HashMap<>();
+
+		//Construct all products
+		while (productData.next()) {
+			String id = productData.getString(1);
+			String name = productData.getString(2);
+			double price = productData.getDouble(3);
+
+			products.put(id, new Product(id, name, price));
+		}
+
+		//Add all product categories
+		while (productCategoryData.next()) {
+			String productID = productCategoryData.getString(1);
+			String categoryName = productCategoryData.getString(2);
+
+			try {
+				Category category = getCategoryByName(categoryName);
+				products.get(productID).addCategory(category);
+			} catch (IOException e) {
+			} //The database should guarantee that this exception never occurs
+		}
+
+		//Set all attribute values
+		while (productValueData.next()) {
+			String attributeID = productValueData.getString(1);
+			String productID = productValueData.getString(2);
+			Object value = bytesToObject(productValueData.getBytes(3));
+
+			try {
+				Attribute attribute = getAttributeByID(attributeID);
+				products.get(productID).setAttribute(attribute, value);
+			} catch (IOException e) {
+			} //The database should guarantee that this exception never occurs
+		}
+
+		//Return set of products
+		return new HashSet<>(products.values());
+	}
+
 	/**
 	 * Get the category with the specified name.
 	 *
@@ -117,7 +251,7 @@ public class DatabaseMediator {
 	 *
 	 * @param categoryData          the data describing category names
 	 * @param categoryAttributeData the data describing attributes on categories
-	 * @return a set of all categories that could be build from the data
+	 * @return a set of all categories that could be built from the data
 	 * @throws SQLException if something goes wrong
 	 */
 	private Set<Category> buildCategories(ResultSet categoryData, ResultSet categoryAttributeData) throws SQLException {
@@ -208,7 +342,7 @@ public class DatabaseMediator {
 	 *
 	 * @param attributeData  the data describing attribute ids, names and default values
 	 * @param legalValueData the data describing legal values of attributes
-	 * @return a set of all attributes that could be build from the data
+	 * @return a set of all attributes that could be built from the data
 	 * @throws SQLException if something goes wrong
 	 */
 	private Set<Attribute> buildAttributes(ResultSet attributeData, ResultSet legalValueData) throws SQLException {
@@ -366,16 +500,16 @@ public class DatabaseMediator {
 			try {
 				Set<Category> categories = getCategories();
 
-				for (Category c: categories) {
+				for (Category c : categories) {
 					System.out.println(c.getName());
 
-					for (Attribute a: c.getAttributes()) {
+					for (Attribute a : c.getAttributes()) {
 						System.out.println("\t" + a.getName().trim() + " [default: " + a.createValue().getValue() + "]");
 
 						if (a.getLegalValues() == null) {
 							System.out.println("\t\tAll values legal");
 						} else {
-							for (Object o: a.getLegalValues()) {
+							for (Object o : a.getLegalValues()) {
 								System.out.println("\t\t" + o);
 							}
 						}
