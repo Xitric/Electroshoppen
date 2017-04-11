@@ -65,37 +65,112 @@ public class DatabaseMediator {
 	}
 
 	/**
+	 * Get the category with the specified name.
+	 *
+	 * @param name the name of the category
+	 * @return the category with the specified name, or null if no such category exists
+	 * @throws IOException if something goes wrong
+	 */
+	public Category getCategoryByName(String name) throws IOException {
+		//Attempt to read data from database. Throw exception if something goes wrong
+		try (PreparedStatement getCategory = connection.prepareStatement("SELECT * FROM category WHERE name = ?;");
+		     PreparedStatement getAttributes = connection.prepareStatement("SELECT * FROM categoryattribute WHERE categoryname = ?;")) {
+
+			getCategory.setString(1, name);
+			ResultSet categoryData = getCategory.executeQuery();
+			getAttributes.setString(1, name);
+			ResultSet categoryAttributeData = getAttributes.executeQuery();
+			Set<Category> result = buildCategories(categoryData, categoryAttributeData);
+
+			//If the set is empty, no category with the specified name was found. Otherwise, the set should contain only
+			//one value, that we return
+			if (result.size() == 0) {
+				return null;
+			} else {
+				return result.toArray(new Category[0])[0];
+			}
+		} catch (SQLException e) {
+			throw new IOException("Could not read category with name " + name + "!", e);
+		}
+	}
+
+	/**
 	 * Get a set of all categories stored in the database.
 	 *
 	 * @return a set of all categories stored in the database
 	 * @throws IOException if something goes wrong
 	 */
 	public Set<Category> getCategories() throws IOException {
-		try (PreparedStatement getCategories = connection.prepareStatement("select * from category;")) {
+		try (PreparedStatement getCategories = connection.prepareStatement("SELECT * FROM category;");
+		     PreparedStatement getAttributes = connection.prepareStatement("SELECT * FROM categoryattribute;")) {
 
+			ResultSet categoryData = getCategories.executeQuery();
+			ResultSet categoryAttributeData = getAttributes.executeQuery();
+			return buildCategories(categoryData, categoryAttributeData);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new IOException("Could not read categories!", e);
 		}
-		return null;
+	}
+
+	/**
+	 * Build a set of attributes from the specified data.
+	 *
+	 * @param categoryData          the data describing category names
+	 * @param categoryAttributeData the data describing attributes on categories
+	 * @return a set of all categories that could be build from the data
+	 * @throws SQLException if something goes wrong
+	 */
+	private Set<Category> buildCategories(ResultSet categoryData, ResultSet categoryAttributeData) throws SQLException {
+		Map<String, Set<Attribute>> categoryAttributes = new HashMap<>();
+		Set<Category> categories = new HashSet<>();
+
+		//Read all category attributes
+		while (categoryAttributeData.next()) {
+			String categoryName = categoryAttributeData.getString(1);
+			String attributeID = categoryAttributeData.getString(2);
+
+			Set<Attribute> set = categoryAttributes.getOrDefault(categoryName, new HashSet<>());
+			try {
+				set.add(getAttributeByID(attributeID));
+			} catch (IOException e) {
+			} //The database should guarantee that this exception never occurs
+			categoryAttributes.put(categoryName, set);
+		}
+
+		//Construct all categories and return result
+		while (categoryData.next()) {
+			String categoryName = categoryData.getString(1);
+
+			//If category has already been read, reuse it. Otherwise register new category
+			Category c = dataCache.getCategoryIfPresent(categoryName);
+			if (c == null) {
+				categories.add(c = new Category(categoryName, categoryAttributes.get(categoryName)));
+				dataCache.registerCategoryIfAbsent(c);
+			} else {
+				categories.add(c);
+			}
+		}
+
+		return categories;
 	}
 
 	/**
 	 * Get the attribute with the specified id.
 	 *
-	 * @param id the id of the attribute.
+	 * @param id the id of the attribute
 	 * @return the attribute with the specified id, or null if no such attribute exists
 	 * @throws IOException if something goes wrong
 	 */
 	public Attribute getAttributeByID(String id) throws IOException {
 		//Attempt to read data from database. Throw exception if something goes wrong
-		try (PreparedStatement getLegalValues = connection.prepareStatement("select * from legalvalue where attributeid = ?");
-		     PreparedStatement getAttribute = connection.prepareStatement("select * from attribute where id = ?")) {
+		try (PreparedStatement getAttribute = connection.prepareStatement("SELECT * FROM attribute WHERE id = ?");
+		     PreparedStatement getLegalValues = connection.prepareStatement("SELECT * FROM legalvalue WHERE attributeid = ?")) {
 
-			getLegalValues.setString(1, id);
-			ResultSet legalValues = getLegalValues.executeQuery();
 			getAttribute.setString(1, id);
 			ResultSet attributeData = getAttribute.executeQuery();
-			Set<Attribute> result =  buildAttributes(attributeData, legalValues);
+			getLegalValues.setString(1, id);
+			ResultSet legalValueData = getLegalValues.executeQuery();
+			Set<Attribute> result = buildAttributes(attributeData, legalValueData);
 
 			//If the set is empty, no attribute with the specified id was found. Otherwise, the set should contain only
 			//one value, that we return
@@ -105,7 +180,7 @@ public class DatabaseMediator {
 				return result.toArray(new Attribute[0])[0];
 			}
 		} catch (SQLException e) {
-			throw new IOException("Could not read attributes!", e);
+			throw new IOException("Could not read attribute with id " + id + "!", e);
 		}
 	}
 
@@ -117,12 +192,12 @@ public class DatabaseMediator {
 	 */
 	public Set<Attribute> getAttributes() throws IOException {
 		//Attempt to read data from database. Throw exception if something goes wrong
-		try (PreparedStatement getLegalValues = connection.prepareStatement("select * from legalvalue;");
-		     PreparedStatement getAttributes = connection.prepareStatement("select * from attribute;")) {
+		try (PreparedStatement getAttributes = connection.prepareStatement("SELECT * FROM attribute;");
+		     PreparedStatement getLegalValues = connection.prepareStatement("SELECT * FROM legalvalue;")) {
 
-			ResultSet legalValues = getLegalValues.executeQuery();
 			ResultSet attributeData = getAttributes.executeQuery();
-			return buildAttributes(attributeData, legalValues);
+			ResultSet legalValueData = getLegalValues.executeQuery();
+			return buildAttributes(attributeData, legalValueData);
 		} catch (SQLException e) {
 			throw new IOException("Could not read attributes!", e);
 		}
@@ -131,7 +206,7 @@ public class DatabaseMediator {
 	/**
 	 * Build a set of attributes from the specified data.
 	 *
-	 * @param attributeData the data describing attribute ids, names and default values
+	 * @param attributeData  the data describing attribute ids, names and default values
 	 * @param legalValueData the data describing legal values of attributes
 	 * @return a set of all attributes that could be build from the data
 	 * @throws SQLException if something goes wrong
@@ -224,29 +299,94 @@ public class DatabaseMediator {
 	}
 
 	public void doObjectTest() {
-		try (PreparedStatement toDB = connection.prepareStatement("insert into legalvalue values (?, ?);")) {
-			//Read attributes
-			Set<Attribute> attributes = null;
+		try (PreparedStatement makeAttribute = connection.prepareStatement("INSERT INTO attribute VALUES (?, ?, ?);");
+		     PreparedStatement makeLegalValue = connection.prepareStatement("INSERT INTO legalvalue VALUES (?, ?);");
+		     PreparedStatement makeCategory = connection.prepareStatement("INSERT INTO category VALUES (?);");
+		     PreparedStatement makeCategoryAttribute = connection.prepareStatement("INSERT INTO categoryattribute VALUES (?, ?);")) {
+
+			//Make attributes
+//			makeAttribute.setString(1, "0");
+//			makeAttribute.setString(2, "Color");
+//			makeAttribute.setObject(3, objectToBytes(new Color(0, 0, 0)));
+//			makeAttribute.executeUpdate();
+//
+//			makeAttribute.setString(1, "1");
+//			makeAttribute.setString(2, "Manufacturing Country");
+//			makeAttribute.setObject(3, objectToBytes("DK"));
+//			makeAttribute.executeUpdate();
+//
+//			makeAttribute.setString(1, "2");
+//			makeAttribute.setString(2, "Length");
+//			makeAttribute.setObject(3, objectToBytes(0));
+//			makeAttribute.executeUpdate();
+//
+//			//Make legal values
+//			makeLegalValue.setString(1, "0");
+//			makeLegalValue.setObject(2, objectToBytes(new Color(255, 0, 0)));
+//			makeLegalValue.executeUpdate();
+//			makeLegalValue.setObject(2, objectToBytes(new Color(0, 255, 0)));
+//			makeLegalValue.executeUpdate();
+//			makeLegalValue.setObject(2, objectToBytes(new Color(0, 0, 255)));
+//			makeLegalValue.executeUpdate();
+//			makeLegalValue.setObject(2, objectToBytes(new Color(255, 255, 255)));
+//			makeLegalValue.executeUpdate();
+//			makeLegalValue.setObject(2, objectToBytes(new Color(0, 0, 0)));
+//			makeLegalValue.executeUpdate();
+//
+//			makeLegalValue.setString(1, "1");
+//			makeLegalValue.setObject(2, objectToBytes("DK"));
+//			makeLegalValue.executeUpdate();
+//			makeLegalValue.setObject(2, objectToBytes("GB"));
+//			makeLegalValue.executeUpdate();
+//			makeLegalValue.setObject(2, objectToBytes("DE"));
+//			makeLegalValue.executeUpdate();
+//			makeLegalValue.setObject(2, objectToBytes("FR"));
+//			makeLegalValue.executeUpdate();
+//
+//			//Make categories
+//			makeCategory.setString(1, "Mice");
+//			makeCategory.executeUpdate();
+//			makeCategory.setString(1, "Rulers");
+//			makeCategory.executeUpdate();
+//
+//			//Make category attributes
+//			makeCategoryAttribute.setString(1, "Mice");
+//			makeCategoryAttribute.setString(2, "0");
+//			makeCategoryAttribute.executeUpdate();
+//			makeCategoryAttribute.setString(2, "1");
+//			makeCategoryAttribute.executeUpdate();
+//
+//			makeCategoryAttribute.setString(1, "Rulers");
+//			makeCategoryAttribute.setString(2, "1");
+//			makeCategoryAttribute.executeUpdate();
+//			makeCategoryAttribute.setString(2, "2");
+//			makeCategoryAttribute.executeUpdate();
+
+			//Read categories and print
 			try {
-				attributes = getAttributes();
+				Set<Category> categories = getCategories();
+
+				for (Category c: categories) {
+					System.out.println(c.getName());
+
+					for (Attribute a: c.getAttributes()) {
+						System.out.println("\t" + a.getName().trim() + " [default: " + a.createValue().getValue() + "]");
+
+						if (a.getLegalValues() == null) {
+							System.out.println("\t\tAll values legal");
+						} else {
+							for (Object o: a.getLegalValues()) {
+								System.out.println("\t\t" + o);
+							}
+						}
+					}
+
+					System.out.println();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
-				return;
 			}
 
-			for (Attribute a : attributes) {
-				System.out.println("Attribute (" + a.getID().trim() + ", " + a.getName().trim() + ")");
-				Set values = a.getLegalValues();
-				if (values == null) {
-					System.out.println("\tAllows all values");
-				} else {
-					for (Object o : values) {
-						System.out.println("\t[" + o.getClass().getName() + "] " + o);
-					}
-				}
-
-				System.out.println();
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
