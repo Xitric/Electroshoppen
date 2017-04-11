@@ -106,7 +106,7 @@ public class Product {
 	 * @param attribute the attribute to set the value for
 	 * @param value     the value to set
 	 */
-	public <T> void setAttribute(Attribute<T> attribute, T value) {
+	public void setAttribute(Attribute attribute, Object value) {
 		//Remove the existing value for this attribute
 		attributes.removeIf(attributeValue -> attributeValue.getParent() == attribute);
 

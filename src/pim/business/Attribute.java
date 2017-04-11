@@ -8,11 +8,10 @@ import java.util.Set;
  * attribute. Each product stores an {@link AttributeValue} that provides the product's value for that attribute. This
  * class is immutable.
  *
- * @param <T> the type of the values for this attribute
  * @author Emil
  * @author Kasper
  */
-public class Attribute<T> {
+public class Attribute {
 
 	/**
 	 * The id of this attribute.
@@ -27,12 +26,12 @@ public class Attribute<T> {
 	/**
 	 * The default value of the attribute.
 	 */
-	private T defaultValue;
+	private Object defaultValue;
 
 	/**
 	 * The list of legal values for this attribute, or null if all values are allowed.
 	 */
-	private final Set<T> legalValues;
+	private final Set<Object> legalValues;
 
 	/**
 	 * Constructs a new attribute with the specified id and name.
@@ -41,9 +40,10 @@ public class Attribute<T> {
 	 * @param name         the name of the attribute
 	 * @param defaultValue the default value of the attribute
 	 */
-	public Attribute(String id, String name, T defaultValue) {
+	public Attribute(String id, String name, Object defaultValue) {
 		this.id = id;
 		this.name = name;
+		this.defaultValue = defaultValue;
 		this.legalValues = null;
 	}
 
@@ -56,11 +56,26 @@ public class Attribute<T> {
 	 * @param defaultValue the default value of the attribute
 	 * @param legalValues  the list of legal values
 	 */
-	public Attribute(String id, String name, T defaultValue, Set<T> legalValues) {
+	public Attribute(String id, String name, Object defaultValue, Set<Object> legalValues) {
+		//Ensure that default value is among legal values, if any
+		if (legalValues != null && !legalValues.contains(defaultValue)) {
+			throw new IllegalArgumentException("Default value is not legal!");
+		}
+
 		this.id = id;
 		this.name = name;
 		this.defaultValue = defaultValue;
-		this.legalValues = legalValues == null ? null : new HashSet<T>(legalValues);
+		this.legalValues = legalValues == null ? null : new HashSet<>(legalValues);
+	}
+
+	/**
+	 * Create a new attribute value object for this attribute with the default value. This method is provided, as the
+	 * attribute class is responsible for knowing the default value.
+	 *
+	 * @return the resulting {@link AttributeValue} object
+	 */
+	public AttributeValue createValue() {
+		return new AttributeValue(this, defaultValue);
 	}
 
 	/**
@@ -70,9 +85,9 @@ public class Attribute<T> {
 	 * @param value the value for the attribute
 	 * @return the resulting {@link AttributeValue} object if the value is allowed
 	 */
-	public AttributeValue createValue(T value) {
+	public AttributeValue createValue(Object value) {
 		if (legalValues == null || legalValues.contains(value)) {
-			return new AttributeValue<T>(this, value);
+			return new AttributeValue(this, value);
 		}
 
 		//Value not allowed
@@ -103,44 +118,16 @@ public class Attribute<T> {
 	 *
 	 * @return the set of legal values for this attribute or null if all values are allowed
 	 */
-	public Set<T> getLegalValues() {
-		return legalValues == null ? null : new HashSet<T>(legalValues);
-	}
-
-	//TODO: Realized I did not need this, but I kept it just in case
-	@Override
-	public boolean equals(Object other) {
-		if (this == other) {
-			return true;
-		}
-
-		if (other instanceof Attribute) {
-			Attribute otherAttribute = (Attribute) other;
-			//ID and name must be equal
-			if (id.equals(otherAttribute.getID()) && name.equals(otherAttribute.getName())) {
-				if (legalValues == null) { //If legal values are not defined, this must apply for both
-					if (otherAttribute.getLegalValues() == null) {
-						return true;
-					}
-				} else { //Otherwise the legal values must be equal
-					if (legalValues.equals(otherAttribute.getLegalValues())) {
-						return true;
-					}
-				}
-			}
-		}
-
-		return false;
+	public Set<Object> getLegalValues() {
+		return legalValues == null ? null : new HashSet<>(legalValues);
 	}
 
 	/**
 	 * Inner class for representing the values of attributes. This is an inner class to ensure that only {@link
 	 * Attribute} can access its constructor. Also, this class is immutable. To change a value a new one must be created
-	 * using {@link Attribute#createValue(T)}.
-	 *
-	 * @param <T> the type of the value
+	 * using {@link Attribute#createValue(Object)}.
 	 */
-	public class AttributeValue<T> {
+	public class AttributeValue {
 
 		/**
 		 * The attribute for which this instance provides a value.
@@ -150,7 +137,7 @@ public class Attribute<T> {
 		/**
 		 * The value.
 		 */
-		private final T value;
+		private final Object value;
 
 		/**
 		 * Constructs a new attribute value object for the specified attribute and with the specified value.
@@ -158,7 +145,7 @@ public class Attribute<T> {
 		 * @param parent the attribute for which this provides a value
 		 * @param value  the value
 		 */
-		private AttributeValue(Attribute parent, T value) {
+		private AttributeValue(Attribute parent, Object value) {
 			this.parent = parent;
 			this.value = value;
 		}
@@ -168,7 +155,7 @@ public class Attribute<T> {
 		 *
 		 * @return the attribute for which this instance provides a value
 		 */
-		public Attribute<T> getParent() {
+		public Attribute getParent() {
 			return parent;
 		}
 
@@ -177,7 +164,7 @@ public class Attribute<T> {
 		 *
 		 * @return the value
 		 */
-		public T getValue() {
+		public Object getValue() {
 			return value;
 		}
 	}

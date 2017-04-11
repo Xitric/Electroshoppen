@@ -122,7 +122,7 @@ public class DatabaseMediator {
 				while (attributeData.next()) {
 					String name = attributeData.getString(2);
 					Object defaultValue = bytesToObject(attributeData.getBytes(3));
-					a = new Attribute<>(id, name, defaultValue, values);
+					a = new Attribute(id, name, defaultValue, values);
 					dataCache.registerAttributeIfAbsent(a);
 				}
 			} catch (SQLException e) {
@@ -170,7 +170,7 @@ public class DatabaseMediator {
 				//If attribute has already been read, reuse it. Otherwise register new attribute
 				Attribute a = dataCache.getAttributeIfPresent(id);
 				if (a == null) {
-					attributes.add(a = new Attribute<>(id, name, defaultValue, values.get(id)));
+					attributes.add(a = new Attribute(id, name, defaultValue, values.get(id)));
 					dataCache.registerAttributeIfAbsent(a);
 				} else {
 					attributes.add(a);
