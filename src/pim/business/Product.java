@@ -113,7 +113,7 @@ public class Product {
 		if (!categoryWasRemoved) return;
 
 		//Remove attribute values that are no longer valid for this product
-		Set<Attribute> allAttributes = this.getAllAttributes();
+		Set<Attribute> allAttributes = this.getAllCategoryAttributes();
 		attributes.removeIf(attributeValue -> !allAttributes.contains(attributeValue.getParent()));
 	}
 
@@ -169,6 +169,19 @@ public class Product {
 		Set<Attribute> attribs = new HashSet<>();
 		for (Attribute.AttributeValue a : attributes) {
 			attribs.add(a.getParent());
+		}
+		return attribs;
+	}
+
+	/**
+	 * Get a set containing all the attributes of the categories of this product.
+	 *
+	 * @return the set of all the product's attributes
+	 */
+	private Set<Attribute> getAllCategoryAttributes() {
+		Set<Attribute> attribs = new HashSet<>();
+		for (Category c : categories) {
+			attribs.addAll(c.getAttributes());
 		}
 		return attribs;
 	}

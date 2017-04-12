@@ -6,10 +6,7 @@ import pim.business.Product;
 
 import java.io.*;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Mediator used to access the underlying database. The mediator uses the singleton pattern, so calling the method
@@ -197,6 +194,49 @@ public class DatabaseMediator {
 
 		//Return set of products
 		return new HashSet<>(products.values());
+	}
+
+	/**
+	 * Save the specified products in the database. This will overwrite any existing data.
+	 *
+	 * @param products the products to save
+	 */
+	public void saveProducts(Collection<Product> products) {
+		try (PreparedStatement storeProductData = connection.prepareStatement("INSERT INTO product VALUES (?, ?, ?) ON CONFLICT (id) DO UPDATE SET name = Excluded.name, price = EXCLUDED.price;");
+		     PreparedStatement removeProductCategories = connection.prepareStatement("DELETE FROM productcategory WHERE productid = ?;");
+		     PreparedStatement addProductCategory = connection.prepareStatement("insert into productcategory values(?, ?);");
+		     PreparedStatement addAttributeValue = connection.prepareStatement("insert into attributevalue values(?, ?, ?);")) {
+
+			for (Product product : products) {
+				//Store basic product data
+				storeProductData.setString(1, product.getID());
+				storeProductData.setString(2, product.getName());
+				storeProductData.setDouble(3, product.getPrice());
+				storeProductData.executeUpdate();
+
+				//Reset product categories. When removing all categories from a product its attribute values are
+				//automatically removed
+				removeProductCategories.setString(1, product.getID());
+				removeProductCategories.executeUpdate();
+
+				addProductCategory.setString(1, product.getID());
+				for (Category category : product.getCategories()) {
+					addProductCategory.setString(2, category.getName());
+					addProductCategory.executeUpdate();
+				}
+
+				//Add product attribute values
+				addAttributeValue.setString(2, product.getID());
+				for (Attribute.AttributeValue value: product.getAttributeValues()) {
+					System.out.println("Attribute: " + value.getParent().getName());
+					addAttributeValue.setString(1, value.getParent().getID());
+					addAttributeValue.setObject(3, objectToBytes(value.getValue()));
+					addAttributeValue.executeUpdate();
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -592,16 +632,29 @@ public class DatabaseMediator {
 //				e.printStackTrace();
 //			}
 
-			connection.setAutoCommit(false);
-			makeAttribute.setString(1, "12");
-			makeAttribute.setString(2, "Shouldn't work");
-			makeAttribute.setObject(3, objectToBytes("Some illegal stuff"));
-			makeAttribute.executeUpdate();
+//			connection.setAutoCommit(false);
+//			makeAttribute.setString(1, "12");
+//			makeAttribute.setString(2, "Shouldn't work");
+//			makeAttribute.setObject(3, objectToBytes("Some illegal stuff"));
+//			makeAttribute.executeUpdate();
+//
+//			makeLegalValue.setString(1, "12");
+//			makeLegalValue.setObject(2, objectToBytes("Some illegal stuff"));
+//			makeLegalValue.executeUpdate();
+//			connection.commit();
 
-			makeLegalValue.setString(1, "12");
-			makeLegalValue.setObject(2, objectToBytes("Some illegal stuff"));
-			makeLegalValue.executeUpdate();
-			connection.commit();
+			try {
+				Product mouse = getProductByID("0");
+
+				Category mice = getCategoryByName("Mice");
+				mouse.removeCategory(mice);
+
+				List<Product> l = new ArrayList<>();
+				l.add(mouse);
+				saveProducts(l);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
