@@ -113,6 +113,15 @@ public class Attribute {
 	}
 
 	/**
+	 * Get the default value of this attribute.
+	 *
+	 * @return the default value of this attribute
+	 */
+	public Object getDefaultValue() {
+		return defaultValue;
+	}
+
+	/**
 	 * Get the set of legal values for this attribute or null if all values are allowed. This will return a copy of the
 	 * internal set, so changing it will not affect this instance.
 	 *

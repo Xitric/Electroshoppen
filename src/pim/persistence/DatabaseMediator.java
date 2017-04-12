@@ -571,26 +571,37 @@ public class DatabaseMediator {
 //			}
 
 			//Read products and print
-			try {
-				Set<Product> products = getProducts();
+//			try {
+//				Set<Product> products = getProducts();
+//
+//				for (Product p: products) {
+//					System.out.println(p.getName().trim() + ": " + p.getPrice() + "$");
+//
+//					for (Category c: p.getCategories()) {
+//						System.out.println("\t" + c.getName().trim());
+//					}
+//
+//					System.out.println();
+//
+//					for (Attribute.AttributeValue a: p.getAttributeValues()) {
+//						System.out.println("\t" + a.getParent().getName().trim() + "[default: " + a.getParent().getDefaultValue() + "]");
+//						System.out.println("\t\t" + a.getValue());
+//					}
+//				}
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 
-				for (Product p: products) {
-					System.out.println(p.getName().trim() + ": " + p.getPrice() + "$");
+			connection.setAutoCommit(false);
+			makeAttribute.setString(1, "12");
+			makeAttribute.setString(2, "Shouldn't work");
+			makeAttribute.setObject(3, objectToBytes("Some illegal stuff"));
+			makeAttribute.executeUpdate();
 
-					for (Category c: p.getCategories()) {
-						System.out.println("\t" + c.getName().trim());
-					}
-
-					System.out.println();
-
-					for (Attribute.AttributeValue a: p.getAttributeValues()) {
-						System.out.println("\t" + a.getParent().getName().trim() + "[default: " + a.getParent().createValue().getValue() + "]");
-						System.out.println("\t\t" + a.getValue());
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			makeLegalValue.setString(1, "12");
+			makeLegalValue.setObject(2, objectToBytes("Some illegal stuff"));
+			makeLegalValue.executeUpdate();
+			connection.commit();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
