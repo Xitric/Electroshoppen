@@ -249,6 +249,21 @@ public class DatabaseMediator {
 	}
 
 	/**
+	 * Delete all data for the product with the specified id.
+	 *
+	 * @param id the id of the product
+	 */
+	public void deleteProduct(String id) {
+		try (PreparedStatement deleteProductData = connection.prepareStatement("delete from product where id = ?")) {
+			//Delete product entry. The constraints in the database should ensure that the deletion is cascaded
+			deleteProductData.setString(1, id);
+			deleteProductData.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Get the category with the specified name.
 	 *
 	 * @param name the name of the category
@@ -389,6 +404,21 @@ public class DatabaseMediator {
 	}
 
 	/**
+	 * Delete all data for the category with the specified name.
+	 *
+	 * @param name the name of the category
+	 */
+	public void deleteCategory(String name) {
+		try (PreparedStatement deleteCategoryData = connection.prepareStatement("delete from category where name = ?")) {
+			//Delete category entry. The constraints in the database should ensure that the deletion is cascaded
+			deleteCategoryData.setString(1, name);
+			deleteCategoryData.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Get the attribute with the specified id.
 	 *
 	 * @param id the id of the attribute
@@ -512,6 +542,21 @@ public class DatabaseMediator {
 					storeLegalValues.executeUpdate();
 				}
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Delete all data for the attribute with the specified id.
+	 *
+	 * @param id the id of the attribute
+	 */
+	public void deleteAttribute(String id) {
+		try (PreparedStatement deleteAttributeData = connection.prepareStatement("delete from attribute where id = ?")) {
+			//Delete attribute entry. The constraints in the database should ensure that the deletion is cascaded
+			deleteAttributeData.setString(1, id);
+			deleteAttributeData.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
