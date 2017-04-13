@@ -238,7 +238,6 @@ public class DatabaseMediator {
 				//Add product attribute values
 				addAttributeValue.setString(2, product.getID());
 				for (Attribute.AttributeValue value : product.getAttributeValues()) {
-					System.out.println("Attribute: " + value.getParent().getName());
 					addAttributeValue.setString(1, value.getParent().getID());
 					addAttributeValue.setObject(3, objectToBytes(value.getValue()));
 					addAttributeValue.executeUpdate();
@@ -480,6 +479,45 @@ public class DatabaseMediator {
 	}
 
 	/**
+	 * Save the specified attribute in the database. This will overwrite any existing data.
+	 *
+	 * @param attribute the attribute to save
+	 */
+	public void saveAttribute(Attribute attribute) {
+		saveAttributes(Collections.singleton(attribute));
+	}
+
+	/**
+	 * Save the specified attributes in the database. This will overwrite any existing data.
+	 *
+	 * @param attributes the attributes to save
+	 */
+	public void saveAttributes(Collection<Attribute> attributes) {
+		try (PreparedStatement storeAttributeData = connection.prepareStatement("INSERT INTO attribute VALUES (?, ?, ?) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, defaultvalue = EXCLUDED.defaultvalue;");
+		     PreparedStatement storeLegalValues = connection.prepareStatement("INSERT INTO legalvalue VALUES (?, ?) ON CONFLICT (attributeid, value) DO NOTHING;")) {
+
+			for (Attribute attribute : attributes) {
+				//Store basic attribute data
+				storeAttributeData.setString(1, attribute.getID());
+				storeAttributeData.setString(2, attribute.getName());
+				storeAttributeData.setObject(3, objectToBytes(attribute.getDefaultValue()));
+				storeAttributeData.executeUpdate();
+
+				//If the attribute already exists, the legal values should not be changed since they are immutable.
+				//Should the immutability be violated, however, the issue lies elsewhere - not here. Thus the
+				//possibility of adding new legal values has not been handled. Also, this would not break anything
+				storeLegalValues.setString(1, attribute.getID());
+				for (Object value : attribute.getLegalValues()) {
+					storeLegalValues.setObject(2, objectToBytes(value));
+					storeLegalValues.executeUpdate();
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Close the database connection.
 	 */
 	public void dispose() {
@@ -704,12 +742,10 @@ public class DatabaseMediator {
 //			connection.commit();
 
 			try {
-				Category rulers = getCategoryByName("Rulers");
-				Attribute manf = getAttributeByID("2");
-
-				rulers.addAttribute(manf);
-
-				saveCategory(rulers);
+				Category mice = getCategoryByName("Mice");
+				Attribute number = getAttributeByID("3");
+				mice.addAttribute(number);
+				saveCategory(mice);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
