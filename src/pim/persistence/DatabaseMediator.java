@@ -7,6 +7,7 @@ import pim.business.Product;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Mediator used to access the underlying database. The mediator uses the singleton pattern, so calling the method
@@ -197,6 +198,15 @@ public class DatabaseMediator {
 	}
 
 	/**
+	 * Save the specified product in the database. This will overwrite any existing data.
+	 *
+	 * @param product the product to save
+	 */
+	public void saveProduct(Product product) {
+		saveProducts(Collections.singleton(product));
+	}
+
+	/**
 	 * Save the specified products in the database. This will overwrite any existing data.
 	 *
 	 * @param products the products to save
@@ -204,8 +214,8 @@ public class DatabaseMediator {
 	public void saveProducts(Collection<Product> products) {
 		try (PreparedStatement storeProductData = connection.prepareStatement("INSERT INTO product VALUES (?, ?, ?) ON CONFLICT (id) DO UPDATE SET name = Excluded.name, price = EXCLUDED.price;");
 		     PreparedStatement removeProductCategories = connection.prepareStatement("DELETE FROM productcategory WHERE productid = ?;");
-		     PreparedStatement addProductCategory = connection.prepareStatement("insert into productcategory values(?, ?);");
-		     PreparedStatement addAttributeValue = connection.prepareStatement("insert into attributevalue values(?, ?, ?);")) {
+		     PreparedStatement addProductCategory = connection.prepareStatement("INSERT INTO productcategory VALUES(?, ?);");
+		     PreparedStatement addAttributeValue = connection.prepareStatement("INSERT INTO attributevalue VALUES(?, ?, ?);")) {
 
 			for (Product product : products) {
 				//Store basic product data
@@ -227,7 +237,7 @@ public class DatabaseMediator {
 
 				//Add product attribute values
 				addAttributeValue.setString(2, product.getID());
-				for (Attribute.AttributeValue value: product.getAttributeValues()) {
+				for (Attribute.AttributeValue value : product.getAttributeValues()) {
 					System.out.println("Attribute: " + value.getParent().getName());
 					addAttributeValue.setString(1, value.getParent().getID());
 					addAttributeValue.setObject(3, objectToBytes(value.getValue()));
@@ -319,7 +329,7 @@ public class DatabaseMediator {
 			//If category has already been read, reuse it. Otherwise register new category
 			Category c = dataCache.getCategoryIfPresent(categoryName);
 			if (c == null) {
-				categories.add(c = new Category(categoryName, categoryAttributes.get(categoryName)));
+				categories.add(c = new Category(categoryName, categoryAttributes.getOrDefault(categoryName, new HashSet<>())));
 				dataCache.registerCategoryIfAbsent(c);
 			} else {
 				categories.add(c);
@@ -327,6 +337,56 @@ public class DatabaseMediator {
 		}
 
 		return categories;
+	}
+
+	/**
+	 * Save the specified category in the database. This will overwrite any existing data.
+	 *
+	 * @param category the category to save
+	 */
+	public void saveCategory(Category category) {
+		saveCategories(Collections.singleton(category));
+	}
+
+	/**
+	 * Save the specified categories in the database. This will overwrite any existing data.
+	 *
+	 * @param categories the categories to save
+	 */
+	public void saveCategories(Collection<Category> categories) {
+		try (PreparedStatement storeCategoryData = connection.prepareStatement("INSERT INTO category VALUES (?) ON CONFLICT (name) DO NOTHING;");
+		     PreparedStatement deleteRemovedAttributes = connection.prepareStatement("DELETE FROM categoryattribute WHERE categoryname = ?  AND NOT (attributeid = ANY(?));");
+		     PreparedStatement addNewAttributes = connection.prepareStatement("INSERT INTO categoryattribute VALUES (?, ?) ON CONFLICT (categoryname, attributeid) DO NOTHING")) {
+
+			for (Category category : categories) {
+				//Store basic category data
+				storeCategoryData.setString(1, category.getName());
+				storeCategoryData.executeUpdate();
+
+				//Delete removed attributes
+				//Construct array of attribute ids for this category
+				Set<Attribute> attributes = category.getAttributes();
+				String[] attributeIDs =
+						attributes.stream().map(Attribute::getID).collect(Collectors.toList()).toArray(new String[0]);
+				Array attributeArray = connection.createArrayOf("CHAR", attributeIDs);
+
+				deleteRemovedAttributes.setString(1, category.getName());
+				deleteRemovedAttributes.setArray(2, attributeArray);
+				deleteRemovedAttributes.executeUpdate();
+
+				//The array is automatically freed at some point, so no need to put it in finally
+				attributeArray.free();
+
+				//Add new attributes
+				addNewAttributes.setString(1, category.getName());
+				for (Attribute attribute : attributes) {
+					addNewAttributes.setString(2, attribute.getID());
+					addNewAttributes.executeUpdate();
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -644,14 +704,12 @@ public class DatabaseMediator {
 //			connection.commit();
 
 			try {
-				Product mouse = getProductByID("0");
+				Category rulers = getCategoryByName("Rulers");
+				Attribute manf = getAttributeByID("2");
 
-				Category mice = getCategoryByName("Mice");
-				mouse.removeCategory(mice);
+				rulers.addAttribute(manf);
 
-				List<Product> l = new ArrayList<>();
-				l.add(mouse);
-				saveProducts(l);
+				saveCategory(rulers);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

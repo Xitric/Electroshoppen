@@ -61,7 +61,7 @@ public class Category implements Iterator<Attribute> {
 	 * @return the attributes of this category
 	 */
 	public Set<Attribute> getAttributes() {
-		return attributes;
+		return new HashSet<>(attributes);
 	}
 
 	@Override
