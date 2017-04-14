@@ -22,17 +22,20 @@ public class PIMImpl implements PIM {
 	public boolean synchronize() {
 		//Get set of product data from supplier integrator. If connection fails, try again. After 5 failed attempts,
 		//synchronization is stopped
-		Set<SupplierIntegrator.ProductData> productData = null;
+		SupplierIntegrator si = null;
 
 		for (int i = 0; i < 5; i++) {
 			try {
-				productData = SupplierIntegrator.getInstance().getAllProductData();
+				si = SupplierIntegrator.getInstance();
+				break; //Only breaks if an exception does not occur
 			} catch (TimeoutException e) {
 				e.printStackTrace();
 			}
 		}
 
-		if (productData == null) return false; //Synchronization failed
+		if (si == null) return false; //Synchronization failed
+
+		Set<SupplierIntegrator.ProductData> productData = si.getAllProductData();
 
 		//Connection was established and the product data has been retrieved. For each piece of data, either update the
 		//existing product or create a new product
@@ -69,6 +72,9 @@ public class PIMImpl implements PIM {
 				DatabaseMediator.getInstance().saveProduct(p);
 			}
 		}
+
+		//Close connection
+		si.close();
 
 		//We made it all the way through, so synchronization was successful
 		return true;
