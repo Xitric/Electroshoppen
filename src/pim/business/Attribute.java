@@ -65,7 +65,9 @@ public class Attribute {
 		this.id = id;
 		this.name = name;
 		this.defaultValue = defaultValue;
-		this.legalValues = legalValues == null ? null : new HashSet<>(legalValues);
+		//If the legal values are not null, we copy its contents into a new set, so that we can ensure that the legal
+		//values cannot be changed
+		this.legalValues = (legalValues == null ? null : new HashSet<>(legalValues));
 	}
 
 	/**

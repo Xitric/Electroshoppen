@@ -34,7 +34,9 @@ public class Category implements Iterator<Attribute> {
 	 */
 	public Category(String name, Set<Attribute> attributes) {
 		this.name = name;
-		this.attributes = attributes;
+		//We must ensure that the attribute set is not null (otherwise we cannot add new attributes), and that we copy
+		//the specified array so that new attributes can only be added using the methods below
+		this.attributes = (attributes == null ? new HashSet<>() : new HashSet<>(attributes));
 	}
 
 	/**
@@ -56,7 +58,7 @@ public class Category implements Iterator<Attribute> {
 	}
 
 	/**
-	 * Get the attributes of this category.
+	 * Get the attributes of this category. This returns a copy of the internal set.
 	 *
 	 * @return the attributes of this category
 	 */
