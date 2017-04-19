@@ -15,6 +15,7 @@ public class Category implements Iterator<Attribute> {
 
 	private final String name;
 	private final Set<Attribute> attributes;
+	private final Set<CategoryChangeListener> changeListeners;
 
 	/**
 	 * Constructs a new category with the specified name.
@@ -24,6 +25,7 @@ public class Category implements Iterator<Attribute> {
 	public Category(String name) {
 		this.name = name;
 		this.attributes = new HashSet<>();
+		this.changeListeners = new HashSet<>();
 	}
 
 	/**
@@ -37,6 +39,7 @@ public class Category implements Iterator<Attribute> {
 		//We must ensure that the attribute set is not null (otherwise we cannot add new attributes), and that we copy
 		//the specified array so that new attributes can only be added using the methods below
 		this.attributes = (attributes == null ? new HashSet<>() : new HashSet<>(attributes));
+		this.changeListeners = new HashSet<>();
 	}
 
 	/**
@@ -48,13 +51,34 @@ public class Category implements Iterator<Attribute> {
 		return name;
 	}
 
-	//TODO: Notify products using observer pattern
-	public void removeAttribute(Attribute attribute) {
-		attributes.remove(attribute);
+	/**
+	 * Add an attribute to this category.
+	 *
+	 * @param attribute the attribute to add
+	 */
+	public void addAttribute(Attribute attribute) {
+		boolean success = attributes.add(attribute);
+
+		if (success) {
+			for (CategoryChangeListener listener : changeListeners) {
+				listener.attributeAdded(attribute);
+			}
+		}
 	}
 
-	public void addAttribute(Attribute attribute) {
-		attributes.add(attribute);
+	/**
+	 * Remove an attribute from this category.
+	 *
+	 * @param attribute the attribute to remove
+	 */
+	public void removeAttribute(Attribute attribute) {
+		boolean success = attributes.remove(attribute);
+
+		if (success) {
+			for (CategoryChangeListener listener : changeListeners) {
+				listener.attributeRemoved(attribute);
+			}
+		}
 	}
 
 	/**
@@ -64,6 +88,24 @@ public class Category implements Iterator<Attribute> {
 	 */
 	public Set<Attribute> getAttributes() {
 		return new HashSet<>(attributes);
+	}
+
+	/**
+	 * Add a change listener to this category.
+	 *
+	 * @param listener the listener to add
+	 */
+	public void addChangeListener(CategoryChangeListener listener) {
+		changeListeners.add(listener);
+	}
+
+	/**
+	 * Remove a change listener from this category.
+	 *
+	 * @param listener the listener to remove
+	 */
+	public void removeChangeListener(CategoryChangeListener listener) {
+		changeListeners.remove(listener);
 	}
 
 	@Override

@@ -1,6 +1,9 @@
 package pim.business;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A business entity representation of a product in the PIM.
@@ -8,15 +11,15 @@ import java.util.*;
  * @author Niels
  * @author Kasper
  */
-public class Product {
+public class Product implements CategoryChangeListener {
 
 	private final String id;
 	private String name;
 	private double price;
 	private Set<Category> categories;
 	private Set<Attribute.AttributeValue> attributes;
-//	private Set<Integer> images;
-//	private List<Tag> tags; TODO: Add tags
+	//	private Set<Integer> images;
+	//	private List<Tag> tags; TODO: Add tags
 
 	/**
 	 * Constructs a new product.
@@ -33,8 +36,8 @@ public class Product {
 		//Initialize lists
 		categories = new HashSet<>();
 		attributes = new HashSet<>();
-//		images = new HashSet<>();
-//		tags = new ArrayList<>(); TODO: Add tags
+		//		images = new HashSet<>();
+		//		tags = new ArrayList<>(); TODO: Add tags
 	}
 
 	/**
@@ -47,15 +50,6 @@ public class Product {
 	}
 
 	/**
-	 * Set the name of this product.
-	 *
-	 * @param name the new name of this product
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
 	 * Get the name of this product.
 	 *
 	 * @return the name of this product
@@ -65,12 +59,12 @@ public class Product {
 	}
 
 	/**
-	 * Set the price of this product.
+	 * Set the name of this product.
 	 *
-	 * @param price the price of this product
+	 * @param name the new name of this product
 	 */
-	public void setPrice(double price) {
-		this.price = price;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
@@ -83,14 +77,26 @@ public class Product {
 	}
 
 	/**
+	 * Set the price of this product.
+	 *
+	 * @param price the price of this product
+	 */
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	/**
 	 * Add a category to this product. Adding the same category twice will have no effect. When adding a new category,
-	 * default attrbute values will be added for all new attributes.
+	 * default attribute values will be added for all new attributes.
 	 *
 	 * @param category the category to add
 	 */
 	public void addCategory(Category category) {
 		boolean categoryWasNew = categories.add(category);
 		if (!categoryWasNew) return;
+
+		//Listen to category
+		category.addChangeListener(this);
 
 		//When adding a new category, add attribute values (default values) for all new attributes
 		Set<Attribute> newAttributes = category.getAttributes();
@@ -111,6 +117,9 @@ public class Product {
 	public void removeCategory(Category category) {
 		boolean categoryWasRemoved = categories.remove(category);
 		if (!categoryWasRemoved) return;
+
+		//Stop listening to category
+		category.removeChangeListener(this);
 
 		//Remove attribute values that are no longer valid for this product
 		Set<Attribute> allAttributes = this.getAllCategoryAttributes();
@@ -136,7 +145,7 @@ public class Product {
 	public void setAttribute(Attribute attribute, Object value) {
 		//Remove the existing value for this attribute
 		boolean attributeExists = attributes.removeIf(attributeValue -> attributeValue.getParent() == attribute);
-		if (! attributeExists) return;
+		if (!attributeExists) return;
 
 		//Add new value
 		attributes.add(attribute.createValue(value));
@@ -152,13 +161,13 @@ public class Product {
 	}
 
 	//TODO: Images as wrappers
-//	public void addImage(int image) {
-//		images.add(image);
-//	}
-//
-//	public ArrayList<Integer> getImages() {
-//		return images;
-//	}
+	//	public void addImage(int image) {
+	//		images.add(image);
+	//	}
+	//
+	//	public ArrayList<Integer> getImages() {
+	//		return images;
+	//	}
 
 	/**
 	 * Get a set containing all the attributes currently registered on this product.
@@ -184,5 +193,21 @@ public class Product {
 			attribs.addAll(c.getAttributes());
 		}
 		return attribs;
+	}
+
+	@Override
+	public void attributeAdded(Attribute attribute) {
+		//Ensure that the attribute is not already present
+		if (!getAllAttributes().contains(attribute)) {
+			setAttribute(attribute, attribute.getDefaultValue());
+		}
+	}
+
+	@Override
+	public void attributeRemoved(Attribute attribute) {
+		//Ensure that the attribute is not present in another category before removing
+		if (!getAllCategoryAttributes().contains(attribute)) {
+			attributes.removeIf(attributeValue -> attributeValue.getParent() == attribute);
+		}
 	}
 }
