@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  * {@link #getInstance()} is necessary to acquire an instance.
  *
  * @author Kasper
+ * @author mstruntze
  */
 public class DatabaseMediator {
 
@@ -74,15 +75,22 @@ public class DatabaseMediator {
 		//Attempt to read data from database. Throw exception if something goes wrong
 		try (PreparedStatement getProduct = connection.prepareStatement("SELECT * FROM product WHERE id = ?;");
 		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT * FROM productcategory WHERE productid = ?;");
-		     PreparedStatement getProductValues = connection.prepareStatement("SELECT * FROM attributevalue WHERE productid = ?;")) {
+		     PreparedStatement getProductValues = connection.prepareStatement("SELECT * FROM attributevalue WHERE productid = ?;");
+		     PreparedStatement getProductTags = connection.prepareStatement("SELECT * FROM producttag WHERE productid = ?")) {
 
 			getProduct.setString(1, id);
 			ResultSet productData = getProduct.executeQuery();
+
 			getProductCategories.setString(1, id);
 			ResultSet productCategoryData = getProductCategories.executeQuery();
+
 			getProductValues.setString(1, id);
 			ResultSet productValueData = getProductValues.executeQuery();
-			Set<Product> result = buildProducts(productData, productCategoryData, productValueData);
+
+			getProductTags.setString(1, id);
+			ResultSet productTagData = getProductTags.executeQuery();
+
+			Set<Product> result = buildProducts(productData, productCategoryData, productValueData, productTagData);
 
 			//If the set is empty, no product with the specified id was found. Otherwise, the set should contain only
 			//one value, that we return
@@ -106,15 +114,22 @@ public class DatabaseMediator {
 	public Set<Product> getProductsByName(String name) throws IOException {
 		try (PreparedStatement getProducts = connection.prepareStatement("SELECT * FROM product WHERE name = ?;");
 		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT productid, categoryName FROM productcategory, product WHERE productID = id AND name = ?;");
-		     PreparedStatement getProductValues = connection.prepareStatement("SELECT attributeid, productid, value FROM attributevalue, product WHERE productid = id AND name = ?;")) {
+		     PreparedStatement getProductValues = connection.prepareStatement("SELECT attributeid, productid, value FROM attributevalue, product WHERE productid = id AND name = ?;");
+			 PreparedStatement getProductTags = connection.prepareStatement("SELECT tagname, product.name FROM producttag, product WHERE producttag.productid = product.id AND product.name = ?;")) {
 
 			getProducts.setString(1, name);
 			ResultSet productData = getProducts.executeQuery();
+
 			getProductCategories.setString(1, name);
 			ResultSet productCategoryData = getProductCategories.executeQuery();
+
 			getProductValues.setString(1, name);
 			ResultSet productValueData = getProductValues.executeQuery();
-			return buildProducts(productData, productCategoryData, productValueData);
+
+			getProductTags.setString(1, name);
+			ResultSet productTagsData = getProductTags.executeQuery();
+
+			return buildProducts(productData, productCategoryData, productValueData, productTagsData);
 		} catch (SQLException e) {
 			throw new IOException("Could not read products with name " + name + "!", e);
 		}
@@ -207,12 +222,14 @@ public class DatabaseMediator {
 	public Set<Product> getProducts() throws IOException {
 		try (PreparedStatement getProducts = connection.prepareStatement("SELECT * FROM product;");
 		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT * FROM productcategory;");
-		     PreparedStatement getProductValues = connection.prepareStatement("SELECT * FROM attributevalue;")) {
+		     PreparedStatement getProductValues = connection.prepareStatement("SELECT * FROM attributevalue;");
+		     PreparedStatement getProductTags = connection.prepareStatement("SELECT * FROM producttag;")) {
 
 			ResultSet productData = getProducts.executeQuery();
 			ResultSet productCategoryData = getProductCategories.executeQuery();
 			ResultSet productValueData = getProductValues.executeQuery();
-			return buildProducts(productData, productCategoryData, productValueData);
+			ResultSet productTags = getProductTags.executeQuery();
+			return buildProducts(productData, productCategoryData, productValueData, productTags);
 		} catch (SQLException e) {
 			throw new IOException("Could not read products!", e);
 		}
@@ -227,7 +244,7 @@ public class DatabaseMediator {
 	 * @return a set of all products that could be built from the data
 	 * @throws SQLException if something goes wrong
 	 */
-	private Set<Product> buildProducts(ResultSet productData, ResultSet productCategoryData, ResultSet productValueData) throws SQLException {
+	private Set<Product> buildProducts(ResultSet productData, ResultSet productCategoryData, ResultSet productValueData, ResultSet productTags) throws SQLException {
 		Map<String, Product> products = new HashMap<>();
 
 		//Construct all products
@@ -262,6 +279,13 @@ public class DatabaseMediator {
 				products.get(productID).setAttribute(attribute, value);
 			} catch (IOException e) {
 			} //The database should guarantee that this exception never occurs
+		}
+
+		while(productTags.next()){
+			String name = productTags.getString(1);
+			Tag t = TagManager.getInstance().createTag(name);
+			Product p = products.get(productTags.getString(2));
+			p.addTag(t);
 		}
 
 		//Return set of products
