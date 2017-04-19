@@ -1,8 +1,6 @@
 package pim.persistence;
 
-import pim.business.Attribute;
-import pim.business.Category;
-import pim.business.Product;
+import pim.business.*;
 
 import java.io.*;
 import java.sql.*;
@@ -122,9 +120,82 @@ public class DatabaseMediator {
 		}
 	}
 
-	//TODO: Support tags
-	public Set<Product> getProductsByTag(String productTag) {
+	/**
+	 * Get a set of all tags
+	 *
+	 * @return the set of all tags
+	 */
+	public Set<Tag> getTags() {
+		try(PreparedStatement tagData = connection.prepareStatement("SELECT * FROM tag")) {
+			ResultSet tagResults = tagData.executeQuery();
+			return buildTags(tagResults);
+		} catch(SQLException e) {
+			// TODO: error handling
+		}
+
 		return null;
+	}
+
+	/**
+	 * Builds a set of tags from a result set
+	 *
+	 * @param tagData The result set of data
+	 * @return The set of tags created
+	 */
+	private Set<Tag> buildTags(ResultSet tagData) {
+		Set<Tag> tags = new HashSet<>();
+
+		TagManager tm = TagManager.getInstance();
+
+		try {
+			while (tagData.next()) {
+				tags.add(tm.createTag(tagData.getString(1)));
+			}
+		} catch(SQLException e) {
+			// TODO: error handling
+		}
+
+		return tags;
+	}
+
+	/**
+	 * Gets all products with the associated tag
+	 *
+	 * @param tag Tag to find products by
+	 * @return A set of products with the provided tag
+	 */
+	public Set<Product> getProductsByTag(Tag tag) {
+		try {
+			Set<Product> products = getProducts();
+			Iterator<Product> it = products.iterator();
+
+			while(it.hasNext()) {
+				Product p = it.next();
+				if(!p.containsTag(tag)) {
+					products.remove(p);
+				}
+			}
+
+			return products;
+		} catch(IOException e) {
+			// TODO: Implement error handling
+		}
+
+		return null;
+	}
+
+	/**
+	 * Stores a tag in the database
+	 *
+	 * @param tag The tag to save
+	 */
+	public void saveTag(Tag tag) {
+		try (PreparedStatement tagData = connection.prepareStatement("INSERT INTO tag VALUES (?);")) {
+			tagData.setString(1, tag.getName());
+			tagData.executeUpdate();
+		} catch(SQLException e) {
+			// TODO: implement something
+		}
 	}
 
 	/**
