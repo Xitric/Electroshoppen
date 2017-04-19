@@ -205,7 +205,7 @@ public class DatabaseMediator {
 	 * @param tag The tag to save
 	 */
 	public void saveTag(Tag tag) {
-		try (PreparedStatement tagData = connection.prepareStatement("INSERT INTO tag VALUES (?);")) {
+		try (PreparedStatement tagData = connection.prepareStatement("INSERT INTO tag VALUES (?) ON CONFLICT (name) DO NOTHING;")) {
 			tagData.setString(1, tag.getName());
 			tagData.executeUpdate();
 		} catch(SQLException e) {
