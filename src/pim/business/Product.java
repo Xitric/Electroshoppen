@@ -21,7 +21,6 @@ public class Product implements CategoryChangeListener {
 //	private Set<Integer> images;
 	private List<Tag> tags;
 
-
 	/**
 	 * Constructs a new product.
 	 *
