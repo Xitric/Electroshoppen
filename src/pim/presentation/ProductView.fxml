@@ -89,7 +89,7 @@
                      <content>
                         <VBox spacing="8.0">
                            <children>
-                              <FlowPane hgap="16.0" vgap="16.0" VBox.vgrow="ALWAYS" />
+                              <FlowPane fx:id="productImagePane" hgap="16.0" vgap="16.0" VBox.vgrow="ALWAYS" />
                               <HBox spacing="8.0">
                                  <children>
                                     <TextField HBox.hgrow="ALWAYS" />
