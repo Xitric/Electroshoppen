@@ -281,6 +281,7 @@ public class DatabaseMediator {
 			} //The database should guarantee that this exception never occurs
 		}
 
+		//Set all tag
 		while(productTags.next()){
 			String name = productTags.getString(1);
 			Tag t = TagManager.getInstance().createTag(name);
