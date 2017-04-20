@@ -7,8 +7,7 @@ package pim.presentation;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.layout.FlowPane;
-import pim.business.Image;
+import javafx.scene.control.Tab;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -21,35 +20,16 @@ import java.util.ResourceBundle;
 public class PIMController implements Initializable {
 
 	@FXML
-	private FlowPane productImagePane;
+	private Tab categoryTabPage;
 
-	/**
-	 * Initializes the controller class.
-	 */
+	@FXML
+	private Tab attributeTabPage;
+
+	@FXML
+	private Tab productTabPage;
+
 	@Override
-	public void initialize(URL url, ResourceBundle rb) {
-		Image img = new Image("res/omen-ax005no.jpg");
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-		productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
-	}
+	public void initialize(URL location, ResourceBundle resources) {
 
-	private void removeImage(RemoveableImage img) {
-		//TODO
-		productImagePane.getChildren().remove(img);
 	}
 }
