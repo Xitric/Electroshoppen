@@ -5,10 +5,7 @@ import pim.persistence.DatabaseMediator;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -51,11 +48,11 @@ public class PIMImpl implements PIM {
 
 		//We further add the data to a map, to speed up the lookup process further
 		Map<String, Product> existingProductsMap = new HashMap<>();
-		for (Product p: existingProducts) {
+		for (Product p : existingProducts) {
 			existingProductsMap.put(p.getID(), p);
 		}
 
-		for (SupplierIntegrator.ProductData data: productData) {
+		for (SupplierIntegrator.ProductData data : productData) {
 			if (existingProductsMap.containsKey(data.getName())) {
 				//The product exists, update it
 				Product p = existingProductsMap.get(data.getID());
@@ -101,6 +98,17 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
+	public List<Attribute> getAttributes() {
+		try {
+			return new ArrayList<>(DatabaseMediator.getInstance().getAttributes());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return new ArrayList<Attribute>();
+	}
+
+	@Override
 	public Attribute getAttribute(String attributeName) {
 		return null;
 	}
@@ -116,6 +124,6 @@ public class PIMImpl implements PIM {
 		pim.synchronize();
 		long end = System.currentTimeMillis();
 
-		System.out.println("Synchronized in " + (end-start) + "ms (it takes almost 1 second for me!)");
+		System.out.println("Synchronized in " + (end - start) + "ms (it takes almost 1 second for me!)");
 	}
 }

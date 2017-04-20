@@ -11,7 +11,7 @@ import java.util.Set;
  * @author Emil
  * @author Kasper
  */
-public class Attribute {
+public class Attribute implements Comparable<Attribute> {
 
 	/**
 	 * The id of this attribute.
@@ -131,6 +131,16 @@ public class Attribute {
 	 */
 	public Set<Object> getLegalValues() {
 		return legalValues == null ? null : new HashSet<>(legalValues);
+	}
+
+	@Override
+	public String toString() {
+		return getName().trim() + " : " + getID().trim();
+	}
+
+	@Override
+	public int compareTo(Attribute o) {
+		return getID().compareTo(o.getID());
 	}
 
 	/**

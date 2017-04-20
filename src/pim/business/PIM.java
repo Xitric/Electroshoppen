@@ -52,6 +52,13 @@ public interface PIM {
 	void removeAttribute(String attributeName);
 
 	/**
+	 * Get a list of all attributes from the PIM.
+	 *
+	 * @return a list of all attributes
+	 */
+	List<Attribute> getAttributes();
+
+	/**
 	 * To retrieve an attribute.
 	 *
 	 * @param attributeName the name of the attribute

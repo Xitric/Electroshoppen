@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pim.presentation.AttributeController">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pim.presentation.AttributeController">
    <left>
       <TitledPane maxHeight="1.7976931348623157E308" text="Attributes" BorderPane.alignment="CENTER">
          <content>
@@ -18,11 +18,11 @@
                <children>
                   <HBox alignment="TOP_CENTER" spacing="16.0">
                      <children>
-                        <Button mnemonicParsing="false" text="Add" />
-                        <Button mnemonicParsing="false" text="Remove" />
+                        <Button mnemonicParsing="false" onAction="#addButtonOnAction" text="Add" />
+                        <Button mnemonicParsing="false" onAction="#removeButtonOnAction" text="Remove" />
                      </children>
                   </HBox>
-                  <ListView prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                  <ListView fx:id="attributeListView" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
          </content>
@@ -34,7 +34,7 @@
             <HBox alignment="CENTER_LEFT" spacing="4.0">
                <children>
                   <Label text="ID:" />
-                  <Label text="noID" />
+                  <Label fx:id="attributeIDLabel" text="noID" />
                </children>
                <padding>
                   <Insets bottom="8.0" top="8.0" />
@@ -46,7 +46,7 @@
             <HBox alignment="CENTER_LEFT" spacing="4.0">
                <children>
                   <Label text="Name:" />
-                  <TextField />
+                  <TextField fx:id="attributeNameField" />
                </children>
                <padding>
                   <Insets bottom="8.0" top="8.0" />
