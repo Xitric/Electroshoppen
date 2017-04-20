@@ -32,11 +32,6 @@ public class DatabaseMediator {
 	private Connection connection;
 
 	/**
-	 * Cache for data read from the database.
-	 */
-	private DataCache dataCache;
-
-	/**
 	 * Private constructor.
 	 */
 	private DatabaseMediator() {
@@ -45,8 +40,6 @@ public class DatabaseMediator {
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-
-		dataCache = new DataCache();
 	}
 
 	/**
@@ -432,18 +425,14 @@ public class DatabaseMediator {
 			categoryAttributes.put(categoryName, set);
 		}
 
+		CategoryManager categoryManager = CategoryManager.getInstance();
+
 		//Construct all categories and return result
 		while (categoryData.next()) {
 			String categoryName = categoryData.getString(1);
 
-			//If category has already been read, reuse it. Otherwise register new category
-			Category c = dataCache.getCategoryIfPresent(categoryName);
-			if (c == null) {
-				categories.add(c = new Category(categoryName, categoryAttributes.getOrDefault(categoryName, new HashSet<>())));
-				dataCache.registerCategoryIfAbsent(c);
-			} else {
-				categories.add(c);
-			}
+			//Create new/reuse category
+			categories.add(categoryManager.createCategory(categoryName, categoryAttributes.getOrDefault(categoryName, new HashSet<>())));
 		}
 
 		return categories;
@@ -585,20 +574,16 @@ public class DatabaseMediator {
 			legalValues.put(id, set);
 		}
 
+		AttributeManager attributeManager = AttributeManager.getInstance();
+
 		//Construct all attributes and return result
 		while (attributeData.next()) {
 			String id = attributeData.getString(1);
 			String name = attributeData.getString(2);
 			Object defaultValue = bytesToObject(attributeData.getBytes(3));
 
-			//If attribute has already been read, reuse it. Otherwise register new attribute
-			Attribute a = dataCache.getAttributeIfPresent(id);
-			if (a == null) {
-				attributes.add(a = new Attribute(id, name, defaultValue, legalValues.get(id)));
-				dataCache.registerAttributeIfAbsent(a);
-			} else {
-				attributes.add(a);
-			}
+			//Create new/reuse attribute.
+			attributes.add(attributeManager.createAttribute(id, name, defaultValue, legalValues.get(id)));
 		}
 
 		return attributes;
