@@ -49,7 +49,7 @@ public class Attribute implements Comparable<Attribute> {
 
 	/**
 	 * Constructs a new attribute with the specified name and list of legal values. If all values are allowed, use
-	 * {@link #Attribute(String, String, Object)} instead, or pass null as the parameter.
+	 * {@link #Attribute(String, String, Object)} instead, or pass null as the 4th parameter.
 	 *
 	 * @param id           the id of the attribute
 	 * @param name         the name of the attribute
