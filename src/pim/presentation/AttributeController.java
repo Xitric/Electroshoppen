@@ -5,11 +5,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import pim.business.Attribute;
 import pim.business.PIMFacade;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Optional;
@@ -50,7 +52,22 @@ public class AttributeController implements Initializable {
 
 	@FXML
 	private void addButtonOnAction(ActionEvent event) {
+		Dialog<Attribute> dialog = new Dialog<>();
+		dialog.setTitle("Create attribute");
+		dialog.setHeaderText("Specify attribute information");
 
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("CreateAttributeDialog.fxml"));
+
+		try {
+			dialog.getDialogPane().setContent(loader.load());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+		dialog.showAndWait();
 	}
 
 	@FXML

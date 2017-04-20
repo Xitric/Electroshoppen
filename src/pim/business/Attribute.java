@@ -135,7 +135,7 @@ public class Attribute implements Comparable<Attribute> {
 
 	@Override
 	public String toString() {
-		return getName().trim() + " : " + getID().trim();
+		return "[" + getID().trim() + "] " + getName().trim();
 	}
 
 	@Override
