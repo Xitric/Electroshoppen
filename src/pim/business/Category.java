@@ -11,7 +11,7 @@ import java.util.Set;
  * @author Mads
  * @author Kasper
  */
-public class Category implements Iterator<Attribute> {
+public class Category implements Iterator<Attribute>, Comparable<Category> {
 
 	private final String name;
 	private final Set<Attribute> attributes;
@@ -122,5 +122,12 @@ public class Category implements Iterator<Attribute> {
 	public Attribute next() {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
-
+	@Override
+	public String toString() {
+		return getName();
+	}
+	@Override
+	public int compareTo(Category category) {
+		return getName().compareTo(category.getName());
+	}
 }

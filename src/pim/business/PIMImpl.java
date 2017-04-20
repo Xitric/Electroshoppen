@@ -117,6 +117,17 @@ public class PIMImpl implements PIM {
 	public List<Category> getCategoriesWithAttribute(String attributeName) {
 		return null;
 	}
+        
+        @Override
+        public List<Category> getCategories(){
+            try {
+			return new ArrayList<>(DatabaseMediator.getInstance().getCategories());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return new ArrayList<Category>();
+        }
 
 	public static void main(String[] args) {
 		PIM pim = new PIMImpl();
