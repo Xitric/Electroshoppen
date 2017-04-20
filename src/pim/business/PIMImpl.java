@@ -93,8 +93,8 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public void removeAttribute(String attributeName) {
-
+	public void removeAttribute(String attributeID) {
+		DatabaseMediator.getInstance().deleteAttribute(attributeID);
 	}
 
 	@Override
