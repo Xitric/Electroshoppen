@@ -75,14 +75,21 @@ public class CreateAttributeDialog implements Initializable {
 		//TODO: START Temp
 		switch (dataTypeComboBox.getSelectionModel().getSelectedItem()) {
 			case "String":
-				StringValueSelection svs = new StringValueSelection();
+				StringValueSelector svs = new StringValueSelector();
 				currentSelector = svs;
 				valueSelectionPane.setCenter(svs);
+				break;
+			case "Integer":
+				IntegerValueSelector ivs = new IntegerValueSelector();
+				currentSelector = ivs;
+				valueSelectionPane.setCenter(ivs);
 				break;
 			default:
 				currentSelector = null;
 				valueSelectionPane.setCenter(null);
 		}
+
+		valueSelectionPane.getScene().getWindow().sizeToScene();
 		//TODO: END Temp
 
 		//Clear all values when data type changes
@@ -117,7 +124,7 @@ public class CreateAttributeDialog implements Initializable {
 			Object value = values[0];
 
 			//Set default only if value is among legal values, or if values are unrestricted
-			if (! restrictedCheckBox.isSelected() || legalValues.contains(value)) {
+			if (!restrictedCheckBox.isSelected() || legalValues.contains(value)) {
 				defaultValueField.setText(value.toString());
 
 				//TODO: Save object
@@ -151,11 +158,11 @@ public class CreateAttributeDialog implements Initializable {
 	/**
 	 * Describes a value selector for a single string.
 	 */
-	private class StringValueSelection extends HBox implements ValueSelector<String> {
+	private class StringValueSelector extends HBox implements ValueSelector<String> {
 
 		private TextField textField;
 
-		private StringValueSelection() {
+		private StringValueSelector() {
 			super();
 
 			setSpacing(8);
@@ -175,7 +182,84 @@ public class CreateAttributeDialog implements Initializable {
 			if (textField.getText().length() == 0) return new String[0];
 
 			//Otherwise return single valued array
-			return new String[] {textField.getText()};
+			return new String[]{textField.getText()};
+		}
+	}
+
+	/**
+	 * Describes a value selector for a range of integers.
+	 */
+	private class IntegerValueSelector extends VBox implements ValueSelector<Integer> {
+
+		private TextField minField;
+		private TextField maxField;
+
+		private IntegerValueSelector() {
+			super();
+
+			setSpacing(8);
+
+			//Min row
+			HBox minRow = new HBox(8);
+			minRow.getChildren().add(new Label("Min (inclusive):"));
+			minField = new TextField();
+			HBox.setHgrow(minField, Priority.ALWAYS);
+			minRow.getChildren().add(minField);
+			getChildren().add(minRow);
+
+			//Max row
+			HBox maxRow = new HBox(8);
+			maxRow.getChildren().add(new Label("Max (exclusive):"));
+			maxField = new TextField();
+			HBox.setHgrow(maxField, Priority.ALWAYS);
+			maxRow.getChildren().add(maxField);
+			getChildren().add(maxRow);
+		}
+
+		@Override
+		public Integer[] getValues() {
+			boolean isMinSpecified = false;
+			boolean isMaxSpecified = false;
+			int min = 0;
+			int max = 0;
+
+			//Read user input
+			try {
+				min = Integer.parseInt(minField.getText());
+				isMinSpecified = true; //Skipped if above throws an exception
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+				//TODO: Notify user
+			}
+
+			try {
+				max = Integer.parseInt(maxField.getText());
+				isMaxSpecified = true; //Skipped if above throws an exception
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+				//TODO: Notify user
+			}
+
+			if (!isMaxSpecified) {
+				//If max is not specified, but minimum is, then return minimum. Otherwise, if minimum is not specified
+				//either, return empty array
+				if (isMinSpecified) {
+					return new Integer[]{min};
+				} else {
+					return new Integer[0];
+				}
+			} else if (isMinSpecified) {
+				//If both max and min are specified, return array of all integers between min and max
+				Integer[] values = new Integer[max - min];
+				for (int i = min; i < max; i++) {
+					values[i - min] = i;
+				}
+
+				return values;
+			} else {
+				//Max is specified, but minimum is not, so return empty array
+				return new Integer[0];
+			}
 		}
 	}
 
