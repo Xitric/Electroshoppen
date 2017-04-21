@@ -47,9 +47,9 @@ public interface PIM {
 	 * To remove an attribute from the PIM. When removing an attribute it will also be removed from all the products and
 	 * related categories.
 	 *
-	 * @param attributeName the attribute to remove
+	 * @param attributeID the attribute to remove
 	 */
-	void removeAttribute(String attributeName);
+	void removeAttribute(String attributeID);
 
 	/**
 	 * Get a list of all attributes from the PIM.
