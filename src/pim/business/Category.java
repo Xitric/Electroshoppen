@@ -1,6 +1,7 @@
 package pim.business;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Set;
  * @author Mads
  * @author Kasper
  */
-public class Category {
+public class Category implements Comparable<Category> {
 
 	private final String name;
 	private final Set<Attribute> attributes;
@@ -105,5 +106,10 @@ public class Category {
 	 */
 	public void removeChangeListener(CategoryChangeListener listener) {
 		changeListeners.remove(listener);
+	}
+
+	@Override
+	public int compareTo(Category category) {
+		return getName().compareTo(category.getName());
 	}
 }

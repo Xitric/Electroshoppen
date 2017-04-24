@@ -17,11 +17,11 @@
                <children>
                   <HBox alignment="TOP_CENTER" spacing="16.0">
                      <children>
-                        <Button mnemonicParsing="false" text="Add" />
-                        <Button mnemonicParsing="false" text="Remove" />
+                        <Button fx:id="btnAddCategory" mnemonicParsing="false" onAction="#addCategory" text="Add" />
+                        <Button fx:id="btnRemoveCategory" mnemonicParsing="false" onAction="#removeCategory" text="Remove" />
                      </children>
                   </HBox>
-                  <ListView prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                  <ListView fx:id="listViewCategory" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
          </content>
@@ -33,7 +33,7 @@
             <HBox alignment="CENTER_LEFT" spacing="4.0">
                <children>
                   <Label text="Name:" />
-                  <Label text="noname" />
+                  <Label fx:id="nameOutput" text="noname" />
                </children>
                <padding>
                   <Insets bottom="8.0" top="8.0" />
@@ -46,17 +46,17 @@
                <content>
                   <HBox prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <ListView HBox.hgrow="ALWAYS" />
+                        <ListView fx:id="listViewAdd" HBox.hgrow="ALWAYS" />
                         <VBox alignment="CENTER" spacing="4.0">
                            <children>
-                              <Button mnemonicParsing="false" text="Add &gt;&gt;" />
-                              <Button mnemonicParsing="false" text="&lt;&lt; Remove" />
+                              <Button fx:id="btnAddAttribute" mnemonicParsing="false" onAction="#addAttribute" text="Add &gt;&gt;" />
+                              <Button fx:id="btnRemoveAttribute" mnemonicParsing="false" onAction="#removeAttribute" text="&lt;&lt; Remove" />
                            </children>
                            <HBox.margin>
                               <Insets left="4.0" right="4.0" />
                            </HBox.margin>
                         </VBox>
-                        <ListView HBox.hgrow="ALWAYS" />
+                        <ListView fx:id="listViewRemove" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
                </content>
@@ -64,7 +64,7 @@
                   <Insets bottom="8.0" />
                </padding>
             </TitledPane>
-            <Button mnemonicParsing="false" text="Save" />
+            <Button fx:id="btnSave" mnemonicParsing="false" onAction="#save" text="Save" />
          </children>
          <padding>
             <Insets bottom="8.0" left="8.0" right="8.0" />

@@ -73,4 +73,12 @@ public interface PIM {
 	 * @return a list of Categories with the attribute name.
 	 */
 	List<Category> getCategoriesWithAttribute(String attributeName);
+        
+        /**
+	 * Get a list of all categories from the PIM.
+	 *
+	 * @return a list of all categories.
+	 */
+        List<Category> getCategories();
+        
 }
