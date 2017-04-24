@@ -1,25 +1,19 @@
 package pim.business;
 
 /**
- * Facade class for the business layer of the PIM.
+ * A factory for creating objects to interact with the business layer.
  *
  * @author Kasper
  */
 public class PIMFacade {
 
-	private static PIM pim;
-
 	/**
-	 * Get the singleton instance of the PIM.
+	 * Get an object for interacting with the business layer.
 	 *
-	 * @return the singleton instance of the PIM
+	 * @return an object for persistence with the business layer
 	 */
-	public static PIM getPIM() {
-		if (pim == null) {
-			//PIMImpl is currently the only implementation of the PIM
-			pim = new PIMImpl();
-		}
-
-		return pim;
+	public static PIM createPIM() {
+		//Currently the only implementation
+		return new PIMImpl();
 	}
 }

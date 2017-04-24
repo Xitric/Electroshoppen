@@ -1,7 +1,8 @@
 package pim.business;
 
 import erp.business.SupplierIntegrator;
-import pim.persistence.DatabaseMediator;
+import pim.persistence.DatabaseFacade;
+import pim.persistence.PersistenceMediator;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -14,6 +15,28 @@ import java.util.concurrent.TimeoutException;
  * @author Kasper
  */
 public class PIMImpl implements PIM {
+
+	/**
+	 * Mediator for persistence layer.
+	 */
+	private final PersistenceMediator persistence;
+
+	/* Entiry managers */
+	private final CategoryManager categoryManager;
+	private final AttributeManager attributeManager;
+	private final TagManager tagManager;
+	private final ImageManager imageManager;
+
+	/**
+	 * Constructs a new PIM implementation.
+	 */
+	public PIMImpl() {
+		categoryManager = new CategoryManager();
+		attributeManager = new AttributeManager();
+		tagManager = new TagManager();
+		imageManager = new ImageManager();
+		persistence = DatabaseFacade.createDatabaseMediator(categoryManager, attributeManager, tagManager, imageManager);
+	}
 
 	@Override
 	public boolean synchronize() {
@@ -40,7 +63,7 @@ public class PIMImpl implements PIM {
 		try {
 			//We get a set of all products in the PIM. This costs more memory, but it also speeds up the process
 			//substantially
-			existingProducts = DatabaseMediator.getInstance().getProducts();
+			existingProducts = persistence.getProducts();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false; //Synchronization failed
@@ -60,13 +83,13 @@ public class PIMImpl implements PIM {
 				p.setPrice(data.getPrice());
 
 				//Save changes to database
-				DatabaseMediator.getInstance().saveProduct(p);
+				persistence.saveProduct(p);
 			} else {
 				//The product was new
 				Product p = new Product(data.getID(), data.getName(), data.getPrice());
 
 				//Save new product in database
-				DatabaseMediator.getInstance().saveProduct(p);
+				persistence.saveProduct(p);
 			}
 		}
 
@@ -94,13 +117,13 @@ public class PIMImpl implements PIM {
 
 	@Override
 	public void removeAttribute(String attributeID) {
-		DatabaseMediator.getInstance().deleteAttribute(attributeID);
+		persistence.deleteAttribute(attributeID);
 	}
 
 	@Override
 	public List<Attribute> getAttributes() {
 		try {
-			return new ArrayList<>(DatabaseMediator.getInstance().getAttributes());
+			return new ArrayList<>(persistence.getAttributes());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -116,14 +139,5 @@ public class PIMImpl implements PIM {
 	@Override
 	public List<Category> getCategoriesWithAttribute(String attributeName) {
 		return null;
-	}
-
-	public static void main(String[] args) {
-		PIM pim = new PIMImpl();
-		long start = System.currentTimeMillis();
-		pim.synchronize();
-		long end = System.currentTimeMillis();
-
-		System.out.println("Synchronized in " + (end - start) + "ms (it takes almost 1 second for me!)");
 	}
 }

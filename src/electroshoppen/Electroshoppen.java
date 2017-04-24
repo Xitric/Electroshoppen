@@ -10,18 +10,23 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import pim.business.PIMFacade;
+import pim.presentation.PIMController;
 
 /**
+ * Main class for application.
+ *
  * @author Kasper
  */
 public class Electroshoppen extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		Parent root = FXMLLoader.load(getClass().getResource("/pim/presentation/PIMView.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/pim/presentation/PIMView.fxml"));
+		Parent root = loader.load();
+		((PIMController) loader.getController()).setPIM(PIMFacade.createPIM());
 
 		Scene scene = new Scene(root);
-
 		stage.setScene(scene);
 		stage.show();
 	}

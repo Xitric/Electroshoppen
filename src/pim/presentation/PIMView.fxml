@@ -1,32 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.*?>
-<?import java.net.URL?>
-<AnchorPane id="AnchorPane" prefHeight="640.0" prefWidth="960.0" styleClass="mainFxmlClass"
-            xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="pim.presentation.PIMController">
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="AnchorPane" prefHeight="640.0" prefWidth="960.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pim.presentation.PIMController">
     <stylesheets>
-        <URL value="@pimview.css"/>
+        <URL value="@pimview.css" />
     </stylesheets>
     <children>
-        <TabPane tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <TabPane tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <tabs>
                 <Tab text="Category">
                     <content>
-                        <fx:include fx:id="categoryTabPage" source="CategoryView.fxml"/>
+                        <fx:include fx:id="categoryTabPage" source="CategoryView.fxml" />
                     </content>
                 </Tab>
-                <Tab text="Attribute">
+                <Tab onSelectionChanged="#onAttributeEnter" text="Attribute">
                     <content>
-                        <fx:include fx:id="attributeTabPage" source="AttributeView.fxml"/>
+                        <fx:include fx:id="attributeTabPage" source="AttributeView.fxml" />
                     </content>
                 </Tab>
                 <Tab text="Product">
                     <content>
-                        <fx:include fx:id="productTabPage" source="ProductView.fxml"/>
+                        <fx:include fx:id="productTabPage" source="ProductView.fxml" />
                     </content>
                 </Tab>
             </tabs>

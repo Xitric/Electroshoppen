@@ -9,11 +9,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import pim.business.Attribute;
-import pim.business.PIMFacade;
+import pim.business.PIM;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -35,19 +36,39 @@ public class AttributeController implements Initializable {
 
 	private Alert confirmationDialog;
 
+	/**
+	 * The mediator for the business layer.
+	 */
+	private PIM pim;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		//TODO: Execute this when tab is selected, bind controller in main PIM controller
-		attributeList = FXCollections.observableArrayList(PIMFacade.getPIM().getAttributes());
-		Collections.sort(attributeList);
+		attributeList = FXCollections.observableArrayList();
 		attributeListView.setItems(attributeList);
-
 		attributeListView.getSelectionModel().selectedItemProperty().addListener(this::listViewSelectionChanged);
 
 		confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
 		confirmationDialog.setTitle("Delete attribute");
 		confirmationDialog.setHeaderText("Confirm deletion");
 		confirmationDialog.setContentText("Are you sure that you wish to delete this attribute?");
+	}
+
+	/**
+	 * Set the business mediator for this controller to use.
+	 *
+	 * @param pim the mediator for the pim
+	 */
+	public void setPIM(PIM pim) {
+		this.pim = pim;
+	}
+
+	/**
+	 * Call this when the view for this controller is entered in the GUI.
+	 */
+	public void onEnter() {
+		List<Attribute> attributes = pim.getAttributes();
+		Collections.sort(attributes);
+		attributeList.setAll(pim.getAttributes());
 	}
 
 	@FXML
@@ -77,15 +98,14 @@ public class AttributeController implements Initializable {
 
 		Optional<ButtonType> choice = confirmationDialog.showAndWait();
 		if (choice.isPresent() && choice.get() == ButtonType.OK) {
-			PIMFacade.getPIM().removeAttribute(selection.getID());
+			pim.removeAttribute(selection.getID());
 			attributeList.remove(selection);
 		}
 	}
 
 	private void listViewSelectionChanged(Observable observable) {
 		Attribute selection = attributeListView.getSelectionModel().getSelectedItem();
-		//TODO: Trim in getters
-		attributeIDLabel.setText(selection.getID().trim());
-		attributeNameField.setText(selection.getName().trim());
+		attributeIDLabel.setText(selection.getID());
+		attributeNameField.setText(selection.getName());
 	}
 }

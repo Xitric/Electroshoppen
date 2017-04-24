@@ -1,7 +1,7 @@
 package pim.business;
 
 /**
- * Interface describing a class that can listen to changes on a category in terms of adding and removing attributes.
+ * Interface describing an object that can listen to changes on a category in terms of adding and removing attributes.
  *
  * @author Kasper
  */

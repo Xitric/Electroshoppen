@@ -8,23 +8,23 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Mediator used to access the underlying database. The mediator uses the singleton pattern, so calling the method
- * {@link #getInstance()} is necessary to acquire an instance.
+ * Mediator used to access the underlying database.
  *
  * @author Kasper
  * @author mstruntze
  */
-public class DatabaseMediator {
-
-	/**
-	 * The singleton instance for the database mediator.
-	 */
-	private static DatabaseMediator instance;
+class DatabaseMediator implements PersistenceMediator {
 
 	/* Variables for database connection */
 	private final static String url = "jdbc:postgresql://46.101.142.251:5432/electroshop";
 	private final static String user = "postgres";
 	private final static String password = "1234";
+
+	/* Entity managers */
+	private final CategoryManager categoryManager;
+	private final AttributeManager attributeManager;
+	private final TagManager tagManager;
+	private final ImageManager imageManager;
 
 	/**
 	 * The database connection.
@@ -32,30 +32,74 @@ public class DatabaseMediator {
 	private Connection connection;
 
 	/**
-	 * Private constructor.
+	 * Package private constructor.
+	 *
+	 * @param categoryManager  the entity manager for categories
+	 * @param attributeManager the entity manager for attributes
+	 * @param tagManager       the entity manager for tags
+	 * @param imageManager     the entity manager for images
 	 */
-	private DatabaseMediator() {
+	DatabaseMediator(CategoryManager categoryManager, AttributeManager attributeManager, TagManager tagManager, ImageManager imageManager) {
 		try {
 			connection = DriverManager.getConnection(url, user, password);
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-	}
 
-	/**
-	 * Get the singleton instance for the database mediator. This instance is used to access the database of the PIM.
-	 *
-	 * @return the singleton instance
-	 */
-	public static DatabaseMediator getInstance() {
-		if (instance == null) {
-			instance = new DatabaseMediator();
-		}
-
-		return instance;
+		this.categoryManager = categoryManager;
+		this.attributeManager = attributeManager;
+		this.tagManager = tagManager;
+		this.imageManager = imageManager;
 	}
 
 	//TODO: Support tags and images
+
+	/**
+	 * Serialize the specified object and get the result in a byte array for storing in the database.
+	 *
+	 * @param o the object to serialize
+	 * @return the serialized object as a byte array, or null if the object could not be serialized
+	 * @see <a href="http://www.easywayserver.com/java/save-serializable-object-in-java/">EasyWayServer - How to save
+	 * java object in database</a>
+	 */
+	private static byte[] objectToBytes(Object o) {
+		try (ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+		     ObjectOutputStream oOut = new ObjectOutputStream(bOut)) {
+
+			//Use the object output stream to serialize an object and store the result in a byte array output stream
+			oOut.writeObject(o);
+			oOut.flush();
+
+			//Get the byte array from the byte array output stream
+			return bOut.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//Something went wrong, return null
+		return null;
+	}
+
+	/**
+	 * Deserialize the object stored in the specified byte array.
+	 *
+	 * @param bytes the byte array containing the serialized object
+	 * @return the deserialized object, or null if the object could not be deserialized
+	 * @see <a href="http://www.easywayserver.com/java/save-serializable-object-in-java/">EasyWayServer - How to save
+	 * java object in database</a>
+	 */
+	private static Object bytesToObject(byte[] bytes) {
+		try (ObjectInputStream oIn = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
+
+			//Use an object input stream to read the object from the byte array
+			return oIn.readObject();
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		//Something went wrong, return null
+		return null;
+	}
 
 	/**
 	 * Get the product with the specified id.
@@ -69,7 +113,8 @@ public class DatabaseMediator {
 		try (PreparedStatement getProduct = connection.prepareStatement("SELECT * FROM product WHERE id = ?;");
 		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT * FROM productcategory WHERE productid = ?;");
 		     PreparedStatement getProductValues = connection.prepareStatement("SELECT * FROM attributevalue WHERE productid = ?;");
-		     PreparedStatement getProductTags = connection.prepareStatement("SELECT * FROM producttag WHERE productid = ?")) {
+		     PreparedStatement getProductTags = connection.prepareStatement("SELECT * FROM producttag WHERE productid = ?");
+		     PreparedStatement getProductImages = connection.prepareStatement("SELECT * FROM image WHERE productid = ?")) {
 
 			getProduct.setString(1, id);
 			ResultSet productData = getProduct.executeQuery();
@@ -83,7 +128,10 @@ public class DatabaseMediator {
 			getProductTags.setString(1, id);
 			ResultSet productTagData = getProductTags.executeQuery();
 
-			Set<Product> result = buildProducts(productData, productCategoryData, productValueData, productTagData);
+			getProductImages.setString(1, id);
+			ResultSet productImages = getProductImages.executeQuery();
+
+			Set<Product> result = buildProducts(productData, productCategoryData, productValueData, productTagData, productImages);
 
 			//If the set is empty, no product with the specified id was found. Otherwise, the set should contain only
 			//one value, that we return
@@ -108,7 +156,8 @@ public class DatabaseMediator {
 		try (PreparedStatement getProducts = connection.prepareStatement("SELECT * FROM product WHERE name = ?;");
 		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT productid, categoryName FROM productcategory, product WHERE productID = id AND name = ?;");
 		     PreparedStatement getProductValues = connection.prepareStatement("SELECT attributeid, productid, value FROM attributevalue, product WHERE productid = id AND name = ?;");
-			 PreparedStatement getProductTags = connection.prepareStatement("SELECT tagname, product.name FROM producttag, product WHERE producttag.productid = product.id AND product.name = ?;")) {
+		     PreparedStatement getProductTags = connection.prepareStatement("SELECT tagname, productid FROM producttag, product WHERE productid = id AND name = ?;");
+		     PreparedStatement getProductImages = connection.prepareStatement("SELECT url, productid FROM image, product WHERE productid = id AND name = ?")) {
 
 			getProducts.setString(1, name);
 			ResultSet productData = getProducts.executeQuery();
@@ -122,48 +171,13 @@ public class DatabaseMediator {
 			getProductTags.setString(1, name);
 			ResultSet productTagsData = getProductTags.executeQuery();
 
-			return buildProducts(productData, productCategoryData, productValueData, productTagsData);
+			getProductImages.setString(1, name);
+			ResultSet productImages = getProductImages.executeQuery();
+
+			return buildProducts(productData, productCategoryData, productValueData, productTagsData, productImages);
 		} catch (SQLException e) {
 			throw new IOException("Could not read products with name " + name + "!", e);
 		}
-	}
-
-	/**
-	 * Get a set of all tags
-	 *
-	 * @return the set of all tags
-	 */
-	public Set<Tag> getTags() {
-		try(PreparedStatement tagData = connection.prepareStatement("SELECT * FROM tag")) {
-			ResultSet tagResults = tagData.executeQuery();
-			return buildTags(tagResults);
-		} catch(SQLException e) {
-			// TODO: error handling
-		}
-
-		return null;
-	}
-
-	/**
-	 * Builds a set of tags from a result set
-	 *
-	 * @param tagData The result set of data
-	 * @return The set of tags created
-	 */
-	private Set<Tag> buildTags(ResultSet tagData) {
-		Set<Tag> tags = new HashSet<>();
-
-		TagManager tm = TagManager.getInstance();
-
-		try {
-			while (tagData.next()) {
-				tags.add(tm.createTag(tagData.getString(1)));
-			}
-		} catch(SQLException e) {
-			// TODO: error handling
-		}
-
-		return tags;
 	}
 
 	/**
@@ -173,37 +187,23 @@ public class DatabaseMediator {
 	 * @return A set of products with the provided tag
 	 */
 	public Set<Product> getProductsByTag(Tag tag) {
-		try {
+		try { //TODO: Optimize!
 			Set<Product> products = getProducts();
 			Iterator<Product> it = products.iterator();
 
-			while(it.hasNext()) {
+			while (it.hasNext()) {
 				Product p = it.next();
-				if(!p.containsTag(tag)) {
+				if (!p.containsTag(tag)) {
 					products.remove(p);
 				}
 			}
 
 			return products;
-		} catch(IOException e) {
+		} catch (IOException e) {
 			// TODO: Implement error handling
 		}
 
 		return null;
-	}
-
-	/**
-	 * Stores a tag in the database
-	 *
-	 * @param tag The tag to save
-	 */
-	public void saveTag(Tag tag) {
-		try (PreparedStatement tagData = connection.prepareStatement("INSERT INTO tag VALUES (?) ON CONFLICT (name) DO NOTHING;")) {
-			tagData.setString(1, tag.getName());
-			tagData.executeUpdate();
-		} catch(SQLException e) {
-			// TODO: implement something
-		}
 	}
 
 	/**
@@ -216,13 +216,15 @@ public class DatabaseMediator {
 		try (PreparedStatement getProducts = connection.prepareStatement("SELECT * FROM product;");
 		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT * FROM productcategory;");
 		     PreparedStatement getProductValues = connection.prepareStatement("SELECT * FROM attributevalue;");
-		     PreparedStatement getProductTags = connection.prepareStatement("SELECT * FROM producttag;")) {
+		     PreparedStatement getProductTags = connection.prepareStatement("SELECT * FROM producttag;");
+		     PreparedStatement getProductImages = connection.prepareStatement("SELECT * FROM image")) {
 
 			ResultSet productData = getProducts.executeQuery();
 			ResultSet productCategoryData = getProductCategories.executeQuery();
 			ResultSet productValueData = getProductValues.executeQuery();
 			ResultSet productTags = getProductTags.executeQuery();
-			return buildProducts(productData, productCategoryData, productValueData, productTags);
+			ResultSet productImages = getProductImages.executeQuery();
+			return buildProducts(productData, productCategoryData, productValueData, productTags, productImages);
 		} catch (SQLException e) {
 			throw new IOException("Could not read products!", e);
 		}
@@ -234,16 +236,18 @@ public class DatabaseMediator {
 	 * @param productData         the data describing product ids, names and prices
 	 * @param productCategoryData the data describing product categories
 	 * @param productValueData    the data describing attribute values on products
+	 * @param productTags         the data describing product tags
+	 * @param productImages       the data describing product images
 	 * @return a set of all products that could be built from the data
 	 * @throws SQLException if something goes wrong
 	 */
-	private Set<Product> buildProducts(ResultSet productData, ResultSet productCategoryData, ResultSet productValueData, ResultSet productTags) throws SQLException {
+	private Set<Product> buildProducts(ResultSet productData, ResultSet productCategoryData, ResultSet productValueData, ResultSet productTags, ResultSet productImages) throws SQLException {
 		Map<String, Product> products = new HashMap<>();
 
 		//Construct all products
 		while (productData.next()) {
-			String id = productData.getString(1);
-			String name = productData.getString(2);
+			String id = productData.getString(1).trim();
+			String name = productData.getString(2).trim();
 			double price = productData.getDouble(3);
 
 			products.put(id, new Product(id, name, price));
@@ -251,8 +255,8 @@ public class DatabaseMediator {
 
 		//Add all product categories
 		while (productCategoryData.next()) {
-			String productID = productCategoryData.getString(1);
-			String categoryName = productCategoryData.getString(2);
+			String productID = productCategoryData.getString(1).trim();
+			String categoryName = productCategoryData.getString(2).trim();
 
 			try {
 				Category category = getCategoryByName(categoryName);
@@ -263,8 +267,8 @@ public class DatabaseMediator {
 
 		//Set all attribute values
 		while (productValueData.next()) {
-			String attributeID = productValueData.getString(1);
-			String productID = productValueData.getString(2);
+			String attributeID = productValueData.getString(1).trim();
+			String productID = productValueData.getString(2).trim();
 			Object value = bytesToObject(productValueData.getBytes(3));
 
 			try {
@@ -274,12 +278,20 @@ public class DatabaseMediator {
 			} //The database should guarantee that this exception never occurs
 		}
 
-		//Set all tag
-		while(productTags.next()){
-			String name = productTags.getString(1);
-			Tag t = TagManager.getInstance().createTag(name);
-			Product p = products.get(productTags.getString(2));
+		//Add all tags
+		while (productTags.next()) {
+			String name = productTags.getString(1).trim();
+			Tag t = tagManager.createTag(name);
+			Product p = products.get(productTags.getString(2).trim());
 			p.addTag(t);
+		}
+
+		//Add all images
+		while (productImages.next()) {
+			String url = productImages.getString(1).trim();
+			Image img = imageManager.createImage(url);
+			String productID = productImages.getString(2).trim();
+			products.get(productID).addImage(img);
 		}
 
 		//Return set of products
@@ -304,7 +316,11 @@ public class DatabaseMediator {
 		try (PreparedStatement storeProductData = connection.prepareStatement("INSERT INTO product VALUES (?, ?, ?) ON CONFLICT (id) DO UPDATE SET name = Excluded.name, price = EXCLUDED.price;");
 		     PreparedStatement removeProductCategories = connection.prepareStatement("DELETE FROM productcategory WHERE productid = ?;");
 		     PreparedStatement addProductCategory = connection.prepareStatement("INSERT INTO productcategory VALUES(?, ?);");
-		     PreparedStatement addAttributeValue = connection.prepareStatement("INSERT INTO attributevalue VALUES(?, ?, ?);")) {
+		     PreparedStatement addAttributeValue = connection.prepareStatement("INSERT INTO attributevalue VALUES(?, ?, ?);");
+		     PreparedStatement removeProductTags = connection.prepareStatement("DELETE FROM producttag WHERE productid = ?");
+		     PreparedStatement saveProductTags = connection.prepareStatement("INSERT INTO producttag VALUES(?, ?)");
+		     PreparedStatement removeProductImages = connection.prepareStatement("DELETE FROM image WHERE productid = ?");
+		     PreparedStatement saveProductImages = connection.prepareStatement("INSERT INTO image VALUES(?, ?)")) {
 
 			for (Product product : products) {
 				//Store basic product data
@@ -331,6 +347,24 @@ public class DatabaseMediator {
 					addAttributeValue.setObject(3, objectToBytes(value.getValue()));
 					addAttributeValue.executeUpdate();
 				}
+
+				//Store product tags
+				removeProductTags.setString(1, product.getID());
+				removeProductTags.executeUpdate();
+				saveProductTags.setString(2, product.getID());
+				for (Tag tag : product.getTags()) {
+					saveProductTags.setString(1, tag.getName());
+					saveProductTags.executeUpdate();
+				}
+
+				//Store images
+				removeProductImages.setString(1, product.getID());
+				removeProductImages.executeUpdate();
+				saveProductImages.setString(2, product.getID());
+				for (Image image : product.getImages()) {
+					saveProductImages.setString(1, image.getUrl());
+					saveProductImages.executeUpdate();
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -343,7 +377,7 @@ public class DatabaseMediator {
 	 * @param id the id of the product
 	 */
 	public void deleteProduct(String id) {
-		try (PreparedStatement deleteProductData = connection.prepareStatement("delete from product where id = ?")) {
+		try (PreparedStatement deleteProductData = connection.prepareStatement("DELETE FROM product WHERE id = ?")) {
 			//Delete product entry. The constraints in the database should ensure that the deletion is cascaded
 			deleteProductData.setString(1, id);
 			deleteProductData.executeUpdate();
@@ -351,6 +385,105 @@ public class DatabaseMediator {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Get a set of all tags.
+	 *
+	 * @return the set of all tags
+	 * @throws IOException if something goes wrong
+	 */
+	public Set<Tag> getTags() throws IOException {
+		try (PreparedStatement tagData = connection.prepareStatement("SELECT * FROM tag")) {
+			ResultSet tagResults = tagData.executeQuery();
+			return buildTags(tagResults);
+		} catch (SQLException e) {
+			throw new IOException("Could not read tags!", e);
+		}
+	}
+
+	/**
+	 * Builds a set of tags from a result set.
+	 *
+	 * @param tagData the result set of data
+	 * @return the set of tags created
+	 * @throws SQLException if something goes wrong
+	 */
+	private Set<Tag> buildTags(ResultSet tagData) throws SQLException {
+		Set<Tag> tags = new HashSet<>();
+
+		while (tagData.next()) {
+			tags.add(tagManager.createTag(tagData.getString(1).trim()));
+		}
+
+		return tags;
+	}
+
+	/**
+	 * Store a tag in the database.
+	 *
+	 * @param tag the tag to save
+	 */
+	public void saveTag(Tag tag) {
+		try (PreparedStatement tagData = connection.prepareStatement("INSERT INTO tag VALUES (?) ON CONFLICT (name) DO NOTHING;")) {
+			tagData.setString(1, tag.getName());
+			tagData.executeUpdate();
+		} catch (SQLException e) {
+			// TODO: implement something
+		}
+	}
+
+	/**
+	 * Delete the tag with the specified name.
+	 *
+	 * @param name the name of the tag
+	 */
+	public void deleteTag(String name) {
+		try (PreparedStatement delete = connection.prepareStatement("DELETE FROM tag WHERE name = ?")) {
+			//Deletion should be cascaded
+			delete.setString(1, name);
+			delete.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Get all the images stored for the specified product.
+	 *
+	 * @param productID the id of the product
+	 * @return a set of all the images for the specified product
+	 * @throws IOException if something goes wrong
+	 */
+	public Set<Image> getImagesForProduct(String productID) throws IOException {
+		try (PreparedStatement getImages = connection.prepareStatement("SELECT url FROM image WHERE productid = ?")) {
+
+			getImages.setString(1, productID);
+			ResultSet imageData = getImages.executeQuery();
+
+			return buildImages(imageData);
+		} catch (SQLException e) {
+			throw new IOException("Could not read images!", e);
+		}
+	}
+
+	/**
+	 * Builds a set of images from a result set.
+	 *
+	 * @param imageData the data describing the images
+	 * @return the set of images
+	 * @throws SQLException if something goes wrong
+	 */
+	private Set<Image> buildImages(ResultSet imageData) throws SQLException {
+		Set<Image> images = new HashSet<>();
+
+		while (imageData.next()) {
+			String url = imageData.getString(1).trim();
+			images.add(imageManager.createImage(url));
+		}
+
+		return images;
+	}
+
 
 	/**
 	 * Get the category with the specified name.
@@ -401,7 +534,7 @@ public class DatabaseMediator {
 	}
 
 	/**
-	 * Build a set of attributes from the specified data.
+	 * Build a set of categories from the specified data.
 	 *
 	 * @param categoryData          the data describing category names
 	 * @param categoryAttributeData the data describing attributes on categories
@@ -414,8 +547,8 @@ public class DatabaseMediator {
 
 		//Read all category attributes
 		while (categoryAttributeData.next()) {
-			String categoryName = categoryAttributeData.getString(1);
-			String attributeID = categoryAttributeData.getString(2);
+			String categoryName = categoryAttributeData.getString(1).trim();
+			String attributeID = categoryAttributeData.getString(2).trim();
 
 			Set<Attribute> set = categoryAttributes.getOrDefault(categoryName, new HashSet<>());
 			try {
@@ -425,11 +558,9 @@ public class DatabaseMediator {
 			categoryAttributes.put(categoryName, set);
 		}
 
-		CategoryManager categoryManager = CategoryManager.getInstance();
-
 		//Construct all categories and return result
 		while (categoryData.next()) {
-			String categoryName = categoryData.getString(1);
+			String categoryName = categoryData.getString(1).trim();
 
 			//Create new/reuse category
 			categories.add(categoryManager.createCategory(categoryName, categoryAttributes.getOrDefault(categoryName, new HashSet<>())));
@@ -494,7 +625,7 @@ public class DatabaseMediator {
 	 * @param name the name of the category
 	 */
 	public void deleteCategory(String name) {
-		try (PreparedStatement deleteCategoryData = connection.prepareStatement("delete from category where name = ?")) {
+		try (PreparedStatement deleteCategoryData = connection.prepareStatement("DELETE FROM category WHERE name = ?")) {
 			//Delete category entry. The constraints in the database should ensure that the deletion is cascaded
 			deleteCategoryData.setString(1, name);
 			deleteCategoryData.executeUpdate();
@@ -566,7 +697,7 @@ public class DatabaseMediator {
 
 		//For every legal value, add it to the set of legal values for the correct attribute
 		while (legalValueData.next()) {
-			String id = legalValueData.getString(1);
+			String id = legalValueData.getString(1).trim();
 			Object val = bytesToObject(legalValueData.getBytes(2));
 
 			Set<Object> set = legalValues.getOrDefault(id, new HashSet<>());
@@ -574,12 +705,10 @@ public class DatabaseMediator {
 			legalValues.put(id, set);
 		}
 
-		AttributeManager attributeManager = AttributeManager.getInstance();
-
 		//Construct all attributes and return result
 		while (attributeData.next()) {
-			String id = attributeData.getString(1);
-			String name = attributeData.getString(2);
+			String id = attributeData.getString(1).trim();
+			String name = attributeData.getString(2).trim();
 			Object defaultValue = bytesToObject(attributeData.getBytes(3));
 
 			//Create new/reuse attribute.
@@ -634,7 +763,7 @@ public class DatabaseMediator {
 	 * @param id the id of the attribute
 	 */
 	public void deleteAttribute(String id) {
-		try (PreparedStatement deleteAttributeData = connection.prepareStatement("delete from attribute where id = ?")) {
+		try (PreparedStatement deleteAttributeData = connection.prepareStatement("DELETE FROM attribute WHERE id = ?")) {
 			//Delete attribute entry. The constraints in the database should ensure that the deletion is cascaded
 			deleteAttributeData.setString(1, id);
 			deleteAttributeData.executeUpdate();
@@ -648,61 +777,5 @@ public class DatabaseMediator {
 	 */
 	public void dispose() {
 		DBUtil.close(connection);
-	}
-
-	/**
-	 * Serialize the specified object and get the result in a byte array for storing in the database.
-	 *
-	 * @param o the object to serialize
-	 * @return the serialized object as a byte array, or null if the object could not be serialized
-	 * @see <a href="http://www.easywayserver.com/java/save-serializable-object-in-java/">EasyWayServer - How to save
-	 * java object in database</a>
-	 */
-	private static byte[] objectToBytes(Object o) {
-		try (ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-		     ObjectOutputStream oOut = new ObjectOutputStream(bOut)) {
-
-			//Use the object output stream to serialize an object and store the result in a byte array output stream
-			oOut.writeObject(o);
-			oOut.flush();
-
-			//Get the byte array from the byte array output stream
-			return bOut.toByteArray();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		//Something went wrong, return null
-		return null;
-	}
-
-	/**
-	 * Deserialize the object stored in the specified byte array.
-	 *
-	 * @param bytes the byte array containing the serialized object
-	 * @return the deserialized object, or null if the object could not be deserialized
-	 * @see <a href="http://www.easywayserver.com/java/save-serializable-object-in-java/">EasyWayServer - How to save
-	 * java object in database</a>
-	 */
-	private static Object bytesToObject(byte[] bytes) {
-		try (ObjectInputStream oIn = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
-
-			//Use an object input stream to read the object from the byte array
-			return oIn.readObject();
-		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		//Something went wrong, return null
-		return null;
-	}
-
-	public void doObjectTest() {
-
-	}
-
-	public static void main(String[] args) {
-		DatabaseMediator db = DatabaseMediator.getInstance();
-		db.doObjectTest();
 	}
 }

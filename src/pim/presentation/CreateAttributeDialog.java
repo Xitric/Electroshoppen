@@ -35,7 +35,6 @@ public class CreateAttributeDialog implements Initializable {
 	@FXML
 	private TextField nameField;
 
-	//TODO: Type instead of string
 	@FXML
 	private ComboBox<String> dataTypeComboBox;
 
@@ -61,6 +60,11 @@ public class CreateAttributeDialog implements Initializable {
 	 * The set of legal values currently selected.
 	 */
 	private ObservableSet<Object> legalValues;
+
+	/**
+	 * The currently selected default value.
+	 */
+	private Object defaultValue;
 
 	/**
 	 * The current control for selecting attribute values. Varies with the selected data type.
@@ -116,8 +120,23 @@ public class CreateAttributeDialog implements Initializable {
 			valueSelectionPane.getScene().getWindow().sizeToScene(); //Resize to fit content
 
 		//Clear all values when data type changes
-		defaultValueField.clear();
+		setDefaultValue(null);
 		legalValues.clear();
+	}
+
+	/**
+	 * Set the currently selected default value. It is assumed that it is part of the legal values.
+	 *
+	 * @param o the default value
+	 */
+	private void setDefaultValue(Object o) {
+		this.defaultValue = o;
+
+		if (o == null) {
+			this.defaultValueField.clear();
+		} else {
+			this.defaultValueField.setText(o.toString());
+		}
 	}
 
 	@FXML
@@ -126,11 +145,10 @@ public class CreateAttributeDialog implements Initializable {
 
 		//Update gui
 		legalValuesPane.setVisible(restricted);
-		legalValuesPane.setManaged(restricted);
 		addLegalButton.setDisable(!restricted);
 
 		if (restricted) { //Clear default value when restricted
-			defaultValueField.clear();
+			this.setDefaultValue(null);
 		} else { //Clear legal values when unrestricted
 			legalValues.clear();
 		}
@@ -149,15 +167,38 @@ public class CreateAttributeDialog implements Initializable {
 			}
 
 			//Set default value
-			defaultValueField.setText(value.toString());
-
-			//TODO: Save object
+			setDefaultValue(value);
 		}
 	}
 
 	@FXML
 	private void addLegalButtonOnAction(ActionEvent event) {
 		legalValues.addAll(Arrays.asList(currentSelector.getValues()));
+
+		//If the default value is null, set it
+		if (defaultValue == null) {
+			setDefaultValue(legalValuesListView.getItems().get(0));
+		}
+	}
+
+	@FXML
+	private void removeValueButtonOnAction(ActionEvent event) {
+		Object selected = legalValuesListView.getSelectionModel().getSelectedItem();
+
+		//Remove selected item, if any
+		if (selected != null) {
+			legalValues.remove(selected);
+
+			//If the default value was removed, clear it
+			if (selected.equals(defaultValue)) {
+				//If there are legal values, set it to the first, otherwise null
+				if (legalValues.size() > 0) {
+					setDefaultValue(legalValuesListView.getItems().get(0));
+				} else {
+					setDefaultValue(null);
+				}
+			}
+		}
 	}
 
 	/**

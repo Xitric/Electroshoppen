@@ -1,7 +1,6 @@
 package pim.business;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -11,7 +10,7 @@ import java.util.Set;
  * @author Mads
  * @author Kasper
  */
-public class Category implements Iterator<Attribute> {
+public class Category {
 
 	private final String name;
 	private final Set<Attribute> attributes;
@@ -107,20 +106,4 @@ public class Category implements Iterator<Attribute> {
 	public void removeChangeListener(CategoryChangeListener listener) {
 		changeListeners.remove(listener);
 	}
-
-	@Override
-	public boolean hasNext() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void remove() {
-		Iterator.super.remove(); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public Attribute next() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
 }

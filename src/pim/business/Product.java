@@ -18,8 +18,8 @@ public class Product implements CategoryChangeListener {
 	private double price;
 	private Set<Category> categories;
 	private Set<Attribute.AttributeValue> attributes;
-//	private Set<Integer> images;
-	private List<Tag> tags;
+	private Set<Tag> tags;
+	private Set<Image> images;
 
 	/**
 	 * Constructs a new product.
@@ -36,8 +36,8 @@ public class Product implements CategoryChangeListener {
 		//Initialize lists
 		categories = new HashSet<>();
 		attributes = new HashSet<>();
-		//		images = new HashSet<>();
-		tags = new ArrayList<>();
+		images = new HashSet<>();
+		tags = new HashSet<>();
 	}
 
 	/**
@@ -160,15 +160,6 @@ public class Product implements CategoryChangeListener {
 		return new ArrayList<>(attributes);
 	}
 
-	//TODO: Images as wrappers
-	//	public void addImage(int image) {
-	//		images.add(image);
-	//	}
-	//
-	//	public ArrayList<Integer> getImages() {
-	//		return images;
-	//	}
-
 	/**
 	 * Get a set containing all the attributes currently registered on this product.
 	 *
@@ -195,20 +186,69 @@ public class Product implements CategoryChangeListener {
 		return attribs;
 	}
 
+	/**
+	 * Add a new tag to this product.
+	 *
+	 * @param tag the tag to add
+	 */
 	public void addTag(Tag tag) {
 		tags.add(tag);
 	}
 
+	/**
+	 * Remove a tag from this product.
+	 *
+	 * @param tag the tag to remove
+	 * @return true if this product contained the tag
+	 */
 	public boolean removeTag(Tag tag) {
 		return tags.remove(tag);
 	}
 
-	public List<Tag> getTags() {
-		return tags;
+	/**
+	 * Get the set of tags for this product. This returns a copy of the internal set.
+	 *
+	 * @return the set of tags
+	 */
+	public Set<Tag> getTags() {
+		return new HashSet<>(tags);
 	}
 
+	/**
+	 * Test whether this product contains the specified tag.
+	 *
+	 * @param tag the tag to test for
+	 * @return true if this product contains the tag, false otherwise
+	 */
 	public boolean containsTag(Tag tag) {
 		return tags.contains(tag);
+	}
+
+	/**
+	 * Add an image to this product.
+	 *
+	 * @param image the image to add
+	 */
+	public void addImage(Image image) {
+		this.images.add(image);
+	}
+
+	/**
+	 * Remove an image from this product.
+	 *
+	 * @param image the image to remove
+	 */
+	public void removeImage(Image image) {
+		this.images.remove(image);
+	}
+
+	/**
+	 * Get the set of images for this product. This returns a copy of the internal set.
+	 *
+	 * @return the set of images
+	 */
+	public Set<Image> getImages() {
+		return new HashSet<>(images);
 	}
 
 	@Override
