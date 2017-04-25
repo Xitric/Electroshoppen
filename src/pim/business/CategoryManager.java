@@ -2,9 +2,11 @@ package pim.business;
 
 import java.util.HashMap;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * Manages category creation and ensures no duplicates (same name) are made.
+ * Manages category creation and ensures no duplicates (same name) are made. Also acts as the central storage of all
+ * categories currently in memory.
  *
  * @author mstruntze
  * @author Kasper
@@ -41,5 +43,16 @@ public class CategoryManager {
 	 */
 	public Category createCategory(String name, Set<Attribute> attributes) {
 		return categories.computeIfAbsent(name, n -> new Category(n, attributes));
+	}
+
+	/**
+	 * Get the set of all categories with the specified attribute.
+	 *
+	 * @param attribute the attribute to filter by
+	 * @return the categories with the specified attribute
+	 */
+	public Set<Category> getCategoriesWithAttribute(Attribute attribute) {
+		return categories.values().stream()
+				.filter(category -> category.hasAttribute(attribute)).collect(Collectors.toSet());
 	}
 }

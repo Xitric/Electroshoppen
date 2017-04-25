@@ -1,7 +1,6 @@
 package pim.business;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -91,6 +90,16 @@ public class Category implements Comparable<Category> {
 	}
 
 	/**
+	 * Test whether this category has the specified attribute.
+	 *
+	 * @param attribute the attribute to test for
+	 * @return true if this category has the attribute, false otherwise
+	 */
+	public boolean hasAttribute(Attribute attribute) {
+		return attributes.contains(attribute);
+	}
+
+	/**
 	 * Add a change listener to this category.
 	 *
 	 * @param listener the listener to add
@@ -106,6 +115,11 @@ public class Category implements Comparable<Category> {
 	 */
 	public void removeChangeListener(CategoryChangeListener listener) {
 		changeListeners.remove(listener);
+	}
+
+	@Override
+	public String toString() {
+		return getName();
 	}
 
 	@Override

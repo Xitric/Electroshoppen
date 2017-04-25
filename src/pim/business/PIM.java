@@ -23,23 +23,23 @@ public interface PIM {
 	 * To retrieve information from the PIM for a product.
 	 *
 	 * @param id the id of the product to retrieve
-	 * @return the product with the specified id
+	 * @return the product with the specified id, or null if no such product could be retrieved
 	 */
-	Product getProductInformation(int id);
+	Product getProductInformation(String id);
 
 	/**
-	 * To retrieve an image with the given id.
+	 * To retrieve an image with the given url.
 	 *
-	 * @param id the id of the image
-	 * @return the image with the specified id
+	 * @param url the url of the image
+	 * @return the image with the specified url
 	 */
-	BufferedImage getMediaInformation(int id);
+	BufferedImage getMediaInformation(String url);
 
 	/**
 	 * To retrieve products from a specific category
 	 *
 	 * @param categoryName the category to get products from
-	 * @return a list of Products
+	 * @return a list of Products, or null if the operation failed
 	 */
 	List<Product> getProducts(String categoryName);
 
@@ -54,31 +54,30 @@ public interface PIM {
 	/**
 	 * Get a list of all attributes from the PIM.
 	 *
-	 * @return a list of all attributes
+	 * @return a list of all attributes, or null if the operation failed
 	 */
 	List<Attribute> getAttributes();
 
 	/**
 	 * To retrieve an attribute.
 	 *
-	 * @param attributeName the name of the attribute
-	 * @return the given attribute
+	 * @param attributeID the id of the attribute
+	 * @return the given attribute, or null if no such attribute could be retrieved
 	 */
-	Attribute getAttribute(String attributeName);
+	Attribute getAttribute(String attributeID);
 
 	/**
-	 * To retrieve all categories with the given attribute.
+	 * To retrieve all currently loaded categories with the given attribute.
 	 *
-	 * @param attributeName the name of the attribute
-	 * @return a list of Categories with the attribute name.
+	 * @param attributeID the id of the attribute
+	 * @return a list of categories with the attribute
 	 */
-	List<Category> getCategoriesWithAttribute(String attributeName);
-        
-        /**
+	List<Category> getCategoriesWithAttribute(String attributeID);
+
+	/**
 	 * Get a list of all categories from the PIM.
 	 *
-	 * @return a list of all categories.
+	 * @return a list of all categories, or null if the operation failed
 	 */
-        List<Category> getCategories();
-        
+	List<Category> getCategories();
 }

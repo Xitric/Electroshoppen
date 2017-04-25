@@ -46,4 +46,15 @@ public class AttributeManager {
 	public Attribute createAttribute(String id, String name, Object defaultValue, Set<Object> legalValues) {
 		return attributes.computeIfAbsent(id, i -> new Attribute(i, name, defaultValue, legalValues));
 	}
+
+	/**
+	 * Get the attribute with the specified id in memory. Even though this attribute is registered in the database it
+	 * might not be in memory, and then this method will return null.
+	 *
+	 * @param attributeID the id of the attribute
+	 * @return the attribute with the specified id, or null if the attribute is not in memory or does not exist
+	 */
+	public Attribute getAttribute(String attributeID) {
+		return attributes.get(attributeID);
+	}
 }

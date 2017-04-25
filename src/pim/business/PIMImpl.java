@@ -101,22 +101,48 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public Product getProductInformation(int id) {
+	public Product getProductInformation(String id) {
+		try {
+			return persistence.getProductByID(id);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//Something went wrong, return null
 		return null;
 	}
 
 	@Override
-	public BufferedImage getMediaInformation(int id) {
-		return null;
+	public BufferedImage getMediaInformation(String url) {
+		return imageManager.createImage(url).getImage();
 	}
 
 	@Override
 	public List<Product> getProducts(String categoryName) {
+		try {
+			return new ArrayList<>(persistence.getProducts());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//Something went wrong, return null
 		return null;
 	}
 
 	@Override
 	public void removeAttribute(String attributeID) {
+		Attribute attribute = attributeManager.getAttribute(attributeID);
+
+		//Remove attribute from all categories (and thus also products) in memory. If the attribute is null, then no
+		//categories or products in memory are referring to it, and this step can be safely skipped
+		if (attribute != null) {
+			Set<Category> categories = categoryManager.getCategoriesWithAttribute(attribute);
+			for (Category category : categories) {
+				category.removeAttribute(attribute);
+			}
+		}
+
+		//Delete attribute in database. This automatically resolves broken references to it
 		persistence.deleteAttribute(attributeID);
 	}
 
@@ -128,16 +154,36 @@ public class PIMImpl implements PIM {
 			e.printStackTrace();
 		}
 
-		return new ArrayList<Attribute>();
+		//Something went wrong, return null
+		return null;
 	}
 
 	@Override
-	public Attribute getAttribute(String attributeName) {
+	public Attribute getAttribute(String attributeID) {
+		try {
+			return persistence.getAttributeByID(attributeID);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//Something went wrong, return null
 		return null;
 	}
 
 	@Override
 	public List<Category> getCategoriesWithAttribute(String attributeName) {
+		return null;
+	}
+
+	@Override
+	public List<Category> getCategories() {
+		try {
+			return new ArrayList<>(persistence.getCategories());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//Something went wrong, return null
 		return null;
 	}
 }
