@@ -5,7 +5,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" prefHeight="640.0" prefWidth="960.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pim.presentation.PIMController">
+<AnchorPane id="AnchorPane" prefHeight="640.0" prefWidth="960.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pim.presentation.PIMController">
     <stylesheets>
         <URL value="@pimview.css" />
     </stylesheets>
@@ -22,7 +22,7 @@
                         <fx:include fx:id="attributeTabPage" source="AttributeView.fxml" />
                     </content>
                 </Tab>
-                <Tab text="Product">
+                <Tab onSelectionChanged="#onProductEnter" text="Product">
                     <content>
                         <fx:include fx:id="productTabPage" source="ProductView.fxml" />
                     </content>

@@ -123,7 +123,7 @@ public class PIMImpl implements PIM {
 	@Override
 	public List<Product> getProducts(String categoryName) {
 		try {
-			return new ArrayList<>(productManager.getProducts());
+			return new ArrayList<>(productManager.getProductsByCategory(categoryName));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
