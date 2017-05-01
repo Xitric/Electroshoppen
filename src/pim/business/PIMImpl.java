@@ -133,6 +133,13 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
+	public String addAttribute(String name, Object defaultValue, Set<Object> legalValues) {
+		//TODO: Temporary
+		attributeManager.saveAttribute(attributeManager.createAttribute("-1", name, defaultValue, legalValues));
+		return "-1";
+	}
+
+	@Override
 	public void removeAttribute(String attributeID) {
 		Attribute attribute = attributeManager.getLoadedAttribute(attributeID);
 

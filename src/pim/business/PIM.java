@@ -2,6 +2,7 @@ package pim.business;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Interface describing the functionality that must be provided by all PIM implementations.
@@ -42,6 +43,16 @@ public interface PIM {
 	 * @return a list of Products, or null if the operation failed
 	 */
 	List<Product> getProducts(String categoryName);
+
+	/**
+	 * Register a new attribute in the pim.
+	 *
+	 * @param name         the name of the attribute
+	 * @param defaultValue the default value of the attribute
+	 * @param legalValues  the legal values of the attribute, or null if all values are allowed
+	 * @return the id of the new attribute
+	 */
+	String addAttribute(String name, Object defaultValue, Set<Object> legalValues);
 
 	/**
 	 * To remove an attribute from the PIM. When removing an attribute it will also be removed from all the products and
@@ -93,14 +104,14 @@ public interface PIM {
 	 *
 	 * @param categoryName name of the selected category
 	 */
-	List<Attribute> getAttributesNotInTheCategory (String categoryName);
+	List<Attribute> getAttributesNotInTheCategory(String categoryName);
 
 	/**
 	 * Remove an attribute from the selected category
 	 *
-	 * @param  categoryName name of the selected category
+	 * @param categoryName name of the selected category
 	 */
-	void deleteAttributeFromCategory (String categoryName);
+	void deleteAttributeFromCategory(String categoryName);
 
 
 }

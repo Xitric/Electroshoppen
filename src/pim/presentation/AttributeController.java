@@ -13,10 +13,7 @@ import pim.business.PIM;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * @author Kasper
@@ -32,7 +29,18 @@ public class AttributeController implements Initializable {
 	@FXML
 	private TextField attributeNameField;
 
+	@FXML
+	private TextField attributeDefaultValueField;
+
+	@FXML
+	private Label attributeDefaultTypeLabel;
+
+	@FXML
+	private ListView<Object> attributeLegalValuesListView;
+
 	private ObservableList<Attribute> attributeList;
+
+	private ObservableList<Object> attributeLegalValuesList;
 
 	private Alert confirmationDialog;
 
@@ -46,6 +54,9 @@ public class AttributeController implements Initializable {
 		attributeList = FXCollections.observableArrayList();
 		attributeListView.setItems(attributeList);
 		attributeListView.getSelectionModel().selectedItemProperty().addListener(this::listViewSelectionChanged);
+
+		attributeLegalValuesList = FXCollections.observableArrayList();
+		attributeLegalValuesListView.setItems(attributeLegalValuesList);
 
 		confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
 		confirmationDialog.setTitle("Delete attribute");
@@ -73,6 +84,7 @@ public class AttributeController implements Initializable {
 
 	@FXML
 	private void addButtonOnAction(ActionEvent event) {
+		//Create dialog for specifying attribute information
 		Dialog<Attribute> dialog = new Dialog<>();
 		dialog.setTitle("Create attribute");
 		dialog.setHeaderText("Specify attribute information");
@@ -88,7 +100,25 @@ public class AttributeController implements Initializable {
 		ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
 		dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
 
-		dialog.showAndWait();
+		//Specify how a result is gathered from the dialog
+		dialog.setResultConverter(button -> {
+			if (button == saveButtonType) {
+				//TODO: Reopen dialog if user specified insufficient information
+				return ((CreateAttributeDialog) loader.getController()).getAttribute();
+			}
+
+			return null;
+		});
+
+		//If a result could be gathered, register it
+		Optional<Attribute> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			Attribute a = result.get();
+			String id = pim.addAttribute(a.getName(), a.getDefaultValue(), a.getLegalValues());
+
+			//Get the new attribute and add it to the list
+			attributeList.add(pim.getAttribute(id));
+		}
 	}
 
 	@FXML
@@ -107,5 +137,14 @@ public class AttributeController implements Initializable {
 		Attribute selection = attributeListView.getSelectionModel().getSelectedItem();
 		attributeIDLabel.setText(selection.getID());
 		attributeNameField.setText(selection.getName());
+		attributeDefaultValueField.setText(selection.getDefaultValue().toString());
+		attributeDefaultTypeLabel.setText("[" + selection.getDefaultValue().getClass().getSimpleName() + "]");
+
+		Set<Object> legals = selection.getLegalValues();
+		if (legals == null) {
+			attributeLegalValuesList.clear();
+		} else {
+			attributeLegalValuesList.setAll(legals);
+		}
 	}
 }
