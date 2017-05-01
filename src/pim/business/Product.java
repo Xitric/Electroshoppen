@@ -136,6 +136,16 @@ public class Product implements CategoryChangeListener {
 	}
 
 	/**
+	 * Test whether this product has the specified category.
+	 *
+	 * @param category the category to test for
+	 * @return true if this product has the category, false otherwise
+	 */
+	public boolean hasCategory(Category category) {
+		return categories.contains(category);
+	}
+
+	/**
 	 * Set the value for the specified attribute. If none of the product's categories contain this attribute nothing
 	 * will happen.
 	 *

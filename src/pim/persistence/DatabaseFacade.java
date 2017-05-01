@@ -1,10 +1,5 @@
 package pim.persistence;
 
-import pim.business.AttributeManager;
-import pim.business.CategoryManager;
-import pim.business.ImageManager;
-import pim.business.TagManager;
-
 /**
  * A factory for creating objects to interact with the persistence layer.
  *
@@ -17,8 +12,8 @@ public class DatabaseFacade {
 	 *
 	 * @return an object for interacting with the persistence layer
 	 */
-	public static PersistenceMediator createDatabaseMediator(CategoryManager cm, AttributeManager am, TagManager tm, ImageManager im) {
+	public static PersistenceMediator createDatabaseMediator() {
 		//Currently the only implementation
-		return new DatabaseMediator(cm, am, tm, im);
+		return new DatabaseMediator();
 	}
 }

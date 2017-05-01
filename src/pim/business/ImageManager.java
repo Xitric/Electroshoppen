@@ -1,5 +1,7 @@
 package pim.business;
 
+import pim.persistence.PersistenceMediator;
+
 import java.util.HashMap;
 
 /**
@@ -11,12 +13,16 @@ import java.util.HashMap;
 public class ImageManager {
 
 	private HashMap<String, Image> images;
+	private final PersistenceMediator persistence;
 
 	/**
 	 * Constructs a new image manager.
+	 *
+	 * @param persistence the persistence mediator
 	 */
-	public ImageManager() {
+	public ImageManager(PersistenceMediator persistence) {
 		images = new HashMap<>();
+		this.persistence = persistence;
 	}
 
 	/**

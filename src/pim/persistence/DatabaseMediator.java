@@ -20,11 +20,7 @@ class DatabaseMediator implements PersistenceMediator {
 	private final static String user = "postgres";
 	private final static String password = "1234";
 
-	/* Entity managers */
-	private final CategoryManager categoryManager;
-	private final AttributeManager attributeManager;
-	private final TagManager tagManager;
-	private final ImageManager imageManager;
+	private DataCache cache;
 
 	/**
 	 * The database connection.
@@ -33,26 +29,14 @@ class DatabaseMediator implements PersistenceMediator {
 
 	/**
 	 * Package private constructor.
-	 *
-	 * @param categoryManager  the entity manager for categories
-	 * @param attributeManager the entity manager for attributes
-	 * @param tagManager       the entity manager for tags
-	 * @param imageManager     the entity manager for images
 	 */
-	DatabaseMediator(CategoryManager categoryManager, AttributeManager attributeManager, TagManager tagManager, ImageManager imageManager) {
+	DatabaseMediator() {
 		try {
 			connection = DriverManager.getConnection(url, user, password);
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-
-		this.categoryManager = categoryManager;
-		this.attributeManager = attributeManager;
-		this.tagManager = tagManager;
-		this.imageManager = imageManager;
 	}
-
-	//TODO: Support tags and images
 
 	/**
 	 * Serialize the specified object and get the result in a byte array for storing in the database.
@@ -108,6 +92,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @return the product with the specified id, or null if no such product exists
 	 * @throws IOException if something goes wrong
 	 */
+	@Override
 	public Product getProductByID(String id) throws IOException {
 		//Attempt to read data from database. Throw exception if something goes wrong
 		try (PreparedStatement getProduct = connection.prepareStatement("SELECT * FROM product WHERE id = ?;");
@@ -152,6 +137,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @return a set of all products with the specified name stored in the database
 	 * @throws IOException if something goes wrong
 	 */
+	@Override
 	public Set<Product> getProductsByName(String name) throws IOException {
 		try (PreparedStatement getProducts = connection.prepareStatement("SELECT * FROM product WHERE name = ?;");
 		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT productid, categoryName FROM productcategory, product WHERE productID = id AND name = ?;");
@@ -181,11 +167,49 @@ class DatabaseMediator implements PersistenceMediator {
 	}
 
 	/**
+	 * Get a set of all products in the specified category stored in the database.
+	 *
+	 * @param category the name of the category
+	 * @return a set of all products in the specified category stored in the database
+	 * @throws IOException if something goes wrong
+	 */
+	//TODO: Code duplication should be fixed when I get around to optimizing this shit...
+	@Override
+	public Set<Product> getProductsByCategory(String category) throws IOException {
+		try (PreparedStatement getProducts = connection.prepareStatement("SELECT * FROM product WHERE id IN (SELECT productid FROM productcategory WHERE categoryname = ?);");
+		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT productid, categoryName FROM productcategory, product WHERE productID = id AND id IN (SELECT productid FROM productcategory WHERE categoryname = ?);");
+		     PreparedStatement getProductValues = connection.prepareStatement("SELECT attributeid, productid, value FROM attributevalue, product WHERE productid = id AND id IN (SELECT productid FROM productcategory WHERE categoryname = ?);");
+		     PreparedStatement getProductTags = connection.prepareStatement("SELECT tagname, productid FROM producttag, product WHERE productid = id AND id IN (SELECT productid FROM productcategory WHERE categoryname = ?);");
+		     PreparedStatement getProductImages = connection.prepareStatement("SELECT url, productid FROM image, product WHERE productid = id AND id IN (SELECT productid FROM productcategory WHERE categoryname = ?);")) {
+
+			getProducts.setString(1, category);
+			ResultSet productData = getProducts.executeQuery();
+
+			getProductCategories.setString(1, category);
+			ResultSet productCategoryData = getProductCategories.executeQuery();
+
+			getProductValues.setString(1, category);
+			ResultSet productValueData = getProductValues.executeQuery();
+
+			getProductTags.setString(1, category);
+			ResultSet productTagsData = getProductTags.executeQuery();
+
+			getProductImages.setString(1, category);
+			ResultSet productImages = getProductImages.executeQuery();
+
+			return buildProducts(productData, productCategoryData, productValueData, productTagsData, productImages);
+		} catch (SQLException e) {
+			throw new IOException("Could not read products from category with name " + category + "!", e);
+		}
+	}
+
+	/**
 	 * Gets all products with the associated tag
 	 *
-	 * @param tag Tag to find products by
-	 * @return A set of products with the provided tag
+	 * @param tag tag to find products by
+	 * @return a set of products with the provided tag
 	 */
+	@Override
 	public Set<Product> getProductsByTag(Tag tag) {
 		try { //TODO: Optimize!
 			Set<Product> products = getProducts();
@@ -212,6 +236,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @return a set of all products stored in the database
 	 * @throws IOException if something goes wrong
 	 */
+	@Override
 	public Set<Product> getProducts() throws IOException {
 		try (PreparedStatement getProducts = connection.prepareStatement("SELECT * FROM product;");
 		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT * FROM productcategory;");
@@ -250,7 +275,7 @@ class DatabaseMediator implements PersistenceMediator {
 			String name = productData.getString(2).trim();
 			double price = productData.getDouble(3);
 
-			products.put(id, new Product(id, name, price));
+			products.put(id, cache.createProduct(id, name , price));
 		}
 
 		//Add all product categories
@@ -281,7 +306,7 @@ class DatabaseMediator implements PersistenceMediator {
 		//Add all tags
 		while (productTags.next()) {
 			String name = productTags.getString(1).trim();
-			Tag t = tagManager.createTag(name);
+			Tag t = cache.createTag(name);
 			Product p = products.get(productTags.getString(2).trim());
 			p.addTag(t);
 		}
@@ -289,7 +314,7 @@ class DatabaseMediator implements PersistenceMediator {
 		//Add all images
 		while (productImages.next()) {
 			String url = productImages.getString(1).trim();
-			Image img = imageManager.createImage(url);
+			Image img = cache.createImage(url);
 			String productID = productImages.getString(2).trim();
 			products.get(productID).addImage(img);
 		}
@@ -303,6 +328,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 *
 	 * @param product the product to save
 	 */
+	@Override
 	public void saveProduct(Product product) {
 		saveProducts(Collections.singleton(product));
 	}
@@ -312,6 +338,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 *
 	 * @param products the products to save
 	 */
+	@Override
 	public void saveProducts(Collection<Product> products) {
 		try (PreparedStatement storeProductData = connection.prepareStatement("INSERT INTO product VALUES (?, ?, ?) ON CONFLICT (id) DO UPDATE SET name = Excluded.name, price = EXCLUDED.price;");
 		     PreparedStatement removeProductCategories = connection.prepareStatement("DELETE FROM productcategory WHERE productid = ?;");
@@ -376,6 +403,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 *
 	 * @param id the id of the product
 	 */
+	@Override
 	public void deleteProduct(String id) {
 		try (PreparedStatement deleteProductData = connection.prepareStatement("DELETE FROM product WHERE id = ?")) {
 			//Delete product entry. The constraints in the database should ensure that the deletion is cascaded
@@ -392,6 +420,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @return the set of all tags
 	 * @throws IOException if something goes wrong
 	 */
+	@Override
 	public Set<Tag> getTags() throws IOException {
 		try (PreparedStatement tagData = connection.prepareStatement("SELECT * FROM tag")) {
 			ResultSet tagResults = tagData.executeQuery();
@@ -412,7 +441,7 @@ class DatabaseMediator implements PersistenceMediator {
 		Set<Tag> tags = new HashSet<>();
 
 		while (tagData.next()) {
-			tags.add(tagManager.createTag(tagData.getString(1).trim()));
+			tags.add(cache.createTag(tagData.getString(1).trim()));
 		}
 
 		return tags;
@@ -423,6 +452,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 *
 	 * @param tag the tag to save
 	 */
+	@Override
 	public void saveTag(Tag tag) {
 		try (PreparedStatement tagData = connection.prepareStatement("INSERT INTO tag VALUES (?) ON CONFLICT (name) DO NOTHING;")) {
 			tagData.setString(1, tag.getName());
@@ -437,6 +467,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 *
 	 * @param name the name of the tag
 	 */
+	@Override
 	public void deleteTag(String name) {
 		try (PreparedStatement delete = connection.prepareStatement("DELETE FROM tag WHERE name = ?")) {
 			//Deletion should be cascaded
@@ -454,6 +485,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @return a set of all the images for the specified product
 	 * @throws IOException if something goes wrong
 	 */
+	@Override
 	public Set<Image> getImagesForProduct(String productID) throws IOException {
 		try (PreparedStatement getImages = connection.prepareStatement("SELECT url FROM image WHERE productid = ?")) {
 
@@ -478,7 +510,7 @@ class DatabaseMediator implements PersistenceMediator {
 
 		while (imageData.next()) {
 			String url = imageData.getString(1).trim();
-			images.add(imageManager.createImage(url));
+			images.add(cache.createImage(url));
 		}
 
 		return images;
@@ -492,6 +524,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @return the category with the specified name, or null if no such category exists
 	 * @throws IOException if something goes wrong
 	 */
+	@Override
 	public Category getCategoryByName(String name) throws IOException {
 		//Attempt to read data from database. Throw exception if something goes wrong
 		try (PreparedStatement getCategory = connection.prepareStatement("SELECT * FROM category WHERE name = ?;");
@@ -521,6 +554,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @return a set of all categories stored in the database
 	 * @throws IOException if something goes wrong
 	 */
+	@Override
 	public Set<Category> getCategories() throws IOException {
 		try (PreparedStatement getCategories = connection.prepareStatement("SELECT * FROM category;");
 		     PreparedStatement getAttributes = connection.prepareStatement("SELECT * FROM categoryattribute;")) {
@@ -563,7 +597,7 @@ class DatabaseMediator implements PersistenceMediator {
 			String categoryName = categoryData.getString(1).trim();
 
 			//Create new/reuse category
-			categories.add(categoryManager.createCategory(categoryName, categoryAttributes.getOrDefault(categoryName, new HashSet<>())));
+			categories.add(cache.createCategory(categoryName, categoryAttributes.getOrDefault(categoryName, new HashSet<>())));
 		}
 
 		return categories;
@@ -574,6 +608,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 *
 	 * @param category the category to save
 	 */
+	@Override
 	public void saveCategory(Category category) {
 		saveCategories(Collections.singleton(category));
 	}
@@ -583,6 +618,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 *
 	 * @param categories the categories to save
 	 */
+	@Override
 	public void saveCategories(Collection<Category> categories) {
 		try (PreparedStatement storeCategoryData = connection.prepareStatement("INSERT INTO category VALUES (?) ON CONFLICT (name) DO NOTHING;");
 		     PreparedStatement deleteRemovedAttributes = connection.prepareStatement("DELETE FROM categoryattribute WHERE categoryname = ?  AND NOT (attributeid = ANY(?));");
@@ -624,6 +660,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 *
 	 * @param name the name of the category
 	 */
+	@Override
 	public void deleteCategory(String name) {
 		try (PreparedStatement deleteCategoryData = connection.prepareStatement("DELETE FROM category WHERE name = ?")) {
 			//Delete category entry. The constraints in the database should ensure that the deletion is cascaded
@@ -641,6 +678,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @return the attribute with the specified id, or null if no such attribute exists
 	 * @throws IOException if something goes wrong
 	 */
+	@Override
 	public Attribute getAttributeByID(String id) throws IOException {
 		//Attempt to read data from database. Throw exception if something goes wrong
 		try (PreparedStatement getAttribute = connection.prepareStatement("SELECT * FROM attribute WHERE id = ?");
@@ -670,6 +708,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @return a set of all attributes stored in the database
 	 * @throws IOException if something goes wrong
 	 */
+	@Override
 	public Set<Attribute> getAttributes() throws IOException {
 		//Attempt to read data from database. Throw exception if something goes wrong
 		try (PreparedStatement getAttributes = connection.prepareStatement("SELECT * FROM attribute;");
@@ -712,7 +751,7 @@ class DatabaseMediator implements PersistenceMediator {
 			Object defaultValue = bytesToObject(attributeData.getBytes(3));
 
 			//Create new/reuse attribute.
-			attributes.add(attributeManager.createAttribute(id, name, defaultValue, legalValues.get(id)));
+			attributes.add(cache.createAttribute(id, name, defaultValue, legalValues.get(id)));
 		}
 
 		return attributes;
@@ -723,6 +762,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 *
 	 * @param attribute the attribute to save
 	 */
+	@Override
 	public void saveAttribute(Attribute attribute) {
 		saveAttributes(Collections.singleton(attribute));
 	}
@@ -732,6 +772,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 *
 	 * @param attributes the attributes to save
 	 */
+	@Override
 	public void saveAttributes(Collection<Attribute> attributes) {
 		try (PreparedStatement storeAttributeData = connection.prepareStatement("INSERT INTO attribute VALUES (?, ?, ?) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, defaultvalue = EXCLUDED.defaultvalue;");
 		     PreparedStatement storeLegalValues = connection.prepareStatement("INSERT INTO legalvalue VALUES (?, ?) ON CONFLICT (attributeid, value) DO NOTHING;")) {
@@ -762,6 +803,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 *
 	 * @param id the id of the attribute
 	 */
+	@Override
 	public void deleteAttribute(String id) {
 		try (PreparedStatement deleteAttributeData = connection.prepareStatement("DELETE FROM attribute WHERE id = ?")) {
 			//Delete attribute entry. The constraints in the database should ensure that the deletion is cascaded
@@ -772,9 +814,15 @@ class DatabaseMediator implements PersistenceMediator {
 		}
 	}
 
+	@Override
+	public void setCache(DataCache cache) {
+		this.cache = cache;
+	}
+
 	/**
 	 * Close the database connection.
 	 */
+	@Override
 	public void dispose() {
 		DBUtil.close(connection);
 	}

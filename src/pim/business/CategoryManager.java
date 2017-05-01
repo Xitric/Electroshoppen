@@ -1,5 +1,8 @@
 package pim.business;
 
+import pim.persistence.PersistenceMediator;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,13 +16,17 @@ import java.util.stream.Collectors;
  */
 public class CategoryManager {
 
+	private final PersistenceMediator persistence;
 	private HashMap<String, Category> categories;
 
 	/**
 	 * Constructs a new category manager.
+	 *
+	 * @param persistence the persistence mediator
 	 */
-	public CategoryManager() {
+	public CategoryManager(PersistenceMediator persistence) {
 		categories = new HashMap<>();
+		this.persistence = persistence;
 	}
 
 	/**
@@ -46,12 +53,43 @@ public class CategoryManager {
 	}
 
 	/**
-	 * Get the set of all categories with the specified attribute.
+	 * Get a set of all categories.
+	 *
+	 * @return a set of all categories
+	 * @throws IOException if something goes wrong
+	 */
+	public Set<Category> getCategories() throws IOException {
+		return persistence.getCategories();
+	}
+
+	/**
+	 * Get the category with the specified name. If the category is not in memory, it will be loaded from the
+	 * persistence layer.
+	 *
+	 * @param categoryName the name of the category
+	 * @return the category with the specified name, or null if no such category could be retrieved
+	 * @throws IOException if something goes wrong
+	 */
+	public Category getCategory(String categoryName) throws IOException {
+		//Look in memory first
+		Category c = categories.get(categoryName);
+
+		//If this failed, look in persistence. This might also fail, leaving c as null
+		if (c == null) {
+			c = persistence.getCategoryByName(categoryName);
+		}
+
+		return c;
+	}
+
+	/**
+	 * Get the set of all categories with the specified attribute in memory. Categories that are not in memory are not
+	 * considered.
 	 *
 	 * @param attribute the attribute to filter by
-	 * @return the categories with the specified attribute
+	 * @return the categories with the specified attribute currently in memory
 	 */
-	public Set<Category> getCategoriesWithAttribute(Attribute attribute) {
+	public Set<Category> getLoadedCategoriesWithAttribute(Attribute attribute) {
 		return categories.values().stream()
 				.filter(category -> category.hasAttribute(attribute)).collect(Collectors.toSet());
 	}

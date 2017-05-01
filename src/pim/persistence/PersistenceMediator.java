@@ -1,9 +1,6 @@
 package pim.persistence;
 
-import pim.business.Attribute;
-import pim.business.Category;
-import pim.business.Product;
-import pim.business.Tag;
+import pim.business.*;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -33,6 +30,15 @@ public interface PersistenceMediator {
 	 * @throws IOException if something goes wrong
 	 */
 	Set<Product> getProductsByName(String name) throws IOException;
+
+	/**
+	 * Get a set of all products in the specified category stored in the database.
+	 *
+	 * @param category the name of the category
+	 * @return a set of all products in the specified category stored in the database
+	 * @throws IOException if something goes wrong
+	 */
+	public Set<Product> getProductsByCategory(String category) throws IOException;
 
 	/**
 	 * Gets all products with the associated tag.
@@ -93,6 +99,15 @@ public interface PersistenceMediator {
 	 * @param name the name of the tag
 	 */
 	void deleteTag(String name);
+
+	/**
+	 * Get all the images stored for the specified product.
+	 *
+	 * @param productID the id of the product
+	 * @return a set of all the images for the specified product
+	 * @throws IOException if something goes wrong
+	 */
+	Set<Image> getImagesForProduct(String productID) throws IOException;
 
 	/**
 	 * Get the category with the specified name.
@@ -169,6 +184,13 @@ public interface PersistenceMediator {
 	 * @param id the id of the attribute
 	 */
 	void deleteAttribute(String id);
+
+	/**
+	 * Set the cache used by the persistence layer. This will delete all data in the current cache.
+	 *
+	 * @param cache the data cache
+	 */
+	void setCache(DataCache cache);
 
 	/**
 	 * Dispose this persistence mediator, closing all currently open connections.

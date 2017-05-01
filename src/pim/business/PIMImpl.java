@@ -21,9 +21,10 @@ public class PIMImpl implements PIM {
 	 */
 	private final PersistenceMediator persistence;
 
-	/* Entiry managers */
-	private final CategoryManager categoryManager;
+	/* Entity managers */
+	private final ProductManager productManager;
 	private final AttributeManager attributeManager;
+	private final CategoryManager categoryManager;
 	private final TagManager tagManager;
 	private final ImageManager imageManager;
 
@@ -31,11 +32,13 @@ public class PIMImpl implements PIM {
 	 * Constructs a new PIM implementation.
 	 */
 	public PIMImpl() {
-		categoryManager = new CategoryManager();
-		attributeManager = new AttributeManager();
-		tagManager = new TagManager();
-		imageManager = new ImageManager();
-		persistence = DatabaseFacade.createDatabaseMediator(categoryManager, attributeManager, tagManager, imageManager);
+		persistence = DatabaseFacade.createDatabaseMediator();
+		productManager = new ProductManager(persistence);
+		attributeManager = new AttributeManager(persistence);
+		categoryManager = new CategoryManager(persistence);
+		tagManager = new TagManager(persistence);
+		imageManager = new ImageManager(persistence);
+		persistence.setCache(new DataCacheImpl(productManager, attributeManager, categoryManager, tagManager, imageManager));
 	}
 
 	@Override
@@ -63,7 +66,7 @@ public class PIMImpl implements PIM {
 		try {
 			//We get a set of all products in the PIM. This costs more memory, but it also speeds up the process
 			//substantially
-			existingProducts = persistence.getProducts();
+			existingProducts = productManager.getProducts();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false; //Synchronization failed
@@ -83,13 +86,13 @@ public class PIMImpl implements PIM {
 				p.setPrice(data.getPrice());
 
 				//Save changes to database
-				persistence.saveProduct(p);
+				productManager.saveProduct(p);
 			} else {
 				//The product was new
 				Product p = new Product(data.getID(), data.getName(), data.getPrice());
 
 				//Save new product in database
-				persistence.saveProduct(p);
+				productManager.saveProduct(p);
 			}
 		}
 
@@ -103,7 +106,7 @@ public class PIMImpl implements PIM {
 	@Override
 	public Product getProductInformation(String id) {
 		try {
-			return persistence.getProductByID(id);
+			return productManager.getProduct(id);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -120,7 +123,7 @@ public class PIMImpl implements PIM {
 	@Override
 	public List<Product> getProducts(String categoryName) {
 		try {
-			return new ArrayList<>(persistence.getProducts());
+			return new ArrayList<>(productManager.getProducts());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -131,25 +134,25 @@ public class PIMImpl implements PIM {
 
 	@Override
 	public void removeAttribute(String attributeID) {
-		Attribute attribute = attributeManager.getAttribute(attributeID);
+		Attribute attribute = attributeManager.getLoadedAttribute(attributeID);
 
 		//Remove attribute from all categories (and thus also products) in memory. If the attribute is null, then no
 		//categories or products in memory are referring to it, and this step can be safely skipped
 		if (attribute != null) {
-			Set<Category> categories = categoryManager.getCategoriesWithAttribute(attribute);
+			Set<Category> categories = categoryManager.getLoadedCategoriesWithAttribute(attribute);
 			for (Category category : categories) {
 				category.removeAttribute(attribute);
 			}
 		}
 
 		//Delete attribute in database. This automatically resolves broken references to it
-		persistence.deleteAttribute(attributeID);
+		attributeManager.deleteAttribute(attributeID);
 	}
 
 	@Override
 	public List<Attribute> getAttributes() {
 		try {
-			return new ArrayList<>(persistence.getAttributes());
+			return new ArrayList<>(attributeManager.getAttributes());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -161,7 +164,7 @@ public class PIMImpl implements PIM {
 	@Override
 	public Attribute getAttribute(String attributeID) {
 		try {
-			return persistence.getAttributeByID(attributeID);
+			return attributeManager.getAttribute(attributeID);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -178,7 +181,7 @@ public class PIMImpl implements PIM {
 	@Override
 	public List<Category> getCategories() {
 		try {
-			return new ArrayList<>(persistence.getCategories());
+			return new ArrayList<>(categoryManager.getCategories());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
