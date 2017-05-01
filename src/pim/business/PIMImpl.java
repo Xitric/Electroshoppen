@@ -189,4 +189,39 @@ public class PIMImpl implements PIM {
 		//Something went wrong, return null
 		return null;
 	}
+
+	@Override
+	public List<Attribute> getAttributesFromCategory (String categoryName){
+		try{
+		   return new ArrayList<>(persistence.getCategoryByName(categoryName).getAttributes());
+		} catch (IOException e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<Attribute> getAttributesNotInTheCategory(String categoryName) {
+		try{
+            Set<Attribute> attributes = persistence.getAttributes();
+            Set<Attribute> aOnCategory = persistence.getCategoryByName(categoryName).getAttributes();
+            attributes.removeAll(aOnCategory);
+		    return new ArrayList<> (attributes);
+
+	} catch (IOException e){
+		e.printStackTrace();
+	}
+		return null;
+	}
+
+	@Override
+	public void deleteAttributeFromCategory (String categoryName){
+//	    try{
+//
+//
+//        }catch (IOException e){
+//            e.printStackTrace();
+//        }
+    }
+
 }

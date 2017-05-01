@@ -80,4 +80,27 @@ public interface PIM {
 	 * @return a list of all categories, or null if the operation failed
 	 */
 	List<Category> getCategories();
+
+	/**
+	 * Get all the attributes for the selected category
+	 *
+	 * @param categoryName name of the selected category
+	 */
+	List<Attribute> getAttributesFromCategory(String categoryName);
+
+	/**
+	 * Get all the attributes that are not in the selected category
+	 *
+	 * @param categoryName name of the selected category
+	 */
+	List<Attribute> getAttributesNotInTheCategory (String categoryName);
+
+	/**
+	 * Remove an attribute from the selected category
+	 *
+	 * @param  categoryName name of the selected category
+	 */
+	void deleteAttributeFromCategory (String categoryName);
+
+
 }

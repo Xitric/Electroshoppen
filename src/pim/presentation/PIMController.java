@@ -56,7 +56,7 @@ public class PIMController implements Initializable {
 	 */
 	public void setPIM(PIM pim) {
 		this.pim = pim;
-		//		categoryTabPageController.setPIM(pim);
+		categoryTabPageController.setPIM(pim);
 		attributeTabPageController.setPIM(pim);
 		//		productTabPageController.setPIM(pim);
 	}

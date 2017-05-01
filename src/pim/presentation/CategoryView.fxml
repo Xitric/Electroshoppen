@@ -46,7 +46,7 @@
                <content>
                   <HBox prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <ListView fx:id="listViewAdd" HBox.hgrow="ALWAYS" />
+                        <ListView fx:id="listViewRemove" HBox.hgrow="ALWAYS" />
                         <VBox alignment="CENTER" spacing="4.0">
                            <children>
                               <Button fx:id="btnAddAttribute" mnemonicParsing="false" onAction="#addAttribute" text="Add &gt;&gt;" />
@@ -56,7 +56,7 @@
                               <Insets left="4.0" right="4.0" />
                            </HBox.margin>
                         </VBox>
-                        <ListView fx:id="listViewRemove" HBox.hgrow="ALWAYS" />
+                        <ListView fx:id="listViewAdd" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
                </content>
