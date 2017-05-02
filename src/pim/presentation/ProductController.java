@@ -23,7 +23,7 @@ public class ProductController implements Initializable {
 
 	private PIM pim;
 
-	TreeItem<String> root = new TreeItem<>("root");
+	private TreeItem<String> root = new TreeItem<>("root");
 
 	@FXML
 	private TreeView<String> productTreeView;
