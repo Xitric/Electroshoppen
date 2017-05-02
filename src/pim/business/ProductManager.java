@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  */
 public class ProductManager {
 
-	private final Map<String, Product> products;
+	private final Map<Integer, Product> products;
 	private final PersistenceMediator persistence;
 
 	/**
@@ -39,7 +39,7 @@ public class ProductManager {
 	 * @param price the price of the product
 	 * @return the created product
 	 */
-	public Product createProduct(String id, String name, double price) {
+	public Product createProduct(int id, String name, double price) {
 		return products.computeIfAbsent(id, i -> new Product(id, name, price));
 	}
 
@@ -70,7 +70,7 @@ public class ProductManager {
 	 * @return the product with the specified id, or null if no such product could be retrieved
 	 * @throws IOException if something goes wrong
 	 */
-	public Product getProduct(String productID) throws IOException {
+	public Product getProduct(int productID) throws IOException {
 		//Look in memory first
 		Product p = products.get(productID);
 
@@ -88,7 +88,7 @@ public class ProductManager {
 	 * @param productID the id of the product
 	 * @return the product with the specified id, or null if no such product could be retrieved from memory
 	 */
-	public Product getLoadedProduct(String productID) {
+	public Product getLoadedProduct(int productID) {
 		return products.get(productID);
 	}
 

@@ -16,22 +16,19 @@ public class Attribute implements Comparable<Attribute> {
 	/**
 	 * The id of this attribute.
 	 */
-	private final String id;
-
-	/**
-	 * The name of this attribute to be displayed to the user.
-	 */
-	private String name;
-
-	/**
-	 * The default value of the attribute.
-	 */
-	private Object defaultValue;
-
+	private final int id;
 	/**
 	 * The list of legal values for this attribute, or null if all values are allowed.
 	 */
 	private final Set<Object> legalValues;
+	/**
+	 * The name of this attribute to be displayed to the user.
+	 */
+	private String name;
+	/**
+	 * The default value of the attribute.
+	 */
+	private Object defaultValue;
 
 	/**
 	 * Constructs a new attribute with the specified id and name.
@@ -40,7 +37,7 @@ public class Attribute implements Comparable<Attribute> {
 	 * @param name         the name of the attribute
 	 * @param defaultValue the default value of the attribute
 	 */
-	public Attribute(String id, String name, Object defaultValue) {
+	public Attribute(int id, String name, Object defaultValue) {
 		this.id = id;
 		this.name = name;
 		this.defaultValue = defaultValue;
@@ -49,14 +46,14 @@ public class Attribute implements Comparable<Attribute> {
 
 	/**
 	 * Constructs a new attribute with the specified name and list of legal values. If all values are allowed, use
-	 * {@link #Attribute(String, String, Object)} instead, or pass null as the 4th parameter.
+	 * {@link #Attribute(int, String, Object)} instead, or pass null as the 4th parameter.
 	 *
 	 * @param id           the id of the attribute
 	 * @param name         the name of the attribute
 	 * @param defaultValue the default value of the attribute
 	 * @param legalValues  the list of legal values
 	 */
-	public Attribute(String id, String name, Object defaultValue, Set<Object> legalValues) {
+	public Attribute(int id, String name, Object defaultValue, Set<Object> legalValues) {
 		//Ensure that default value is among legal values, if any
 		if (legalValues != null && !legalValues.contains(defaultValue)) {
 			throw new IllegalArgumentException("Default value is not legal!");
@@ -101,7 +98,7 @@ public class Attribute implements Comparable<Attribute> {
 	 *
 	 * @return the id of this attribute
 	 */
-	public String getID() {
+	public int getID() {
 		return id;
 	}
 
@@ -140,7 +137,7 @@ public class Attribute implements Comparable<Attribute> {
 
 	@Override
 	public int compareTo(Attribute o) {
-		return getID().compareTo(o.getID());
+		return Integer.compare(getID(), o.getID());
 	}
 
 	/**

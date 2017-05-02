@@ -21,7 +21,7 @@ public interface DataCache {
 	 * @param price the price of the product
 	 * @return the created product
 	 */
-	Product createProduct(String id, String name, double price);
+	Product createProduct(int id, String name, double price);
 
 	/**
 	 * Creates an attribute if one with the given id does not exist already. Otherwise a reference to the existing
@@ -32,7 +32,7 @@ public interface DataCache {
 	 * @param defaultValue default value of the attribute
 	 * @return a reference to the created/existing attribute with the given id
 	 */
-	Attribute createAttribute(String id, String name, Object defaultValue);
+	Attribute createAttribute(int id, String name, Object defaultValue);
 
 	/**
 	 * Creates an attribute if one with the given id does not exist already. Otherwise a reference to the existing
@@ -44,7 +44,7 @@ public interface DataCache {
 	 * @param legalValues  allowed values for the attribute
 	 * @return a reference to the created/existing attribute with the given id
 	 */
-	Attribute createAttribute(String id, String name, Object defaultValue, Set<Object> legalValues);
+	Attribute createAttribute(int id, String name, Object defaultValue, Set<Object> legalValues);
 
 	/**
 	 * Creates a category if one with the given name does not exist already. Otherwise a reference to the existing

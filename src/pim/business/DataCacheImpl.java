@@ -37,17 +37,17 @@ public class DataCacheImpl implements DataCache {
 	}
 
 	@Override
-	public Product createProduct(String id, String name, double price) {
+	public Product createProduct(int id, String name, double price) {
 		return productManager.createProduct(id, name, price);
 	}
 
 	@Override
-	public Attribute createAttribute(String id, String name, Object defaultValue) {
+	public Attribute createAttribute(int id, String name, Object defaultValue) {
 		return attributeManager.createAttribute(id, name, defaultValue);
 	}
 
 	@Override
-	public Attribute createAttribute(String id, String name, Object defaultValue, Set<Object> legalValues) {
+	public Attribute createAttribute(int id, String name, Object defaultValue, Set<Object> legalValues) {
 		return attributeManager.createAttribute(id, name, defaultValue, legalValues);
 	}
 

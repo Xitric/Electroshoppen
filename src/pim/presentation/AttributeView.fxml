@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pim.presentation.AttributeController">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pim.presentation.AttributeController">
    <left>
       <TitledPane maxHeight="1.7976931348623157E308" text="Attributes" BorderPane.alignment="CENTER">
          <content>
@@ -46,7 +46,7 @@
             <HBox alignment="CENTER_LEFT" spacing="4.0">
                <children>
                   <Label text="Name:" />
-                  <TextField fx:id="attributeNameField" />
+                  <TextField fx:id="attributeNameField" HBox.hgrow="ALWAYS" />
                </children>
                <padding>
                   <Insets bottom="8.0" top="8.0" />
@@ -58,8 +58,8 @@
             <HBox alignment="CENTER_LEFT" spacing="4.0">
                <children>
                   <Label text="Default:" />
-                  <TextField />
-                  <Label text="&lt;--TODO" />
+                  <TextField fx:id="attributeDefaultValueField" editable="false" HBox.hgrow="ALWAYS" />
+                  <Label fx:id="attributeDefaultTypeLabel" />
                </children>
                <padding>
                   <Insets bottom="8.0" top="8.0" />
@@ -73,7 +73,7 @@
                   <Label text="Legal values:" />
                </children>
             </HBox>
-            <ListView>
+            <ListView fx:id="attributeLegalValuesListView">
                <VBox.margin>
                   <Insets bottom="8.0" />
                </VBox.margin>
