@@ -26,7 +26,7 @@ public interface PIM {
 	 * @param id the id of the product to retrieve
 	 * @return the product with the specified id, or null if no such product could be retrieved
 	 */
-	Product getProductInformation(String id);
+	Product getProductInformation(int id);
 
 	/**
 	 * To retrieve an image with the given url.
@@ -52,7 +52,7 @@ public interface PIM {
 	 * @param legalValues  the legal values of the attribute, or null if all values are allowed
 	 * @return the id of the new attribute
 	 */
-	String addAttribute(String name, Object defaultValue, Set<Object> legalValues);
+	int addAttribute(String name, Object defaultValue, Set<Object> legalValues);
 
 	/**
 	 * To remove an attribute from the PIM. When removing an attribute it will also be removed from all the products and
@@ -60,7 +60,7 @@ public interface PIM {
 	 *
 	 * @param attributeID the attribute to remove
 	 */
-	void removeAttribute(String attributeID);
+	void removeAttribute(int attributeID);
 
 	/**
 	 * Get a list of all attributes from the PIM.
@@ -75,7 +75,7 @@ public interface PIM {
 	 * @param attributeID the id of the attribute
 	 * @return the given attribute, or null if no such attribute could be retrieved
 	 */
-	Attribute getAttribute(String attributeID);
+	Attribute getAttribute(int attributeID);
 
 	/**
 	 * To retrieve all currently loaded categories with the given attribute.
@@ -83,7 +83,7 @@ public interface PIM {
 	 * @param attributeID the id of the attribute
 	 * @return a list of categories with the attribute
 	 */
-	List<Category> getCategoriesWithAttribute(String attributeID);
+	List<Category> getCategoriesWithAttribute(int attributeID);
 
 	/**
 	 * Get a list of all categories from the PIM.

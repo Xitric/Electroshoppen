@@ -114,7 +114,7 @@ public class AttributeController implements Initializable {
 		Optional<Attribute> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			Attribute a = result.get();
-			String id = pim.addAttribute(a.getName(), a.getDefaultValue(), a.getLegalValues());
+			int id = pim.addAttribute(a.getName(), a.getDefaultValue(), a.getLegalValues());
 
 			//Get the new attribute and add it to the list
 			attributeList.add(pim.getAttribute(id));
@@ -135,16 +135,27 @@ public class AttributeController implements Initializable {
 
 	private void listViewSelectionChanged(Observable observable) {
 		Attribute selection = attributeListView.getSelectionModel().getSelectedItem();
-		attributeIDLabel.setText(selection.getID());
-		attributeNameField.setText(selection.getName());
-		attributeDefaultValueField.setText(selection.getDefaultValue().toString());
-		attributeDefaultTypeLabel.setText("[" + selection.getDefaultValue().getClass().getSimpleName() + "]");
 
-		Set<Object> legals = selection.getLegalValues();
-		if (legals == null) {
+		if (selection == null) {
+			//Clear
+			attributeIDLabel.setText("");
+			attributeNameField.setText("");
+			attributeDefaultValueField.setText("");
+			attributeDefaultTypeLabel.setText("");
 			attributeLegalValuesList.clear();
 		} else {
-			attributeLegalValuesList.setAll(legals);
+			//Set values
+			attributeIDLabel.setText(String.valueOf(selection.getID()));
+			attributeNameField.setText(selection.getName());
+			attributeDefaultValueField.setText(selection.getDefaultValue().toString());
+			attributeDefaultTypeLabel.setText("[" + selection.getDefaultValue().getClass().getSimpleName() + "]");
+
+			Set<Object> legals = selection.getLegalValues();
+			if (legals == null) {
+				attributeLegalValuesList.clear();
+			} else {
+				attributeLegalValuesList.setAll(legals);
+			}
 		}
 	}
 }

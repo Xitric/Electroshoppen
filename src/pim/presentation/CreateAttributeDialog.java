@@ -103,9 +103,9 @@ public class CreateAttributeDialog implements Initializable {
 		String name = nameField.getText();
 
 		if (restrictedCheckBox.isSelected()) {
-			return new Attribute("-1", name, defaultValue, legalValues);
+			return new Attribute(-1, name, defaultValue, legalValues);
 		} else {
-			return new Attribute("-1", name, defaultValue);
+			return new Attribute(-1, name, defaultValue);
 		}
 	}
 

@@ -93,7 +93,7 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @throws IOException if something goes wrong
 	 */
 	@Override
-	public Product getProductByID(String id) throws IOException {
+	public Product getProductByID(int id) throws IOException {
 		//Attempt to read data from database. Throw exception if something goes wrong
 		try (PreparedStatement getProduct = connection.prepareStatement("SELECT * FROM product WHERE id = ?;");
 		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT * FROM productcategory WHERE productid = ?;");
@@ -101,19 +101,19 @@ class DatabaseMediator implements PersistenceMediator {
 		     PreparedStatement getProductTags = connection.prepareStatement("SELECT * FROM producttag WHERE productid = ?");
 		     PreparedStatement getProductImages = connection.prepareStatement("SELECT * FROM image WHERE productid = ?")) {
 
-			getProduct.setString(1, id);
+			getProduct.setInt(1, id);
 			ResultSet productData = getProduct.executeQuery();
 
-			getProductCategories.setString(1, id);
+			getProductCategories.setInt(1, id);
 			ResultSet productCategoryData = getProductCategories.executeQuery();
 
-			getProductValues.setString(1, id);
+			getProductValues.setInt(1, id);
 			ResultSet productValueData = getProductValues.executeQuery();
 
-			getProductTags.setString(1, id);
+			getProductTags.setInt(1, id);
 			ResultSet productTagData = getProductTags.executeQuery();
 
-			getProductImages.setString(1, id);
+			getProductImages.setInt(1, id);
 			ResultSet productImages = getProductImages.executeQuery();
 
 			Set<Product> result = buildProducts(productData, productCategoryData, productValueData, productTagData, productImages);
@@ -213,10 +213,8 @@ class DatabaseMediator implements PersistenceMediator {
 	public Set<Product> getProductsByTag(Tag tag) {
 		try { //TODO: Optimize!
 			Set<Product> products = getProducts();
-			Iterator<Product> it = products.iterator();
 
-			while (it.hasNext()) {
-				Product p = it.next();
+			for (Product p : products) {
 				if (!p.containsTag(tag)) {
 					products.remove(p);
 				}
@@ -267,20 +265,20 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @throws SQLException if something goes wrong
 	 */
 	private Set<Product> buildProducts(ResultSet productData, ResultSet productCategoryData, ResultSet productValueData, ResultSet productTags, ResultSet productImages) throws SQLException {
-		Map<String, Product> products = new HashMap<>();
+		Map<Integer, Product> products = new HashMap<>();
 
 		//Construct all products
 		while (productData.next()) {
-			String id = productData.getString(1).trim();
+			int id = productData.getInt(1);
 			String name = productData.getString(2).trim();
 			double price = productData.getDouble(3);
 
-			products.put(id, cache.createProduct(id, name , price));
+			products.put(id, cache.createProduct(id, name, price));
 		}
 
 		//Add all product categories
 		while (productCategoryData.next()) {
-			String productID = productCategoryData.getString(1).trim();
+			int productID = productCategoryData.getInt(1);
 			String categoryName = productCategoryData.getString(2).trim();
 
 			try {
@@ -292,8 +290,8 @@ class DatabaseMediator implements PersistenceMediator {
 
 		//Set all attribute values
 		while (productValueData.next()) {
-			String attributeID = productValueData.getString(1).trim();
-			String productID = productValueData.getString(2).trim();
+			int attributeID = productValueData.getInt(1);
+			int productID = productValueData.getInt(2);
 			Object value = bytesToObject(productValueData.getBytes(3));
 
 			try {
@@ -307,7 +305,7 @@ class DatabaseMediator implements PersistenceMediator {
 		while (productTags.next()) {
 			String name = productTags.getString(1).trim();
 			Tag t = cache.createTag(name);
-			Product p = products.get(productTags.getString(2).trim());
+			Product p = products.get(productTags.getInt(2));
 			p.addTag(t);
 		}
 
@@ -315,7 +313,7 @@ class DatabaseMediator implements PersistenceMediator {
 		while (productImages.next()) {
 			String url = productImages.getString(1).trim();
 			Image img = cache.createImage(url);
-			String productID = productImages.getString(2).trim();
+			int productID = productImages.getInt(2);
 			products.get(productID).addImage(img);
 		}
 
@@ -351,43 +349,43 @@ class DatabaseMediator implements PersistenceMediator {
 
 			for (Product product : products) {
 				//Store basic product data
-				storeProductData.setString(1, product.getID());
+				storeProductData.setInt(1, product.getID());
 				storeProductData.setString(2, product.getName());
 				storeProductData.setDouble(3, product.getPrice());
 				storeProductData.executeUpdate();
 
 				//Reset product categories. When removing all categories from a product its attribute values are
 				//automatically removed
-				removeProductCategories.setString(1, product.getID());
+				removeProductCategories.setInt(1, product.getID());
 				removeProductCategories.executeUpdate();
 
-				addProductCategory.setString(1, product.getID());
+				addProductCategory.setInt(1, product.getID());
 				for (Category category : product.getCategories()) {
 					addProductCategory.setString(2, category.getName());
 					addProductCategory.executeUpdate();
 				}
 
 				//Add product attribute values
-				addAttributeValue.setString(2, product.getID());
+				addAttributeValue.setInt(2, product.getID());
 				for (Attribute.AttributeValue value : product.getAttributeValues()) {
-					addAttributeValue.setString(1, value.getParent().getID());
+					addAttributeValue.setInt(1, value.getParent().getID());
 					addAttributeValue.setObject(3, objectToBytes(value.getValue()));
 					addAttributeValue.executeUpdate();
 				}
 
 				//Store product tags
-				removeProductTags.setString(1, product.getID());
+				removeProductTags.setInt(1, product.getID());
 				removeProductTags.executeUpdate();
-				saveProductTags.setString(2, product.getID());
+				saveProductTags.setInt(2, product.getID());
 				for (Tag tag : product.getTags()) {
 					saveProductTags.setString(1, tag.getName());
 					saveProductTags.executeUpdate();
 				}
 
 				//Store images
-				removeProductImages.setString(1, product.getID());
+				removeProductImages.setInt(1, product.getID());
 				removeProductImages.executeUpdate();
-				saveProductImages.setString(2, product.getID());
+				saveProductImages.setInt(2, product.getID());
 				for (Image image : product.getImages()) {
 					saveProductImages.setString(1, image.getUrl());
 					saveProductImages.executeUpdate();
@@ -404,10 +402,10 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @param id the id of the product
 	 */
 	@Override
-	public void deleteProduct(String id) {
+	public void deleteProduct(int id) {
 		try (PreparedStatement deleteProductData = connection.prepareStatement("DELETE FROM product WHERE id = ?")) {
 			//Delete product entry. The constraints in the database should ensure that the deletion is cascaded
-			deleteProductData.setString(1, id);
+			deleteProductData.setInt(1, id);
 			deleteProductData.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -582,7 +580,7 @@ class DatabaseMediator implements PersistenceMediator {
 		//Read all category attributes
 		while (categoryAttributeData.next()) {
 			String categoryName = categoryAttributeData.getString(1).trim();
-			String attributeID = categoryAttributeData.getString(2).trim();
+			int attributeID = categoryAttributeData.getInt(2);
 
 			Set<Attribute> set = categoryAttributes.getOrDefault(categoryName, new HashSet<>());
 			try {
@@ -632,9 +630,9 @@ class DatabaseMediator implements PersistenceMediator {
 				//Delete removed attributes
 				//Construct array of attribute ids for this category
 				Set<Attribute> attributes = category.getAttributes();
-				String[] attributeIDs =
-						attributes.stream().map(Attribute::getID).collect(Collectors.toList()).toArray(new String[0]);
-				Array attributeArray = connection.createArrayOf("CHAR", attributeIDs);
+				Integer[] attributeIDs =
+						attributes.stream().map(Attribute::getID).collect(Collectors.toList()).toArray(new Integer[0]);
+				Array attributeArray = connection.createArrayOf("INTEGER", attributeIDs);
 
 				deleteRemovedAttributes.setString(1, category.getName());
 				deleteRemovedAttributes.setArray(2, attributeArray);
@@ -646,7 +644,7 @@ class DatabaseMediator implements PersistenceMediator {
 				//Add new attributes
 				addNewAttributes.setString(1, category.getName());
 				for (Attribute attribute : attributes) {
-					addNewAttributes.setString(2, attribute.getID());
+					addNewAttributes.setInt(2, attribute.getID());
 					addNewAttributes.executeUpdate();
 				}
 			}
@@ -679,14 +677,14 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @throws IOException if something goes wrong
 	 */
 	@Override
-	public Attribute getAttributeByID(String id) throws IOException {
+	public Attribute getAttributeByID(int id) throws IOException {
 		//Attempt to read data from database. Throw exception if something goes wrong
 		try (PreparedStatement getAttribute = connection.prepareStatement("SELECT * FROM attribute WHERE id = ?");
 		     PreparedStatement getLegalValues = connection.prepareStatement("SELECT * FROM legalvalue WHERE attributeid = ?")) {
 
-			getAttribute.setString(1, id);
+			getAttribute.setInt(1, id);
 			ResultSet attributeData = getAttribute.executeQuery();
-			getLegalValues.setString(1, id);
+			getLegalValues.setInt(1, id);
 			ResultSet legalValueData = getLegalValues.executeQuery();
 			Set<Attribute> result = buildAttributes(attributeData, legalValueData);
 
@@ -731,12 +729,12 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @throws SQLException if something goes wrong
 	 */
 	private Set<Attribute> buildAttributes(ResultSet attributeData, ResultSet legalValueData) throws SQLException {
-		Map<String, Set<Object>> legalValues = new HashMap<>();
+		Map<Integer, Set<Object>> legalValues = new HashMap<>();
 		Set<Attribute> attributes = new HashSet<>();
 
 		//For every legal value, add it to the set of legal values for the correct attribute
 		while (legalValueData.next()) {
-			String id = legalValueData.getString(1).trim();
+			int id = legalValueData.getInt(1);
 			Object val = bytesToObject(legalValueData.getBytes(2));
 
 			Set<Object> set = legalValues.getOrDefault(id, new HashSet<>());
@@ -746,7 +744,7 @@ class DatabaseMediator implements PersistenceMediator {
 
 		//Construct all attributes and return result
 		while (attributeData.next()) {
-			String id = attributeData.getString(1).trim();
+			int id = attributeData.getInt(1);
 			String name = attributeData.getString(2).trim();
 			Object defaultValue = bytesToObject(attributeData.getBytes(3));
 
@@ -755,6 +753,39 @@ class DatabaseMediator implements PersistenceMediator {
 		}
 
 		return attributes;
+	}
+
+	@Override
+	public int createAttribute(String name, Object defaultValue, Set<Object> legalValues) throws IOException {
+		try (PreparedStatement storeAttributeData = connection.prepareStatement("INSERT INTO attribute VALUES (DEFAULT, ?, ?) RETURNING id;");
+		     PreparedStatement storeLegalValues = connection.prepareStatement("INSERT INTO legalvalue VALUES (? , ?)")) {
+
+			int id;
+
+			//Store basic attribute data
+			storeAttributeData.setString(1, name);
+			storeAttributeData.setObject(2, objectToBytes(defaultValue));
+			if (storeAttributeData.execute()) {
+				//Get id
+				ResultSet result = storeAttributeData.getResultSet();
+				result.next();
+				id = result.getInt(1);
+			} else {
+				//Nothing returned, so something must have gone wrong
+				throw new IOException("Could not create new attribute! No ID returned from database");
+			}
+
+			//Store legal values
+			storeLegalValues.setInt(1, id);
+			for (Object value: legalValues) {
+				storeLegalValues.setObject(2, objectToBytes(value));
+				storeLegalValues.executeUpdate();
+			}
+
+			return id;
+		} catch (SQLException e) {
+			throw new IOException("Could not create new attribute!", e);
+		}
 	}
 
 	/**
@@ -779,7 +810,7 @@ class DatabaseMediator implements PersistenceMediator {
 
 			for (Attribute attribute : attributes) {
 				//Store basic attribute data
-				storeAttributeData.setString(1, attribute.getID());
+				storeAttributeData.setInt(1, attribute.getID());
 				storeAttributeData.setString(2, attribute.getName());
 				storeAttributeData.setObject(3, objectToBytes(attribute.getDefaultValue()));
 				storeAttributeData.executeUpdate();
@@ -787,7 +818,7 @@ class DatabaseMediator implements PersistenceMediator {
 				//If the attribute already exists, the legal values should not be changed since they are immutable.
 				//Should the immutability be violated, however, the issue lies elsewhere - not here. Thus the
 				//possibility of adding new legal values has not been handled. Also, this would not break anything
-				storeLegalValues.setString(1, attribute.getID());
+				storeLegalValues.setInt(1, attribute.getID());
 				for (Object value : attribute.getLegalValues()) {
 					storeLegalValues.setObject(2, objectToBytes(value));
 					storeLegalValues.executeUpdate();
@@ -804,10 +835,10 @@ class DatabaseMediator implements PersistenceMediator {
 	 * @param id the id of the attribute
 	 */
 	@Override
-	public void deleteAttribute(String id) {
+	public void deleteAttribute(int id) {
 		try (PreparedStatement deleteAttributeData = connection.prepareStatement("DELETE FROM attribute WHERE id = ?")) {
 			//Delete attribute entry. The constraints in the database should ensure that the deletion is cascaded
-			deleteAttributeData.setString(1, id);
+			deleteAttributeData.setInt(1, id);
 			deleteAttributeData.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
