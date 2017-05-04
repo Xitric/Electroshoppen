@@ -89,7 +89,7 @@ public class PIMImpl implements PIM {
 				productManager.saveProduct(p);
 			} else {
 				//The product was new
-				Product p = new Product(data.getID(), data.getName(), data.getPrice());
+				Product p = productManager.createProduct(data.getID(), data.getName(), data.getPrice());
 
 				//Save new product in database
 				productManager.saveProduct(p);
