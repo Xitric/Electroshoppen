@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class ProductManager {
 
 	private final Map<Integer, Product> products;
+	private HashMap<String, Image> images;
 	private final PersistenceMediator persistence;
 
 	/**
@@ -27,6 +28,7 @@ public class ProductManager {
 	 */
 	public ProductManager(PersistenceMediator persistence) {
 		products = new HashMap<>();
+		images = new HashMap<>();
 		this.persistence = persistence;
 	}
 
@@ -123,5 +125,25 @@ public class ProductManager {
 	 */
 	public void saveProduct(Product product) {
 		persistence.saveProduct(product);
+	}
+
+	/**
+	 * Creates an image or returns the existing one with the same url if it already exists.
+	 *
+	 * @param url the url of the image
+	 * @return the created image object
+	 */
+	public Image createImage(String url) {
+		return images.computeIfAbsent(url, Image::new);
+	}
+
+	/**
+	 * Removes an image from the list of images.
+	 *
+	 * @param url the url of the image to remove
+	 */
+	public void removeImage(String url) {
+		//TODO: Delete in database if all references are gone
+		images.remove(url);
 	}
 }

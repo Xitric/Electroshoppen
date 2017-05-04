@@ -26,7 +26,6 @@ public class PIMImpl implements PIM {
 	private final AttributeManager attributeManager;
 	private final CategoryManager categoryManager;
 	private final TagManager tagManager;
-	private final ImageManager imageManager;
 
 	/**
 	 * Constructs a new PIM implementation.
@@ -37,8 +36,7 @@ public class PIMImpl implements PIM {
 		attributeManager = new AttributeManager(persistence);
 		categoryManager = new CategoryManager(persistence);
 		tagManager = new TagManager(persistence);
-		imageManager = new ImageManager(persistence);
-		persistence.setCache(new DataCacheImpl(productManager, attributeManager, categoryManager, tagManager, imageManager));
+		persistence.setCache(new DataCacheImpl(productManager, attributeManager, categoryManager, tagManager));
 	}
 
 	@Override
@@ -89,7 +87,7 @@ public class PIMImpl implements PIM {
 				productManager.saveProduct(p);
 			} else {
 				//The product was new
-				Product p = new Product(data.getID(), data.getName(), data.getPrice());
+				Product p = productManager.createProduct(data.getID(), data.getName(), data.getPrice());
 
 				//Save new product in database
 				productManager.saveProduct(p);
@@ -117,7 +115,7 @@ public class PIMImpl implements PIM {
 
 	@Override
 	public BufferedImage getMediaInformation(String url) {
-		return imageManager.createImage(url).getImage();
+		return productManager.createImage(url).getImage();
 	}
 
 	@Override

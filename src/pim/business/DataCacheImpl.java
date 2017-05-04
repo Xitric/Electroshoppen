@@ -17,7 +17,6 @@ public class DataCacheImpl implements DataCache {
 	private final AttributeManager attributeManager;
 	private final CategoryManager categoryManager;
 	private final TagManager tagManager;
-	private final ImageManager imageManager;
 
 	/**
 	 * Constructs a new data buffer.
@@ -26,14 +25,12 @@ public class DataCacheImpl implements DataCache {
 	 * @param attributeManager the attribute manager to delegate calls to
 	 * @param categoryManager  the category manager to delegate calls to
 	 * @param tagManager       the tag manager to delegate calls to
-	 * @param imageManager     the image manager to delegate calls to
 	 */
-	public DataCacheImpl(ProductManager productManager, AttributeManager attributeManager, CategoryManager categoryManager, TagManager tagManager, ImageManager imageManager) {
+	public DataCacheImpl(ProductManager productManager, AttributeManager attributeManager, CategoryManager categoryManager, TagManager tagManager) {
 		this.productManager = productManager;
 		this.attributeManager = attributeManager;
 		this.categoryManager = categoryManager;
 		this.tagManager = tagManager;
-		this.imageManager = imageManager;
 	}
 
 	@Override
@@ -68,6 +65,6 @@ public class DataCacheImpl implements DataCache {
 
 	@Override
 	public Image createImage(String url) {
-		return imageManager.createImage(url);
+		return productManager.createImage(url);
 	}
 }
