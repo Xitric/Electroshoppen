@@ -86,11 +86,11 @@ public class CategoryController implements Initializable {
 
     private void listViewCategorySelectionChanged(Observable observable) {
         Category selected = listViewCategory.getSelectionModel().getSelectedItem();
-        nameOutput.setText(selected.getName());
-
-        attributeAddList.setAll(pim.getAttributesFromCategory(selected.getName()));
-        attributeRemoveList.setAll(pim.getAttributesNotInTheCategory(selected.getName()));
-
+        if (selected != null) {
+            nameOutput.setText(selected.getName());
+            attributeAddList.setAll(pim.getAttributesFromCategory(selected.getName()));
+            attributeRemoveList.setAll(pim.getAttributesNotInTheCategory(selected.getName()));
+        }
     }
 
     private void listViewAddSelectionChanged(Observable observable) {
@@ -160,7 +160,7 @@ public class CategoryController implements Initializable {
         if (!tempData.isEmpty()) {
             for (Category c : tempData) {
                 pim.deleteCategory(c.getName());
-                System.out.println("Removed: " + c.getName());
+                System.out.println("Removed category: " + c.getName());
             }
         }
 //        List<Category> tempCategories = new ArrayList<>(categoryList);
