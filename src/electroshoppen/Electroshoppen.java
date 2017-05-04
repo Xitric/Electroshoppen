@@ -28,6 +28,7 @@ public class Electroshoppen extends Application {
 
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
+		stage.setTitle("Next Gen PIM");
 		stage.show();
 	}
 

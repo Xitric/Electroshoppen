@@ -262,6 +262,11 @@ public class Product implements CategoryChangeListener {
 	}
 
 	@Override
+	public String toString() {
+		return getName();
+	}
+
+	@Override
 	public void attributeAdded(Attribute attribute) {
 		//Ensure that the attribute is not already present
 		if (!getAllAttributes().contains(attribute)) {

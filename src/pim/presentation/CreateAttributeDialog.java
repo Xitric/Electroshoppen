@@ -31,7 +31,7 @@ public class CreateAttributeDialog implements Initializable {
 	/**
 	 * The data types that are supported by this dialogue window.
 	 */
-	private static final String[] dataTypes = {"String", "Character", "Integer", "Color"};
+	private static final String[] dataTypes = {"String", "Separated Strings", "Character", "Integer", "Floating Point", "Color"};
 
 	@FXML
 	private TextField nameField;
@@ -117,11 +117,17 @@ public class CreateAttributeDialog implements Initializable {
 			case "String":
 				vs = new StringValueSelector();
 				break;
+			case "Separated Strings":
+				vs = new SeparatedStringsValueSelector();
+				break;
 			case "Character":
 				vs = new CharValueSelector();
 				break;
 			case "Integer":
 				vs = new IntegerValueSelector();
+				break;
+			case "Floating Point":
+				vs = new DoubleValueSelector();
 				break;
 			case "Color":
 				vs = new ColorValueSelector();
@@ -190,7 +196,11 @@ public class CreateAttributeDialog implements Initializable {
 
 	@FXML
 	private void addLegalButtonOnAction(ActionEvent event) {
-		legalValues.addAll(Arrays.asList(currentSelector.getValues()));
+		//Do nothing if selected value is nonexistent
+		Object[] values = currentSelector.getValues();
+		if (values.length == 0) return;
+
+		legalValues.addAll(Arrays.asList(values));
 
 		//If the default value is null, set it
 		if (defaultValue == null) {
@@ -261,6 +271,43 @@ public class CreateAttributeDialog implements Initializable {
 
 			//Otherwise return single valued array
 			return new String[]{textField.getText()};
+		}
+	}
+
+	/**
+	 * Describes a value selector for a multiple strings separated by semicolons (;).
+	 */
+	private class SeparatedStringsValueSelector extends VBox implements ValueSelector<String> {
+
+		private TextField textField;
+
+		private SeparatedStringsValueSelector() {
+			super();
+
+			setSpacing(8);
+
+			HBox inputRow = new HBox(8);
+
+			//Add label
+			inputRow.getChildren().add(new Label("Value:"));
+
+			//Add text field
+			textField = new TextField();
+			HBox.setHgrow(textField, Priority.ALWAYS);
+			inputRow.getChildren().add(textField);
+			getChildren().add(inputRow);
+
+			//Help message
+			getChildren().add(new Label("Separate strings with semicolons ';'"));
+		}
+
+		@Override
+		public String[] getValues() {
+			//If nothing is written, return empty array
+			if (textField.getText().length() == 0) return new String[0];
+
+			//Otherwise return split string
+			return textField.getText().split(";");
 		}
 	}
 
@@ -369,6 +416,43 @@ public class CreateAttributeDialog implements Initializable {
 			} else {
 				//Max is specified, but minimum is not, so return empty array
 				return new Integer[0];
+			}
+		}
+	}
+
+	/**
+	 * Describes a value selector for a single double.
+	 */
+	private class DoubleValueSelector extends HBox implements ValueSelector<Double> {
+
+		private TextField textField;
+
+		private DoubleValueSelector() {
+			super();
+
+			setSpacing(8);
+
+			//Add label
+			getChildren().add(new Label("Value:"));
+
+			//Add text field
+			textField = new TextField();
+			HBox.setHgrow(textField, Priority.ALWAYS);
+			getChildren().add(textField);
+		}
+
+		@Override
+		public Double[] getValues() {
+			try {
+				//Try reading user input
+				double number = Double.parseDouble(textField.getText());
+				return new Double[]{number};
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+				//TODO: Notify user
+
+				//Illegal input, return empty array
+				return new Double[0];
 			}
 		}
 	}

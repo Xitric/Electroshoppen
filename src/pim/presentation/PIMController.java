@@ -58,11 +58,16 @@ public class PIMController implements Initializable {
 		this.pim = pim;
 		categoryTabPageController.setPIM(pim);
 		attributeTabPageController.setPIM(pim);
-		//		productTabPageController.setPIM(pim);
+		productTabPageController.setPIM(pim);
 	}
 
 	@FXML
 	private void onAttributeEnter(Event event) {
 		attributeTabPageController.onEnter();
+	}
+
+	@FXML
+	private void onProductEnter(Event event) {
+		productTabPageController.onEnter();
 	}
 }
