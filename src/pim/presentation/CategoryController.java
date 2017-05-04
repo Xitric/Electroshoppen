@@ -6,16 +6,16 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import pim.business.Attribute;
 import pim.business.Category;
 import pim.business.PIM;
+
+import javax.swing.*;
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * @author Kasper
@@ -43,7 +43,8 @@ public class CategoryController implements Initializable {
 
     private ObservableList<Category> categoryList;
     private ObservableList<Attribute> attributeAddList, attributeRemoveList;
-
+    //private List<Attribute> tempAdd;
+    //private List<Attribute> tempRemove;
     /**
      * The mediator for the business layer.
      */
@@ -86,6 +87,7 @@ public class CategoryController implements Initializable {
     private void listViewCategorySelectionChanged(Observable observable) {
         Category selected = listViewCategory.getSelectionModel().getSelectedItem();
         nameOutput.setText(selected.getName());
+
         attributeAddList.setAll(pim.getAttributesFromCategory(selected.getName()));
         attributeRemoveList.setAll(pim.getAttributesNotInTheCategory(selected.getName()));
 
@@ -94,34 +96,80 @@ public class CategoryController implements Initializable {
     private void listViewAddSelectionChanged(Observable observable) {
         Attribute selected = listViewAdd.getSelectionModel().getSelectedItem();
 
+
     }
     private void listViewRemoveSelectionChanged(Observable observable){
         Attribute selected = listViewAdd.getSelectionModel().getSelectedItem();
+
     }
 
     @FXML
     private void addCategory(ActionEvent event) {
-        Attribute selected;
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Add new category");
+
+        ButtonType saveButton = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.NO);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButton, cancelButton);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(10));
+        TextField cName = new TextField();
+        grid.add(new Label("Name: "), 0, 1);
+        grid.add(cName,1,1);
+
+        dialog.getDialogPane().setContent(grid);
+        dialog.showAndWait().ifPresent(result -> {
+            if (result == saveButton && !cName.getText().trim().equals("")) {
+                pim.addCategory(cName.getText());
+                setItemsInLw();
+            }
+        });
     }
 
     @FXML
     private void removeCategory(ActionEvent event) {
-
+        Category selected = listViewCategory.getSelectionModel().getSelectedItem();
+        categoryList.remove(selected);
     }
 
     @FXML
     private void addAttribute(ActionEvent event) {
-
-    }
+        Attribute selected = listViewAdd.getSelectionModel().getSelectedItem();
+      //  List tempAdd = new ArrayList(pim.getAttributesFromCategory(selected.getName()));
+        if(selected != null){
+        attributeAddList.add(selected);
+        attributeRemoveList.remove(selected);
+    }}
 
     @FXML
     private void removeAttribute(ActionEvent event) {
-
-    }
+        Attribute selected = listViewRemove.getSelectionModel().getSelectedItem();
+        if(selected != null){
+        attributeAddList.add(selected);
+        attributeRemoveList.remove(selected);
+    }}
 
     @FXML
     private void save(ActionEvent event) {
-
+        List<Category> tempData = new ArrayList<>(pim.getCategories());
+        tempData.removeAll(categoryList);
+        if (!tempData.isEmpty()) {
+            for (Category c : tempData) {
+                pim.deleteCategory(c.getName());
+                System.out.println("Removed: " + c.getName());
+            }
+        }
+//        List<Category> tempCategories = new ArrayList<>(categoryList);
+//        tempCategories.removeAll(pim.getCategories());
+//        if (!tempCategories.isEmpty()) {
+//            for (Category c : tempCategories) {
+//                pim.addCategory(c.getName());
+//                System.out.println("Added: " + c.getName());
+//            }
+//        }
     }
-
 }
