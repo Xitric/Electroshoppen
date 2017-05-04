@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import pim.business.Attribute;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -90,6 +91,22 @@ public class CreateAttributeDialog implements Initializable {
 		//Populate combo box for data types
 		dataTypeComboBox.setItems(FXCollections.observableArrayList(dataTypes));
 		dataTypeComboBox.getSelectionModel().select(0);
+	}
+
+	/**
+	 * Get the attribute created by this dialog, or null if no proper attribute has been specified.
+	 *
+	 * @return the resulting attribute
+	 */
+	public Attribute getAttribute() {
+		if (nameField.getText().isEmpty() || defaultValue == null) return null;
+		String name = nameField.getText();
+
+		if (restrictedCheckBox.isSelected()) {
+			return new Attribute(-1, name, defaultValue, legalValues);
+		} else {
+			return new Attribute(-1, name, defaultValue);
+		}
 	}
 
 	private void dataTypeChanged(Observable observable) {

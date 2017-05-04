@@ -2,6 +2,7 @@ package pim.business;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Interface describing the functionality that must be provided by all PIM implementations.
@@ -25,7 +26,7 @@ public interface PIM {
 	 * @param id the id of the product to retrieve
 	 * @return the product with the specified id, or null if no such product could be retrieved
 	 */
-	Product getProductInformation(String id);
+	Product getProductInformation(int id);
 
 	/**
 	 * To retrieve an image with the given url.
@@ -44,12 +45,22 @@ public interface PIM {
 	List<Product> getProducts(String categoryName);
 
 	/**
+	 * Register a new attribute in the pim.
+	 *
+	 * @param name         the name of the attribute
+	 * @param defaultValue the default value of the attribute
+	 * @param legalValues  the legal values of the attribute, or null if all values are allowed
+	 * @return the id of the new attribute
+	 */
+	int addAttribute(String name, Object defaultValue, Set<Object> legalValues);
+
+	/**
 	 * To remove an attribute from the PIM. When removing an attribute it will also be removed from all the products and
 	 * related categories.
 	 *
 	 * @param attributeID the attribute to remove
 	 */
-	void removeAttribute(String attributeID);
+	void removeAttribute(int attributeID);
 
 	/**
 	 * Get a list of all attributes from the PIM.
@@ -64,7 +75,7 @@ public interface PIM {
 	 * @param attributeID the id of the attribute
 	 * @return the given attribute, or null if no such attribute could be retrieved
 	 */
-	Attribute getAttribute(String attributeID);
+	Attribute getAttribute(int attributeID);
 
 	/**
 	 * To retrieve all currently loaded categories with the given attribute.
@@ -72,7 +83,7 @@ public interface PIM {
 	 * @param attributeID the id of the attribute
 	 * @return a list of categories with the attribute
 	 */
-	List<Category> getCategoriesWithAttribute(String attributeID);
+	List<Category> getCategoriesWithAttribute(int attributeID);
 
 	/**
 	 * Get a list of all categories from the PIM.
@@ -94,14 +105,14 @@ public interface PIM {
 	 *
 	 * @param categoryName name of the selected category
 	 */
-	List<Attribute> getAttributesNotInTheCategory (String categoryName);
+	List<Attribute> getAttributesNotInTheCategory(String categoryName);
 
 	/**
 	 * Remove an attribute from the selected category
 	 *
-	 * @param  categoryName name of the selected category
+	 * @param categoryName name of the selected category
 	 */
-	void deleteAttributeFromCategory (String categoryName);
+	void deleteAttributeFromCategory(String categoryName);
 
 	void deleteCategory (String categoryName);
 

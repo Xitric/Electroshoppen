@@ -73,13 +73,13 @@ public class PIMImpl implements PIM {
 		}
 
 		//We further add the data to a map, to speed up the lookup process further
-		Map<String, Product> existingProductsMap = new HashMap<>();
+		Map<Integer, Product> existingProductsMap = new HashMap<>();
 		for (Product p : existingProducts) {
 			existingProductsMap.put(p.getID(), p);
 		}
 
 		for (SupplierIntegrator.ProductData data : productData) {
-			if (existingProductsMap.containsKey(data.getName())) {
+			if (existingProductsMap.containsKey(data.getID())) {
 				//The product exists, update it
 				Product p = existingProductsMap.get(data.getID());
 				p.setName(data.getName());
@@ -104,7 +104,7 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public Product getProductInformation(String id) {
+	public Product getProductInformation(int id) {
 		try {
 			return productManager.getProduct(id);
 		} catch (IOException e) {
@@ -133,7 +133,20 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public void removeAttribute(String attributeID) {
+	public int addAttribute(String name, Object defaultValue, Set<Object> legalValues) {
+		try {
+			return attributeManager.registerAttribute(name, defaultValue, legalValues);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//TODO: Send exception all the way to the GUI to notify the user
+		//Something went wrong, return -1
+		return -1;
+	}
+
+	@Override
+	public void removeAttribute(int attributeID) {
 		Attribute attribute = attributeManager.getLoadedAttribute(attributeID);
 
 		//Remove attribute from all categories (and thus also products) in memory. If the attribute is null, then no
@@ -162,7 +175,7 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public Attribute getAttribute(String attributeID) {
+	public Attribute getAttribute(int attributeID) {
 		try {
 			return attributeManager.getAttribute(attributeID);
 		} catch (IOException e) {
@@ -174,7 +187,7 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public List<Category> getCategoriesWithAttribute(String attributeName) {
+	public List<Category> getCategoriesWithAttribute(int attributeID) {
 		return null;
 	}
 
@@ -207,27 +220,27 @@ public class PIMImpl implements PIM {
 
 	@Override
 	public List<Attribute> getAttributesNotInTheCategory(String categoryName) {
-		try{
-            Set<Attribute> attributes = persistence.getAttributes();
-            Set<Attribute> aOnCategory = persistence.getCategoryByName(categoryName).getAttributes();
-            attributes.removeAll(aOnCategory);
-		    return new ArrayList<> (attributes);
+		try {
+			Set<Attribute> attributes = persistence.getAttributes();
+			Set<Attribute> aOnCategory = persistence.getCategoryByName(categoryName).getAttributes();
+			attributes.removeAll(aOnCategory);
+			return new ArrayList<>(attributes);
 
-	} catch (IOException e){
-		e.printStackTrace();
-	}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
 	@Override
-	public void deleteAttributeFromCategory (String categoryName){
-//	    try{
-//
-//
-//        }catch (IOException e){
-//            e.printStackTrace();
-//        }
-    }
+	public void deleteAttributeFromCategory(String categoryName) {
+		//	    try{
+		//
+		//
+		//        }catch (IOException e){
+		//            e.printStackTrace();
+		//        }
+	}
 
 	@Override
 	public void deleteCategory(String categoryName) {

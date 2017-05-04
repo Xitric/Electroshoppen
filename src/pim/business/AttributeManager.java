@@ -15,7 +15,7 @@ import java.util.Set;
  */
 public class AttributeManager {
 
-	private final HashMap<String, Attribute> attributes;
+	private final HashMap<Integer, Attribute> attributes;
 	private final PersistenceMediator persistence;
 
 	/**
@@ -29,29 +29,29 @@ public class AttributeManager {
 	}
 
 	/**
-	 * Creates an attributes if one with the given id does not exist already.
-	 * Otherwise a reference to the existing attribute will be returned.
+	 * Creates an attributes if one with the given id does not exist already. Otherwise a reference to the existing
+	 * attribute will be returned.
 	 *
-	 * @param id           Id of the attribute.
-	 * @param name         Name of the attribute.
-	 * @param defaultValue Default value of the attribute.
-	 * @return Returns a reference to the created/existing attribute with the given id.
+	 * @param id           id of the attribute.
+	 * @param name         name of the attribute.
+	 * @param defaultValue default value of the attribute.
+	 * @return returns a reference to the created/existing attribute with the given id.
 	 */
-	public Attribute createAttribute(String id, String name, Object defaultValue) {
+	public Attribute createAttribute(int id, String name, Object defaultValue) {
 		return attributes.computeIfAbsent(id, i -> new Attribute(i, name, defaultValue));
 	}
 
 	/**
-	 * Creates an attributes if one with the given id does not exist already.
-	 * Otherwise a reference to the existing attribute will be returned.
+	 * Creates an attributes if one with the given id does not exist already. Otherwise a reference to the existing
+	 * attribute will be returned.
 	 *
-	 * @param id           Id of the attribute.
-	 * @param name         Name of the attribute.
-	 * @param defaultValue Default value of the attribute.
-	 * @param legalValues  Allowed values for the attribute.
-	 * @return Returns a reference to the created/existing attribute with the given id.
+	 * @param id           id of the attribute.
+	 * @param name         name of the attribute.
+	 * @param defaultValue default value of the attribute.
+	 * @param legalValues  allowed values for the attribute.
+	 * @return returns a reference to the created/existing attribute with the given id.
 	 */
-	public Attribute createAttribute(String id, String name, Object defaultValue, Set<Object> legalValues) {
+	public Attribute createAttribute(int id, String name, Object defaultValue, Set<Object> legalValues) {
 		return attributes.computeIfAbsent(id, i -> new Attribute(i, name, defaultValue, legalValues));
 	}
 
@@ -63,7 +63,7 @@ public class AttributeManager {
 	 * @return the attribute with the specified id, or null if no such attribute could be retrieved
 	 * @throws IOException if something goes wrong
 	 */
-	public Attribute getAttribute(String attributeID) throws IOException {
+	public Attribute getAttribute(int attributeID) throws IOException {
 		//Look in memory first
 		Attribute a = attributes.get(attributeID);
 
@@ -81,7 +81,7 @@ public class AttributeManager {
 	 * @param attributeID the id of the attribute
 	 * @return the attribute with the specified id, or null if no such attribute could be retrieved from memory
 	 */
-	public Attribute getLoadedAttribute(String attributeID) {
+	public Attribute getLoadedAttribute(int attributeID) {
 		return attributes.get(attributeID);
 	}
 
@@ -96,6 +96,19 @@ public class AttributeManager {
 	}
 
 	/**
+	 * Register a new attribute.
+	 *
+	 * @param name         the name of the attribute
+	 * @param defaultValue the default value of the attribute
+	 * @param legalValues  the legal values of the attribute, or null if all values are allowed
+	 * @return the id of the new attribute
+	 * @throws IOException if something goes wrong
+	 */
+	public int registerAttribute(String name, Object defaultValue, Set<Object> legalValues) throws IOException {
+		return persistence.createAttribute(name, defaultValue, legalValues);
+	}
+
+	/**
 	 * Save the information about the specified attribute in the database.
 	 *
 	 * @param attribute the attribute to save
@@ -105,11 +118,11 @@ public class AttributeManager {
 	}
 
 	/**
-	 * Delete the specified atribute in the database.
+	 * Delete the specified attribute in the database.
 	 *
 	 * @param attributeID the id of the attribute
 	 */
-	public void deleteAttribute(String attributeID) {
+	public void deleteAttribute(int attributeID) {
 		attributes.remove(attributeID);
 		persistence.deleteAttribute(attributeID);
 	}

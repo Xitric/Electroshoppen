@@ -20,7 +20,7 @@ public interface PersistenceMediator {
 	 * @return the product with the specified id, or null if no such product exists
 	 * @throws IOException if something goes wrong
 	 */
-	Product getProductByID(String id) throws IOException;
+	Product getProductByID(int id) throws IOException;
 
 	/**
 	 * Get a set of all products with the specified name
@@ -76,7 +76,7 @@ public interface PersistenceMediator {
 	 *
 	 * @param id the id of the product
 	 */
-	void deleteProduct(String id);
+	void deleteProduct(int id);
 
 	/**
 	 * Get a set of all tags.
@@ -154,7 +154,7 @@ public interface PersistenceMediator {
 	 * @return the attribute with the specified id, or null if no such attribute exists
 	 * @throws IOException if something goes wrong
 	 */
-	Attribute getAttributeByID(String id) throws IOException;
+	Attribute getAttributeByID(int id) throws IOException;
 
 	/**
 	 * Get a set of all attributes.
@@ -163,6 +163,17 @@ public interface PersistenceMediator {
 	 * @throws IOException if something goes wrong
 	 */
 	Set<Attribute> getAttributes() throws IOException;
+
+	/**
+	 * Create a new attribute in the database and get the id by which it was stored.
+	 *
+	 * @param name         the name of the attribute
+	 * @param defaultValue the default value of the attribute
+	 * @param legalValues  the legal values of the attribute, or null if all values are allowed
+	 * @return the id of the new attribute
+	 * @throws IOException if something goes wrong
+	 */
+	int createAttribute(String name, Object defaultValue, Set<Object> legalValues) throws IOException;
 
 	/**
 	 * Save the specified attribute. This will overwrite any existing data.
@@ -183,7 +194,7 @@ public interface PersistenceMediator {
 	 *
 	 * @param id the id of the attribute
 	 */
-	void deleteAttribute(String id);
+	void deleteAttribute(int id);
 
 	/**
 	 * Set the cache used by the persistence layer. This will delete all data in the current cache.

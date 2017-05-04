@@ -54,7 +54,7 @@ public class SupplierIntegrator {
 				//Read the information from the line using a new scanner with ':' as its delimiter
 				Scanner lineReader = new Scanner(line);
 				lineReader.useDelimiter(":");
-				String id = lineReader.next();
+				int id = lineReader.nextInt();
 				String name = lineReader.next();
 				double price = lineReader.nextDouble();
 
@@ -79,7 +79,7 @@ public class SupplierIntegrator {
 	 */
 	public static class ProductData {
 
-		private final String id;
+		private final int id;
 		private final String name;
 		private final double price;
 
@@ -90,7 +90,7 @@ public class SupplierIntegrator {
 		 * @param name  the name of the product
 		 * @param price the price of the product
 		 */
-		private ProductData(String id, String name, double price) {
+		private ProductData(int id, String name, double price) {
 			this.id = id;
 			this.name = name;
 			this.price = price;
@@ -101,7 +101,7 @@ public class SupplierIntegrator {
 		 *
 		 * @return the id of the product represented by this data
 		 */
-		public String getID() {
+		public int getID() {
 			return id;
 		}
 
