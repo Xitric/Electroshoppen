@@ -34,7 +34,13 @@ public interface PIM {
 	 * @param url the url of the image
 	 * @return the image with the specified url
 	 */
-	BufferedImage getMediaInformation(String url);
+	BufferedImage getImage(String url);
+
+	/**
+	 * Remove image with the given url
+	 * @param url the url of the image
+	 */
+	void removeImage(String url);
 
 	/**
 	 * To retrieve products from a specific category
@@ -52,7 +58,7 @@ public interface PIM {
 	List<Product> getProducts();
 
 	/**
-	 * Register a new attribute in the pim.
+	 * Creates and registers a new attribute in the pim.
 	 *
 	 * @param name         the name of the attribute
 	 * @param defaultValue the default value of the attribute
