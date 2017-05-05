@@ -52,7 +52,7 @@ public interface PIM {
 	List<Product> getProducts();
 
 	/**
-	 * Register a new attribute in the pim.
+	 * Creates and registers a new attribute in the pim.
 	 *
 	 * @param name         the name of the attribute
 	 * @param defaultValue the default value of the attribute
