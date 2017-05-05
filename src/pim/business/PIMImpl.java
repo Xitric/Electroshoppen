@@ -257,4 +257,14 @@ public class PIMImpl implements PIM {
 		//        }
 	}
 
+	@Override
+	public void addCategory(String categoryName) {
+		//TODO:implement
+	}
+
+	@Override
+	public void removeCategory(String categoryName) {
+		//TODO:implement
+	}
+
 }

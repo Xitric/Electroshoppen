@@ -133,4 +133,9 @@ public interface PIM {
 	void deleteAttributeFromCategory(String categoryName);
 
 
+	void addCategory(String categoryName);
+
+	void removeCategory(String categoryName);
+
+
 }
