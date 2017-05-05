@@ -45,6 +45,13 @@ public interface PIM {
 	List<Product> getProducts(String categoryName);
 
 	/**
+	 * Get a list of all products in the PIM.
+	 *
+	 * @return a list of all products
+	 */
+	List<Product> getProducts();
+
+	/**
 	 * Register a new attribute in the pim.
 	 *
 	 * @param name         the name of the attribute

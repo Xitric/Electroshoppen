@@ -19,7 +19,7 @@
          <content>
             <VBox spacing="8.0">
                <children>
-                  <TreeView fx:id="productTreeView" editable="true" prefHeight="698.0" prefWidth="200.0" />
+                  <TreeView fx:id="productTreeView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
          </content>
@@ -33,7 +33,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="4.0">
                      <children>
                         <Label text="ID:" />
-                        <Label text="noID" />
+                        <Label fx:id="idLabel" text="noID" />
                      </children>
                      <padding>
                         <Insets bottom="8.0" top="8.0" />
@@ -45,21 +45,43 @@
                   <HBox alignment="CENTER_LEFT" spacing="4.0">
                      <children>
                         <Label text="Name:" />
-                        <Label text="noname" />
+                        <Label fx:id="nameLabel" text="noname" />
                      </children>
                      <padding>
                         <Insets bottom="8.0" top="8.0" />
                      </padding>
                      <VBox.margin>
-                        <Insets bottom="16.0" />
+                        <Insets />
                      </VBox.margin>
                   </HBox>
+                  <HBox spacing="4.0">
+                     <children>
+                        <Label text="Price:" />
+                        <Label fx:id="priceLabel" text="0$" />
+                     </children>
+                     <padding>
+                        <Insets bottom="8.0" top="8.0" />
+                     </padding>
+                  </HBox>
+                  <HBox>
+                     <children>
+                        <Label text="Description" />
+                     </children>
+                     <padding>
+                        <Insets top="8.0" />
+                     </padding>
+                  </HBox>
+                  <TextArea fx:id="descriptionTextArea" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets bottom="16.0" />
+                     </VBox.margin>
+                  </TextArea>
                   <TitledPane maxHeight="1.7976931348623157E308" text="Categories" VBox.vgrow="ALWAYS">
                      <padding>
                         <Insets bottom="8.0" />
                      </padding>
                      <content>
-                        <TextArea minHeight="100.0" wrapText="true" />
+                        <TextArea prefHeight="200.0" prefWidth="200.0" />
                      </content>
                   </TitledPane>
                   <TitledPane maxHeight="1.7976931348623157E308" text="Attributes" VBox.vgrow="ALWAYS">
@@ -79,7 +101,7 @@
                         <Insets bottom="8.0" />
                      </padding>
                      <content>
-                        <TextArea minHeight="100.0" wrapText="true" />
+                        <TextArea fx:id="tagTextArea" minHeight="100.0" wrapText="true" />
                      </content>
                   </TitledPane>
                   <TitledPane maxHeight="1.7976931348623157E308" text="Images" VBox.vgrow="ALWAYS">
@@ -92,14 +114,14 @@
                               <FlowPane fx:id="productImagePane" hgap="16.0" vgap="16.0" VBox.vgrow="ALWAYS" />
                               <HBox spacing="8.0">
                                  <children>
-                                    <TextField HBox.hgrow="ALWAYS" />
-                                    <Button mnemonicParsing="false" text="Browse" />
+                                    <TextField fx:id="browseTextField" HBox.hgrow="ALWAYS" />
+                                    <Button mnemonicParsing="false" onAction="#browseButtonOnAction" text="Browse" />
                                  </children>
                               </HBox>
                               <HBox alignment="BOTTOM_RIGHT" spacing="8.0">
                                  <children>
-                                    <Button mnemonicParsing="false" text="Upload Image" />
-                                    <Button mnemonicParsing="false" text="Cancel" />
+                                    <Button mnemonicParsing="false" onAction="#uploadButtonOnAction" text="Upload Image" />
+                                    <Button mnemonicParsing="false" onAction="#cancelButtonOnAction" text="Cancel" />
                                  </children>
                               </HBox>
                            </children>
@@ -109,7 +131,7 @@
                         </VBox>
                      </content>
                   </TitledPane>
-                  <Button mnemonicParsing="false" text="Save" />
+                  <Button mnemonicParsing="false" onAction="#saveButtonOnAction" styleClass="raised" text="Save" />
                </children>
                <padding>
                   <Insets bottom="8.0" left="8.0" right="8.0" />

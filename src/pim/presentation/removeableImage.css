@@ -2,6 +2,7 @@
  * Author: Kasper
  */
 .RemoveableImage {
+    -fx-background-color: white;
     -fx-border-color: #2196f3;
     -fx-border-style: solid;
     -fx-border-width: 1;

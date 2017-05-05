@@ -137,7 +137,7 @@ public class Attribute implements Comparable<Attribute> {
 
 	@Override
 	public int compareTo(Attribute o) {
-		return Integer.compare(getID(), o.getID());
+		return Integer.compare(this.getID(), o.getID());
 	}
 
 	/**

@@ -64,7 +64,7 @@
                   <Insets bottom="8.0" />
                </padding>
             </TitledPane>
-            <Button fx:id="btnSave" mnemonicParsing="false" onAction="#save" text="Save" />
+            <Button fx:id="btnSave" mnemonicParsing="false" onAction="#save" styleClass="raised" text="Save" />
          </children>
          <padding>
             <Insets bottom="8.0" left="8.0" right="8.0" />

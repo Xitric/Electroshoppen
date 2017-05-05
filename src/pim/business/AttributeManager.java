@@ -4,6 +4,7 @@ import pim.persistence.PersistenceMediator;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -105,7 +106,7 @@ public class AttributeManager {
 	 * @throws IOException if something goes wrong
 	 */
 	public int registerAttribute(String name, Object defaultValue, Set<Object> legalValues) throws IOException {
-		return persistence.createAttribute(name, defaultValue, legalValues);
+		return persistence.createAttribute(name, defaultValue, legalValues == null ? new HashSet<>() : legalValues);
 	}
 
 	/**

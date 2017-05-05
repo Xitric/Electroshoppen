@@ -79,7 +79,7 @@ public class AttributeController implements Initializable {
 	public void onEnter() {
 		List<Attribute> attributes = pim.getAttributes();
 		Collections.sort(attributes);
-		attributeList.setAll(pim.getAttributes());
+		attributeList.setAll(attributes);
 	}
 
 	@FXML

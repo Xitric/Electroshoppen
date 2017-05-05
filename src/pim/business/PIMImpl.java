@@ -131,6 +131,18 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
+	public List<Product> getProducts() {
+		try {
+			return new ArrayList<>(productManager.getProducts());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//Something went wrong, return null
+		return null;
+	}
+
+	@Override
 	public int addAttribute(String name, Object defaultValue, Set<Object> legalValues) {
 		try {
 			return attributeManager.registerAttribute(name, defaultValue, legalValues);

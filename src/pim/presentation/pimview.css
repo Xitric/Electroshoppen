@@ -12,7 +12,7 @@
 
 /* ----- General ----- */
 .label {
-    -fx-font-size: 14;
+    -fx-font-size: 16;
     -fx-text-fill: black;
 }
 
@@ -113,7 +113,7 @@
 
 .text-field {
     -fx-text-overrun: ellipsis;
-    -fx-padding: 8 0 8 0;
+    -fx-padding: 8 0 2 0;
     -fx-border-insets: 0 0 8 0;
 }
 
@@ -264,4 +264,42 @@
     -fx-background-color: transparent;
     -fx-border-color: #e0e0e0;
     -fx-border-width: 0.5;
+}
+
+/* ----- Titled Pane ----- */
+.titled-pane {
+    -fx-text-fill: white;
+    -fx-font-size: 16;
+}
+
+.titled-pane > .title {
+    -fx-background-color: #12679c;
+    -fx-background-radius: 0;
+}
+
+.titled-pane:focused > .title {
+    -fx-color: white;
+}
+
+.titled-pane > .title > .arrow-button {
+    -fx-background-color: null;
+}
+
+.titled-pane > .title > .arrow-button .arrow {
+    -fx-background-color: white;
+    -fx-focus-color: transparent;
+    -fx-shape: "m 80.697913,117.08333 5.29167,5.29167 5.29167,-5.29167 1.32291,1.32292 -6.61458,6.61458 -6.61458,-6.61458 z";
+}
+
+.titled-pane > *.content {
+    -fx-background-color: white;
+}
+
+.titled-pane:focused > .title > .arrow-button .arrow {
+    -fx-background-color: white;
+}
+
+/* ----- List view ----- */
+.list-view {
+    -fx-font-size: 12;
 }
