@@ -34,7 +34,13 @@ public interface PIM {
 	 * @param url the url of the image
 	 * @return the image with the specified url
 	 */
-	BufferedImage getMediaInformation(String url);
+	BufferedImage getImage(String url);
+
+	/**
+	 * Remove image with the given url
+	 * @param url the url of the image
+	 */
+	void removeImage(String url);
 
 	/**
 	 * To retrieve products from a specific category

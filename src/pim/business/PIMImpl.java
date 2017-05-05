@@ -114,8 +114,13 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public BufferedImage getMediaInformation(String url) {
+	public BufferedImage getImage(String url) {
 		return productManager.createImage(url).getImage();
+	}
+
+	@Override
+	public void removeImage(String url) {
+		productManager.removeImage(url);
 	}
 
 	@Override
