@@ -15,6 +15,7 @@ import pim.business.Product;
 import pim.business.Tag;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
@@ -80,39 +81,45 @@ public class ProductController implements Initializable {
 	 * Call this when the view for this controller is entered in the GUI.
 	 */
 	public void onEnter() {
-		List<Product> allProducts = pim.getProducts();
-		List<Category> allCategories = pim.getCategories();
+		//TODO:
+		try {
+			List<Product> allProducts = pim.getProducts();
+			List<Category> allCategories = pim.getCategories();
 
-		TreeItem<Object> treeRoot = new TreeItem<>("All categories");
-		treeRoot.setExpanded(true);
+			TreeItem<Object> treeRoot = new TreeItem<>("All categories");
+			treeRoot.setExpanded(true);
 
-		//TODO: Super inefficient!
-		//Add categories and products to tree view
-		TreeItem<Object> uncategorised = new TreeItem<>("Uncategorised", new ImageView(redPackageImage));
-		for (Product p : allProducts) {
-			if (p.getCategories().isEmpty()) {
-
-				//Only make uncategorised category if some products belong to it
-				if (treeRoot.getChildren().isEmpty()) {
-					treeRoot.getChildren().add(uncategorised);
-				}
-
-				uncategorised.getChildren().add(new TreeItem<>(p));
-			}
-		}
-
-		for (Category c : allCategories) {
-			TreeItem<Object> category = new TreeItem<>(c, new ImageView(packageImage));
-			treeRoot.getChildren().add(category);
-
+			//TODO: Super inefficient!
+			//Add categories and products to tree view
+			TreeItem<Object> uncategorised = new TreeItem<>("Uncategorised", new ImageView(redPackageImage));
 			for (Product p : allProducts) {
-				if (p.hasCategory(c)) {
-					category.getChildren().add(new TreeItem<>(p));
+				if (p.getCategories().isEmpty()) {
+
+					//Only make uncategorised category if some products belong to it
+					if (treeRoot.getChildren().isEmpty()) {
+						treeRoot.getChildren().add(uncategorised);
+					}
+
+					uncategorised.getChildren().add(new TreeItem<>(p));
 				}
 			}
-		}
 
-		productTreeView.setRoot(treeRoot);
+			for (Category c : allCategories) {
+				TreeItem<Object> category = new TreeItem<>(c, new ImageView(packageImage));
+				treeRoot.getChildren().add(category);
+
+				for (Product p : allProducts) {
+					if (p.hasCategory(c)) {
+						category.getChildren().add(new TreeItem<>(p));
+					}
+				}
+			}
+
+			productTreeView.setRoot(treeRoot);
+			productTreeView.setShowRoot(false);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void removeImage(RemoveableImage img) {

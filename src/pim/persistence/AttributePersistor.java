@@ -94,13 +94,17 @@ class AttributePersistor {
 				} else {
 					storeAttributeDataNew.setString(1, attribute.getName());
 					storeAttributeDataNew.setObject(2, DatabaseFacade.objectToBytes(attribute.getDefaultValue()));
-					storeAttributeDataNew.executeUpdate();
-
-					//Get generated id
-					ResultSet result = storeAttributeDataNew.getResultSet();
-					result.next();
-					int id = result.getInt(1);
-					attribute.setID(id); //Subsequent calls to attribute.getID() are now safe for use
+					if (storeAttributeDataNew.execute()) {
+						//Get generated id
+						ResultSet result = storeAttributeDataNew.getResultSet();
+						result.next();
+						int id = result.getInt(1);
+						attribute.setID(id); //Subsequent calls to attribute.getID() are now safe for use
+					} else {
+						//Nothing returned, so something must have gone wrong
+						connection.rollback();
+						throw new IOException("Unable to save attribute! No ID returned from database");
+					}
 				}
 
 				//If the attribute already exists, the legal values should not be changed since they are immutable.

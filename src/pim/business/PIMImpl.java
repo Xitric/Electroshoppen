@@ -76,6 +76,9 @@ public class PIMImpl implements PIM {
 			existingProductsMap.put(p.getID(), p);
 		}
 
+		//Keep track of products to save
+		Set<Product> productsToSave = new HashSet<>();
+
 		for (SupplierIntegrator.ProductData data : productData) {
 			if (existingProductsMap.containsKey(data.getID())) {
 				//The product exists, update it
@@ -83,15 +86,23 @@ public class PIMImpl implements PIM {
 				p.setName(data.getName());
 				p.setPrice(data.getPrice());
 
-				//Save changes to database
-				productManager.saveProduct(p);
+				//Schedule for saving
+				productsToSave.add(p);
 			} else {
 				//The product was new
 				Product p = productManager.createProduct(data.getID(), data.getName(), data.getPrice());
 
-				//Save new product in database
-				productManager.saveProduct(p);
+				//Schedule for saving
+				productsToSave.add(p);
 			}
+		}
+
+		//Save products in database
+		try {
+			productManager.saveProducts(productsToSave);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false; //Synchronization failed, might only be partial
 		}
 
 		//Close connection
@@ -102,66 +113,32 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public Product getProductInformation(int id) {
-		try {
-			return productManager.getProduct(id);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		//Something went wrong, return null
-		return null;
+	public Product getProductInformation(int id) throws IOException {
+		return productManager.getProduct(id);
 	}
 
 	@Override
-	public BufferedImage getImage(String url) {
+	public BufferedImage getImage(String url) throws IOException {
 		return productManager.createImage(url).getImage();
 	}
 
 	@Override
-	public void removeImage(String url) {
+	public void removeImage(String url) throws IOException {
 		productManager.removeImage(url);
 	}
 
 	@Override
-	public List<Product> getProducts(String categoryName) {
-		try {
-			return new ArrayList<>(productManager.getProductsByCategory(categoryName));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		//Something went wrong, return null
-		return null;
+	public List<Product> getProducts(String categoryName) throws IOException {
+		return new ArrayList<>(productManager.getProductsByCategory(categoryName));
 	}
 
 	@Override
-	public List<Product> getProducts() {
-		try {
-			return new ArrayList<>(productManager.getProducts());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		//Something went wrong, return null
-		return null;
+	public List<Product> getProducts() throws IOException {
+		return new ArrayList<>(productManager.getProducts());
 	}
 
 	@Override
-	public int addAttribute(String name, Object defaultValue, Set<Object> legalValues) {
-		try {
-			return attributeManager.registerAttribute(name, defaultValue, legalValues);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		//TODO: Send exception all the way to the GUI to notify the user
-		//Something went wrong, return -1
-		return -1;
-	}
-
-	@Override
-	public void removeAttribute(int attributeID) {
+	public void removeAttribute(int attributeID) throws IOException {
 		Attribute attribute = attributeManager.getLoadedAttribute(attributeID);
 
 		//Remove attribute from all categories (and thus also products) in memory. If the attribute is null, then no
@@ -178,72 +155,45 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public List<Attribute> getAttributes() {
-		try {
-			return new ArrayList<>(attributeManager.getAttributes());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void saveAttribute(Attribute attribute) throws IOException {
+		attributeManager.saveAttribute(attribute);
+	}
 
-		//Something went wrong, return null
+	@Override
+	public List<Attribute> getAttributes() throws IOException {
+		return new ArrayList<>(attributeManager.getAttributes());
+	}
+
+	@Override
+	public Attribute getAttribute(int attributeID) throws IOException {
+		return attributeManager.getAttribute(attributeID);
+	}
+
+	@Override
+	public List<Category> getCategoriesWithAttribute(int attributeID) throws IOException {
 		return null;
 	}
 
 	@Override
-	public Attribute getAttribute(int attributeID) {
-		try {
-			return attributeManager.getAttribute(attributeID);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		//Something went wrong, return null
-		return null;
+	public List<Category> getCategories() throws IOException {
+		return new ArrayList<>(categoryManager.getCategories());
 	}
 
 	@Override
-	public List<Category> getCategoriesWithAttribute(int attributeID) {
-		return null;
+	public List<Attribute> getAttributesFromCategory(String categoryName) throws IOException {
+		return new ArrayList<>(persistence.getCategoryByName(categoryName).getAttributes());
 	}
 
 	@Override
-	public List<Category> getCategories() {
-		try {
-			return new ArrayList<>(categoryManager.getCategories());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		//Something went wrong, return null
-		return null;
+	public List<Attribute> getAttributesNotInTheCategory(String categoryName) throws IOException {
+		Set<Attribute> attributes = persistence.getAttributes();
+		Set<Attribute> aOnCategory = persistence.getCategoryByName(categoryName).getAttributes();
+		attributes.removeAll(aOnCategory);
+		return new ArrayList<>(attributes);
 	}
 
 	@Override
-	public List<Attribute> getAttributesFromCategory(String categoryName) {
-		try {
-			return new ArrayList<>(persistence.getCategoryByName(categoryName).getAttributes());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	@Override
-	public List<Attribute> getAttributesNotInTheCategory(String categoryName) {
-		try {
-			Set<Attribute> attributes = persistence.getAttributes();
-			Set<Attribute> aOnCategory = persistence.getCategoryByName(categoryName).getAttributes();
-			attributes.removeAll(aOnCategory);
-			return new ArrayList<>(attributes);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	@Override
-	public void deleteAttributeFromCategory(String categoryName) {
+	public void deleteAttributeFromCategory(String categoryName) throws IOException {
 		//	    try{
 		//
 		//

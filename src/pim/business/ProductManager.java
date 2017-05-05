@@ -3,10 +3,7 @@ package pim.business;
 import pim.persistence.PersistenceFacade;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -126,6 +123,21 @@ public class ProductManager {
 	 */
 	public void saveProduct(Product product) throws IOException {
 		persistence.saveProduct(product);
+		products.put(product.getID(), product);
+	}
+
+	/**
+	 * Save the information about all the specified products in the database.
+	 *
+	 * @param productCollection the products to save
+	 * @throws IOException if something goes wrong
+	 */
+	public void saveProducts(Collection<Product> productCollection) throws IOException {
+		persistence.saveProducts(productCollection);
+
+		for (Product product: productCollection) {
+			products.put(product.getID(), product);
+		}
 	}
 
 	/**

@@ -31,6 +31,17 @@ public class Attribute implements Comparable<Attribute> {
 	private Object defaultValue;
 
 	/**
+	 * Constructs a new attribute with the specified name and with a missing id. The id is generated when the attribute
+	 * is saved to the database for the first time.
+	 *
+	 * @param name         the name of the attribute
+	 * @param defaultValue the default value of the attribute
+	 */
+	public Attribute(String name, Object defaultValue) {
+		this(-1, name, defaultValue);
+	}
+
+	/**
 	 * Constructs a new attribute with the specified id and name.
 	 *
 	 * @param id           the id of the attribute

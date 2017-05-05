@@ -194,13 +194,17 @@ class ProductPersistor {
 				} else {
 					storeProductDataNew.setString(1, product.getName());
 					storeProductDataNew.setDouble(2, product.getPrice());
-					storeProductDataNew.executeUpdate();
-
-					//Get generated id
-					ResultSet result = storeProductDataNew.getResultSet();
-					result.next();
-					int id = result.getInt(1);
-					product.setID(id); //Subsequent calls to product.getID() are now safe for use
+					if (storeProductData.execute()) {
+						//Get generated id
+						ResultSet result = storeProductDataNew.getResultSet();
+						result.next();
+						int id = result.getInt(1);
+						product.setID(id); //Subsequent calls to product.getID() are now safe for use
+					} else {
+						//Nothing returned, so something must have gone wrong
+						connection.rollback();
+						throw new IOException("Unable to save product! No ID returned from database");
+					}
 				}
 
 				//Reset product categories. When removing all categories from a product its attribute values are
