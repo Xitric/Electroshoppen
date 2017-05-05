@@ -37,6 +37,12 @@ public interface PIM {
 	BufferedImage getImage(String url);
 
 	/**
+	 * Add image with the given ulr
+	 * @param url the url of the image
+	 */
+	void addImage(String url);
+
+	/**
 	 * Remove image with the given url
 	 * @param url the url of the image
 	 */
