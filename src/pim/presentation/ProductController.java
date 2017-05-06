@@ -160,10 +160,10 @@ public class ProductController implements Initializable {
 	}
 
 	private void treeViewSelectionChanged(Observable observable) {
-		Object selection = productTreeView.getSelectionModel().getSelectedItem().getValue();
+		TreeItem selection = productTreeView.getSelectionModel().getSelectedItem();
 
-		if (selection instanceof Product) { //If the selection is a product, set the fields
-			Product product = (Product) selection;
+		if (selection != null && selection.getValue() instanceof Product) { //If the selection is a product, set the fields
+			Product product = (Product) selection.getValue();
 
 			//Set basic information
 			idLabel.setText(String.valueOf(product.getID()));

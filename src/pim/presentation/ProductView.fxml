@@ -26,9 +26,9 @@
       </TitledPane>
    </left>
    <center>
-      <ScrollPane fitToHeight="true" fitToWidth="true" BorderPane.alignment="CENTER">
+      <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
          <content>
-            <VBox alignment="BOTTOM_RIGHT">
+            <VBox alignment="BOTTOM_RIGHT" maxHeight="1.7976931348623157E308">
                <children>
                   <HBox alignment="CENTER_LEFT" spacing="4.0">
                      <children>
@@ -71,12 +71,12 @@
                         <Insets top="8.0" />
                      </padding>
                   </HBox>
-                  <TextArea fx:id="descriptionTextArea" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                  <TextArea fx:id="descriptionTextArea" minHeight="-Infinity" VBox.vgrow="ALWAYS">
                      <VBox.margin>
                         <Insets bottom="16.0" />
                      </VBox.margin>
                   </TextArea>
-                  <TitledPane maxHeight="1.7976931348623157E308" text="Categories" VBox.vgrow="ALWAYS">
+                  <TitledPane maxHeight="1.7976931348623157E308" minHeight="-Infinity" text="Categories" VBox.vgrow="ALWAYS">
                      <padding>
                         <Insets bottom="8.0" />
                      </padding>
@@ -84,7 +84,7 @@
                         <TextArea prefHeight="200.0" prefWidth="200.0" />
                      </content>
                   </TitledPane>
-                  <TitledPane maxHeight="1.7976931348623157E308" text="Attributes" VBox.vgrow="ALWAYS">
+                  <TitledPane maxHeight="1.7976931348623157E308" minHeight="-Infinity" text="Attributes" VBox.vgrow="ALWAYS">
                      <padding>
                         <Insets bottom="8.0" />
                      </padding>
@@ -96,7 +96,7 @@
                         </VBox>
                      </content>
                   </TitledPane>
-                  <TitledPane maxHeight="1.7976931348623157E308" text="Tags (comma separated)" VBox.vgrow="ALWAYS">
+                  <TitledPane maxHeight="1.7976931348623157E308" minHeight="-Infinity" text="Tags (comma separated)" VBox.vgrow="ALWAYS">
                      <padding>
                         <Insets bottom="8.0" />
                      </padding>
@@ -104,7 +104,7 @@
                         <TextArea fx:id="tagTextArea" minHeight="100.0" wrapText="true" />
                      </content>
                   </TitledPane>
-                  <TitledPane maxHeight="1.7976931348623157E308" text="Images" VBox.vgrow="ALWAYS">
+                  <TitledPane maxHeight="1.7976931348623157E308" minHeight="-Infinity" text="Images" VBox.vgrow="ALWAYS">
                      <padding>
                         <Insets bottom="8.0" />
                      </padding>
