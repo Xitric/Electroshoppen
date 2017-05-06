@@ -96,7 +96,7 @@
                         </VBox>
                      </content>
                   </TitledPane>
-                  <TitledPane maxHeight="1.7976931348623157E308" text="Tags" VBox.vgrow="ALWAYS">
+                  <TitledPane maxHeight="1.7976931348623157E308" text="Tags (comma separated)" VBox.vgrow="ALWAYS">
                      <padding>
                         <Insets bottom="8.0" />
                      </padding>

@@ -1,12 +1,9 @@
 package pim.business;
 
-import pim.persistence.PersistenceMediator;
+import pim.persistence.PersistenceFacade;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -18,15 +15,15 @@ import java.util.stream.Collectors;
 public class ProductManager {
 
 	private final Map<Integer, Product> products;
+	private final PersistenceFacade persistence;
 	private HashMap<String, Image> images;
-	private final PersistenceMediator persistence;
 
 	/**
 	 * Constructs a new product manager.
 	 *
-	 * @param persistence the persistence mediator
+	 * @param persistence the persistence facade
 	 */
-	public ProductManager(PersistenceMediator persistence) {
+	public ProductManager(PersistenceFacade persistence) {
 		products = new HashMap<>();
 		images = new HashMap<>();
 		this.persistence = persistence;
@@ -122,9 +119,25 @@ public class ProductManager {
 	 * Save the information about the specified product in the database.
 	 *
 	 * @param product the product to save
+	 * @throws IOException if something goes wrong
 	 */
-	public void saveProduct(Product product) {
+	public void saveProduct(Product product) throws IOException {
 		persistence.saveProduct(product);
+		products.put(product.getID(), product);
+	}
+
+	/**
+	 * Save the information about all the specified products in the database.
+	 *
+	 * @param productCollection the products to save
+	 * @throws IOException if something goes wrong
+	 */
+	public void saveProducts(Collection<Product> productCollection) throws IOException {
+		persistence.saveProducts(productCollection);
+
+		for (Product product: productCollection) {
+			products.put(product.getID(), product);
+		}
 	}
 
 	/**
