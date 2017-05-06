@@ -17,9 +17,7 @@ import pim.business.Tag;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * @author Kasper
@@ -45,6 +43,12 @@ public class ProductController implements Initializable {
 	private TextField browseTextField;
 
 	@FXML
+	private Button refreshButton;
+
+	@FXML
+	private TextField searchBar;
+
+	@FXML
 	private TreeView<Object> productTreeView;
 
 	@FXML
@@ -66,6 +70,7 @@ public class ProductController implements Initializable {
 		packageImage = new Image(getClass().getResourceAsStream("../../package.png"));
 		redPackageImage = new Image(getClass().getResourceAsStream("../../packageRed.png"));
 		productTreeView.getSelectionModel().selectedItemProperty().addListener(this::treeViewSelectionChanged);
+		refreshButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("../../refreshButton.png"))));
 	}
 
 	/**
@@ -83,40 +88,7 @@ public class ProductController implements Initializable {
 	public void onEnter() {
 		//TODO:
 		try {
-			List<Product> allProducts = pim.getProducts();
-			List<Category> allCategories = pim.getCategories();
-
-			TreeItem<Object> treeRoot = new TreeItem<>("All categories");
-			treeRoot.setExpanded(true);
-
-			//TODO: Super inefficient!
-			//Add categories and products to tree view
-			TreeItem<Object> uncategorised = new TreeItem<>("Uncategorised", new ImageView(redPackageImage));
-			for (Product p : allProducts) {
-				if (p.getCategories().isEmpty()) {
-
-					//Only make uncategorised category if some products belong to it
-					if (treeRoot.getChildren().isEmpty()) {
-						treeRoot.getChildren().add(uncategorised);
-					}
-
-					uncategorised.getChildren().add(new TreeItem<>(p));
-				}
-			}
-
-			for (Category c : allCategories) {
-				TreeItem<Object> category = new TreeItem<>(c, new ImageView(packageImage));
-				treeRoot.getChildren().add(category);
-
-				for (Product p : allProducts) {
-					if (p.hasCategory(c)) {
-						category.getChildren().add(new TreeItem<>(p));
-					}
-				}
-			}
-
-			productTreeView.setRoot(treeRoot);
-			productTreeView.setShowRoot(false);
+			populateTreeView(pim.getProducts(), true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -125,6 +97,25 @@ public class ProductController implements Initializable {
 	private void removeImage(RemoveableImage img) {
 		//TODO
 		productImagePane.getChildren().remove(img);
+	}
+
+	@FXML
+	void refreshButtonOnAction(ActionEvent event) {
+		String searchValue = searchBar.getText();
+
+		try {
+			if (searchValue.isEmpty()) {
+				populateTreeView(pim.getProducts(), true);
+			} else {
+				List<Product> products = pim.getProducts();
+
+				//Ignore case when searching
+				products.removeIf(product -> ! product.getName().toLowerCase().contains(searchValue.toLowerCase()));
+				populateTreeView(products, false);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
@@ -183,11 +174,70 @@ public class ProductController implements Initializable {
 
 			//Set images
 			productImagePane.getChildren().clear();
-			for (pim.business.Image img: product.getImages()) {
+			for (pim.business.Image img : product.getImages()) {
 				productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
 			}
 		} else { //Else clear the fields
 			//TODO
+		}
+	}
+
+	/**
+	 * Populate the tree view with the specified products.
+	 *
+	 * @param products      the products to place in the tree view.
+	 * @param allCategories if true, the tree view will contain all categories. Otherwise the tree view will only
+	 *                      contain the categories of the specified products
+	 */
+	@SuppressWarnings("Duplicates")
+	private void populateTreeView(List<Product> products, boolean allCategories) {
+		//TODO:
+		try {
+			TreeItem<Object> treeRoot = new TreeItem<>();
+			treeRoot.setExpanded(true);
+
+			//Add categories and products to tree view
+			TreeItem<Object> uncategorised = new TreeItem<>("Uncategorised", new ImageView(redPackageImage));
+			for (Product p : products) {
+				if (p.getCategories().isEmpty()) {
+
+					//Only make uncategorised category if some products belong to it
+					if (treeRoot.getChildren().isEmpty()) {
+						treeRoot.getChildren().add(uncategorised);
+					}
+
+					uncategorised.getChildren().add(new TreeItem<>(p));
+				}
+			}
+
+			if (allCategories) { //Populate with all categories
+				for (Category c : pim.getCategories()) {
+					TreeItem<Object> category = new TreeItem<>(c, new ImageView(packageImage));
+					treeRoot.getChildren().add(category);
+
+					for (Product p : products) {
+						if (p.hasCategory(c)) {
+							category.getChildren().add(new TreeItem<>(p));
+						}
+					}
+				}
+			} else { //Populate only with used categories
+				Map<Category, TreeItem<Object>> categoryNodes = new HashMap<>();
+
+				for (Product p : products) {
+					for (Category c : p.getCategories()) {
+						TreeItem<Object> category = categoryNodes.getOrDefault(c, new TreeItem<>(c, new ImageView(packageImage)));
+						treeRoot.getChildren().add(category);
+						category.getChildren().add(new TreeItem<>(p));
+						categoryNodes.put(c, category);
+					}
+				}
+			}
+
+			productTreeView.setRoot(treeRoot);
+			productTreeView.setShowRoot(false);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }

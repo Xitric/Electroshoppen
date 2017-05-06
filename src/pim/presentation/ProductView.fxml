@@ -19,6 +19,12 @@
          <content>
             <VBox spacing="8.0">
                <children>
+                  <HBox alignment="CENTER_LEFT" spacing="4.0">
+                     <children>
+                        <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshButtonOnAction" />
+                        <TextField fx:id="searchBar" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
                   <TreeView fx:id="productTreeView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
