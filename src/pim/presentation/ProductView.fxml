@@ -22,7 +22,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="4.0">
                      <children>
                         <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshButtonOnAction" />
-                        <TextField fx:id="searchBar" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="searchBar" promptText="Search..." HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
                   <TreeView fx:id="productTreeView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
@@ -77,7 +77,7 @@
                         <Insets top="8.0" />
                      </padding>
                   </HBox>
-                  <TextArea fx:id="descriptionTextArea" minHeight="-Infinity" VBox.vgrow="ALWAYS">
+                  <TextArea fx:id="descriptionTextArea" minHeight="-Infinity" promptText="No description yet. Fill this out to let your customers know what makes this product special!" VBox.vgrow="ALWAYS">
                      <VBox.margin>
                         <Insets bottom="16.0" />
                      </VBox.margin>
