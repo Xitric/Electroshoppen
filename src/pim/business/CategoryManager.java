@@ -73,7 +73,6 @@ public class CategoryManager {
 	public Category getCategory(String categoryName) throws IOException {
 		//Look in memory first
 		Category c = categories.get(categoryName);
-
 		//If this failed, look in persistence. This might also fail, leaving c as null
 		if (c == null) {
 			c = persistence.getCategoryByName(categoryName);
@@ -93,4 +92,14 @@ public class CategoryManager {
 		return categories.values().stream()
 				.filter(category -> category.hasAttribute(attribute)).collect(Collectors.toSet());
 	}
+
+	public void addCategory (Category categoryName) throws IOException {
+		persistence.saveCategory(categoryName);
+	}
+
+	public void deleteCategory (String categoryName) throws IOException {
+		categories.remove(categoryName);
+		persistence.deleteCategory(categoryName);
+	}
+
 }

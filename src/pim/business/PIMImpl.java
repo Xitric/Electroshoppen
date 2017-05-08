@@ -180,6 +180,11 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
+	public Category getCategory(String categoryName) {
+		return null;
+	}
+
+	@Override
 	public List<Attribute> getAttributesFromCategory(String categoryName) throws IOException {
 		return new ArrayList<>(persistence.getCategoryByName(categoryName).getAttributes());
 	}
@@ -201,5 +206,31 @@ public class PIMImpl implements PIM {
 		//            e.printStackTrace();
 		//        }
 	}
+
+	@Override
+	public void deleteCategory(String categoryName) {
+		try {
+
+			if (categoryManager.getCategory(categoryName) != null) {
+				categoryManager.deleteCategory(categoryName);
+			}
+		} catch (IOException e){
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void addCategory(String categoryName) {
+		try{
+			if(!categoryManager.getCategories().contains(categoryName)){
+				Category c = categoryManager.createCategory(categoryName);
+				persistence.saveCategory(c);
+
+			}
+		} catch (IOException e){
+			e.printStackTrace();
+		}
+	}
+
 
 }

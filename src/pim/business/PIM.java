@@ -115,6 +115,7 @@ public interface PIM {
 	 */
 	List<Category> getCategories() throws IOException;
 
+	Category getCategory (String categoryName);
 	/**
 	 * Get all the attributes for the selected category
 	 *
@@ -139,5 +140,8 @@ public interface PIM {
 	 */
 	void deleteAttributeFromCategory(String categoryName) throws IOException;
 
+	void deleteCategory (String categoryName);
+
+	void addCategory (String categoryName);
 
 }
