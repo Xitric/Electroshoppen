@@ -14,6 +14,7 @@ import pim.business.Category;
 import pim.business.PIM;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -74,9 +75,14 @@ public class CategoryController implements Initializable {
     }
 
     private void setItemsInLw(){
-        List<Category> categories = pim.getCategories();
-        Collections.sort(categories);
-        categoryList.setAll(categories);
+        List<Category> categories = null;
+        try {
+            categories = pim.getCategories();
+            Collections.sort(categories);
+            categoryList.setAll(categories);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //List<Attribute> attributes = pim.getAttributes();
         //Collections.sort(attributes);
 
@@ -88,8 +94,13 @@ public class CategoryController implements Initializable {
         Category selected = listViewCategory.getSelectionModel().getSelectedItem();
         if (selected != null) {
             nameOutput.setText(selected.getName());
-            attributeAddList.setAll(pim.getAttributesFromCategory(selected.getName()));
-            attributeRemoveList.setAll(pim.getAttributesNotInTheCategory(selected.getName()));
+            try {
+                attributeAddList.setAll(pim.getAttributesFromCategory(selected.getName()));
+                attributeRemoveList.setAll(pim.getAttributesNotInTheCategory(selected.getName()));
+            } catch (IOException e) {
+                e.printStackTrace();
+
+            }
         }
     }
 
@@ -155,14 +166,22 @@ public class CategoryController implements Initializable {
 
     @FXML
     private void save(ActionEvent event) {
-        List<Category> tempData = new ArrayList<>(pim.getCategories());
-        tempData.removeAll(categoryList);
-        if (!tempData.isEmpty()) {
-            for (Category c : tempData) {
-                pim.deleteCategory(c.getName());
-                System.out.println("Removed category: " + c.getName());
+        List<Category> tempData = null;
+        try {
+            tempData = new ArrayList<>(pim.getCategories());
+            tempData.removeAll(categoryList);
+            if (!tempData.isEmpty()) {
+                for (Category c : tempData) {
+                    pim.deleteCategory(c.getName());
+                    System.out.println("Removed category: " + c.getName());
+                }
             }
+            } catch(IOException e){
+                e.printStackTrace();
+            }
+
         }
+
 //        List<Category> tempCategories = new ArrayList<>(categoryList);
 //        tempCategories.removeAll(pim.getCategories());
 //        if (!tempCategories.isEmpty()) {
@@ -172,4 +191,4 @@ public class CategoryController implements Initializable {
 //            }
 //        }
     }
-}
+
