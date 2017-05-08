@@ -170,8 +170,8 @@ class ProductPersistor {
 	public void saveProducts(Collection<Product> products) throws IOException {
 		Connection connection = dbf.getConnection();
 
-		try (PreparedStatement storeProductData = connection.prepareStatement("INSERT INTO product VALUES (?, ?, ?) ON CONFLICT (productid) DO UPDATE SET name = Excluded.name, price = EXCLUDED.price;");
-		     PreparedStatement storeProductDataNew = connection.prepareStatement("INSERT INTO product VALUES (DEFAULT , ?, ?) RETURNING productid;");
+		try (PreparedStatement storeProductData = connection.prepareStatement("INSERT INTO product VALUES (?, ?, ?, ?) ON CONFLICT (productid) DO UPDATE SET name = Excluded.name, price = EXCLUDED.price;");
+		     PreparedStatement storeProductDataNew = connection.prepareStatement("INSERT INTO product VALUES (DEFAULT , ?, ?, ?) RETURNING productid;");
 		     PreparedStatement removeProductCategories = connection.prepareStatement("DELETE FROM productcategory WHERE productid = ?;");
 		     PreparedStatement addProductCategory = connection.prepareStatement("INSERT INTO productcategory VALUES(?, ?);");
 		     PreparedStatement addAttributeValue = connection.prepareStatement("INSERT INTO attributevalue VALUES(?, ?, ?);");
@@ -190,10 +190,12 @@ class ProductPersistor {
 					storeProductData.setInt(1, product.getID());
 					storeProductData.setString(2, product.getName());
 					storeProductData.setDouble(3, product.getPrice());
+					storeProductData.setString(4, product.getDescription());
 					storeProductData.executeUpdate();
 				} else {
 					storeProductDataNew.setString(1, product.getName());
 					storeProductDataNew.setDouble(2, product.getPrice());
+					storeProductData.setString(3, product.getDescription());
 					if (storeProductData.execute()) {
 						//Get generated id
 						ResultSet result = storeProductDataNew.getResultSet();
@@ -321,8 +323,9 @@ class ProductPersistor {
 			int id = productData.getInt(1);
 			String name = productData.getString(2).trim();
 			double price = productData.getDouble(3);
+			String description = productData.getString(4);
 
-			products.put(id, dbf.getCache().createProduct(id, name, price));
+			products.put(id, dbf.getCache().createProduct(id, name, description, price));
 		}
 
 		//Add all product categories

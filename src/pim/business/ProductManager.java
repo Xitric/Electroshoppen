@@ -33,13 +33,14 @@ public class ProductManager {
 	 * Creates a product if one with the given id does not exist already. Otherwise a reference to the existing product
 	 * will be returned.
 	 *
-	 * @param id    the id of the product
-	 * @param name  the name of the product
-	 * @param price the price of the product
+	 * @param id          the id of the product
+	 * @param name        the name of the product
+	 * @param description the description of the product
+	 * @param price       the price of the product
 	 * @return the created product
 	 */
-	public Product createProduct(int id, String name, double price) {
-		return products.computeIfAbsent(id, i -> new Product(id, name, price));
+	public Product createProduct(int id, String name, String description, double price) {
+		return products.computeIfAbsent(id, i -> new Product(id, name, description, price));
 	}
 
 	/**
@@ -135,7 +136,7 @@ public class ProductManager {
 	public void saveProducts(Collection<Product> productCollection) throws IOException {
 		persistence.saveProducts(productCollection);
 
-		for (Product product: productCollection) {
+		for (Product product : productCollection) {
 			products.put(product.getID(), product);
 		}
 	}
