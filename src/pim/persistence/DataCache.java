@@ -16,12 +16,13 @@ public interface DataCache {
 	 * Creates a product if one with the given id does not exist already. Otherwise a reference to the existing product
 	 * will be returned.
 	 *
-	 * @param id    the id of the product
-	 * @param name  the name of the product
-	 * @param price the price of the product
+	 * @param id          the id of the product
+	 * @param name        the name of the product
+	 * @param description the description of the product
+	 * @param price       the price of the product
 	 * @return the created product
 	 */
-	Product createProduct(int id, String name, double price);
+	Product createProduct(int id, String name, String description, double price);
 
 	/**
 	 * Creates an attribute if one with the given id does not exist already. Otherwise a reference to the existing

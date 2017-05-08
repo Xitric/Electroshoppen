@@ -34,8 +34,8 @@ public class DataCacheImpl implements DataCache {
 	}
 
 	@Override
-	public Product createProduct(int id, String name, double price) {
-		return productManager.createProduct(id, name, price);
+	public Product createProduct(int id, String name, String description, double price) {
+		return productManager.createProduct(id, name, description, price);
 	}
 
 	@Override

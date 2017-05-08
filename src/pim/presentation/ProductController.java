@@ -1,6 +1,8 @@
 package pim.presentation;
 
 import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -54,8 +56,17 @@ public class ProductController implements Initializable {
 	@FXML
 	private TextArea tagTextArea;
 
+	@FXML
+	private ListView<Category> availableCategoriesView;
+
+	@FXML
+	private ListView<Category> containedCategoriesView;
+
 	private Image packageImage;
 	private Image redPackageImage;
+
+	private ObservableList<Category> availableCategories;
+	private ObservableList<Category> containedCategories;
 
 	/**
 	 * The mediator for the business layer.
@@ -71,6 +82,10 @@ public class ProductController implements Initializable {
 		redPackageImage = new Image(getClass().getResourceAsStream("../../packageRed.png"));
 		productTreeView.getSelectionModel().selectedItemProperty().addListener(this::treeViewSelectionChanged);
 		refreshButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("../../refreshButton.png"))));
+		availableCategories = FXCollections.observableArrayList();
+		containedCategories = FXCollections.observableArrayList();
+		availableCategoriesView.setItems(availableCategories);
+		containedCategoriesView.setItems(containedCategories);
 	}
 
 	/**
@@ -110,8 +125,15 @@ public class ProductController implements Initializable {
 				List<Product> products = pim.getProducts();
 
 				//Ignore case when searching
-				products.removeIf(product -> ! product.getName().toLowerCase().contains(searchValue.toLowerCase()));
+				products.removeIf(product -> !product.getName().toLowerCase().contains(searchValue.toLowerCase()));
 				populateTreeView(products, false);
+
+				//Select first product, if any
+				TreeItem<Object> firstCategory = productTreeView.getRoot().getChildren().get(0);
+				if (firstCategory != null) {
+					firstCategory.setExpanded(true);
+					productTreeView.getSelectionModel().select(firstCategory.getChildren().get(0));
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -160,8 +182,16 @@ public class ProductController implements Initializable {
 			idLabel.setText(String.valueOf(product.getID()));
 			nameLabel.setText(product.getName());
 			priceLabel.setText(product.getPrice() + "$");
-			//TODO: Description
-			//TODO: Categories
+			descriptionTextArea.setText(product.getDescription());
+			//TODO: Exception handling
+			try {
+				List<Category> categories = pim.getCategories();
+				categories.removeAll(product.getCategories());
+				availableCategories.setAll(categories);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			containedCategories.setAll(product.getCategories());
 			//TODO: Attributes
 
 			//Set tags
@@ -178,7 +208,17 @@ public class ProductController implements Initializable {
 				productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
 			}
 		} else { //Else clear the fields
-			//TODO
+			idLabel.setText("");
+			nameLabel.setText("");
+			priceLabel.setText("");
+			descriptionTextArea.clear();
+			descriptionTextArea.clear();
+			availableCategories.clear();
+			containedCategories.clear();
+			//TODO: Attributes
+			tagTextArea.clear();
+			productImagePane.getChildren().clear();
+
 		}
 	}
 
@@ -189,7 +229,6 @@ public class ProductController implements Initializable {
 	 * @param allCategories if true, the tree view will contain all categories. Otherwise the tree view will only
 	 *                      contain the categories of the specified products
 	 */
-	@SuppressWarnings("Duplicates")
 	private void populateTreeView(List<Product> products, boolean allCategories) {
 		//TODO:
 		try {
