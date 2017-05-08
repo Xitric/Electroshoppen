@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class Product implements CategoryChangeListener {
 
-	private final int id;
+	private int id;
 	private String name;
 	private double price;
 	private Set<Category> categories;
@@ -41,12 +41,33 @@ public class Product implements CategoryChangeListener {
 	}
 
 	/**
+	 * Test whether the id of this product is valid.
+	 *
+	 * @return true if the id is valid, false otherwise
+	 */
+	public boolean hasValidID() {
+		return id >= 0;
+	}
+
+	/**
 	 * Get the id of this product.
 	 *
 	 * @return the id of this product
 	 */
 	public int getID() {
 		return id;
+	}
+
+	/**
+	 * Set the id of this product. This operation will be ignored if the id is already set. The purpose of this method
+	 * is to allow the persistence layer to assign an id to a product created in the domain layer.
+	 *
+	 * @param id the id of the product
+	 */
+	public void setID(int id) {
+		if (this.id < 0) {
+			this.id = id;
+		}
 	}
 
 	/**
@@ -259,6 +280,11 @@ public class Product implements CategoryChangeListener {
 	 */
 	public Set<Image> getImages() {
 		return new HashSet<>(images);
+	}
+
+	@Override
+	public String toString() {
+		return getName();
 	}
 
 	@Override

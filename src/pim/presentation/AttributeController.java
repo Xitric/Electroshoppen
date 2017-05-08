@@ -77,9 +77,14 @@ public class AttributeController implements Initializable {
 	 * Call this when the view for this controller is entered in the GUI.
 	 */
 	public void onEnter() {
-		List<Attribute> attributes = pim.getAttributes();
-		Collections.sort(attributes);
-		attributeList.setAll(pim.getAttributes());
+		//TODO
+		try {
+			List<Attribute> attributes = pim.getAttributes();
+			Collections.sort(attributes);
+			attributeList.setAll(attributes);
+		} catch (IOException e) {
+
+		}
 	}
 
 	@FXML
@@ -113,11 +118,16 @@ public class AttributeController implements Initializable {
 		//If a result could be gathered, register it
 		Optional<Attribute> result = dialog.showAndWait();
 		if (result.isPresent()) {
-			Attribute a = result.get();
-			int id = pim.addAttribute(a.getName(), a.getDefaultValue(), a.getLegalValues());
+			Attribute attribute = result.get();
+			//TODO:
+			try {
+				pim.saveAttribute(attribute);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
 			//Get the new attribute and add it to the list
-			attributeList.add(pim.getAttribute(id));
+			attributeList.add(attribute);
 		}
 	}
 
@@ -128,7 +138,12 @@ public class AttributeController implements Initializable {
 
 		Optional<ButtonType> choice = confirmationDialog.showAndWait();
 		if (choice.isPresent() && choice.get() == ButtonType.OK) {
-			pim.removeAttribute(selection.getID());
+			//TODO:
+			try {
+				pim.removeAttribute(selection.getID());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			attributeList.remove(selection);
 		}
 	}

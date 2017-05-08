@@ -1,12 +1,9 @@
 package pim.business;
 
-import pim.persistence.PersistenceMediator;
+import pim.persistence.PersistenceFacade;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -18,15 +15,17 @@ import java.util.stream.Collectors;
 public class ProductManager {
 
 	private final Map<Integer, Product> products;
-	private final PersistenceMediator persistence;
+	private final PersistenceFacade persistence;
+	private HashMap<String, Image> images;
 
 	/**
 	 * Constructs a new product manager.
 	 *
-	 * @param persistence the persistence mediator
+	 * @param persistence the persistence facade
 	 */
-	public ProductManager(PersistenceMediator persistence) {
+	public ProductManager(PersistenceFacade persistence) {
 		products = new HashMap<>();
+		images = new HashMap<>();
 		this.persistence = persistence;
 	}
 
@@ -120,8 +119,44 @@ public class ProductManager {
 	 * Save the information about the specified product in the database.
 	 *
 	 * @param product the product to save
+	 * @throws IOException if something goes wrong
 	 */
-	public void saveProduct(Product product) {
+	public void saveProduct(Product product) throws IOException {
 		persistence.saveProduct(product);
+		products.put(product.getID(), product);
+	}
+
+	/**
+	 * Save the information about all the specified products in the database.
+	 *
+	 * @param productCollection the products to save
+	 * @throws IOException if something goes wrong
+	 */
+	public void saveProducts(Collection<Product> productCollection) throws IOException {
+		persistence.saveProducts(productCollection);
+
+		for (Product product: productCollection) {
+			products.put(product.getID(), product);
+		}
+	}
+
+	/**
+	 * Creates an image or returns the existing one with the same url if it already exists.
+	 *
+	 * @param url the url of the image
+	 * @return the created image object
+	 */
+	public Image createImage(String url) {
+		return images.computeIfAbsent(url, Image::new);
+	}
+
+	/**
+	 * Removes an image from the list of images.
+	 *
+	 * @param url the url of the image to remove
+	 */
+	public void removeImage(String url) {
+		//TODO: Delete in database if all references are gone
+		images.remove(url);
 	}
 }

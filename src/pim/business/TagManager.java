@@ -1,6 +1,6 @@
 package pim.business;
 
-import pim.persistence.PersistenceMediator;
+import pim.persistence.PersistenceFacade;
 
 import java.util.HashMap;
 
@@ -13,14 +13,14 @@ import java.util.HashMap;
 public class TagManager {
 
 	private HashMap<String, Tag> tags;
-	private final PersistenceMediator persistence;
+	private final PersistenceFacade persistence;
 
 	/**
 	 * Constructs a new tag manager.
 	 *
-	 * @param persistence the persistence mediator
+	 * @param persistence the persistence facade
 	 */
-	public TagManager(PersistenceMediator persistence) {
+	public TagManager(PersistenceFacade persistence) {
 		tags = new HashMap<>();
 		this.persistence = persistence;
 	}

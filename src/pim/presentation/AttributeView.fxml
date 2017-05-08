@@ -73,12 +73,12 @@
                   <Label text="Legal values:" />
                </children>
             </HBox>
-            <ListView fx:id="attributeLegalValuesListView">
+            <ListView fx:id="attributeLegalValuesListView" VBox.vgrow="ALWAYS">
                <VBox.margin>
                   <Insets bottom="8.0" />
                </VBox.margin>
             </ListView>
-            <Button mnemonicParsing="false" text="Save" />
+            <Button mnemonicParsing="false" styleClass="raised" text="Save" />
          </children>
          <padding>
             <Insets bottom="8.0" left="8.0" right="8.0" />

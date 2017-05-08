@@ -19,6 +19,8 @@ import java.util.function.Consumer;
  */
 class RemoveableImage extends StackPane {
 
+	private final int WIDTH = 200;
+	private final int HEIGHT = 200;
 	private final Consumer<RemoveableImage> removeListener;
 
 	/**
@@ -33,13 +35,27 @@ class RemoveableImage extends StackPane {
 		getStylesheets().add("pim/presentation/removeableImage.css");
 
 		//Set up canvas with image
-		Canvas canvas = new Canvas(200, 200);
+		Canvas canvas = new Canvas(WIDTH, HEIGHT);
 		Image img = SwingFXUtils.toFXImage(bimg, null);
-		canvas.getGraphicsContext2D().drawImage(img, 0, 0, 200, 200);
-		getChildren().add(canvas);
 
-		//TODO: Temp
-		setStyle(String.format("-fx-border-color: rgb(%d, %d, %d);", (int) (Math.random() * 255), (int) (Math.random() * 255), (int) (Math.random() * 255)));
+		//Keep the aspect ratio of the image and center on either horizontal or vertical axis
+		double aspectRatio = img.getWidth() / img.getHeight();
+		double w, h, xOffset, yOffset;
+
+		if (img.getHeight() > img.getWidth()) { //Center on horizontal axis
+			w = WIDTH * aspectRatio;
+			h = HEIGHT;
+			xOffset = (WIDTH - w) / 2.0;
+			yOffset = 0;
+		} else { //Center on vertical axis
+			w = WIDTH;
+			h = HEIGHT / aspectRatio;
+			xOffset = 0;
+			yOffset = (HEIGHT - h) / 2.0;
+		}
+
+		canvas.getGraphicsContext2D().drawImage(img, xOffset, yOffset, w, h);
+		getChildren().add(canvas);
 
 		//Set up close button
 		BorderPane borderPane = new BorderPane();

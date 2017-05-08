@@ -14,13 +14,13 @@ import java.util.Set;
 public class Attribute implements Comparable<Attribute> {
 
 	/**
-	 * The id of this attribute.
-	 */
-	private final int id;
-	/**
 	 * The list of legal values for this attribute, or null if all values are allowed.
 	 */
 	private final Set<Object> legalValues;
+	/**
+	 * The id of this attribute.
+	 */
+	private int id;
 	/**
 	 * The name of this attribute to be displayed to the user.
 	 */
@@ -29,6 +29,17 @@ public class Attribute implements Comparable<Attribute> {
 	 * The default value of the attribute.
 	 */
 	private Object defaultValue;
+
+	/**
+	 * Constructs a new attribute with the specified name and with a missing id. The id is generated when the attribute
+	 * is saved to the database for the first time.
+	 *
+	 * @param name         the name of the attribute
+	 * @param defaultValue the default value of the attribute
+	 */
+	public Attribute(String name, Object defaultValue) {
+		this(-1, name, defaultValue);
+	}
 
 	/**
 	 * Constructs a new attribute with the specified id and name.
@@ -94,6 +105,15 @@ public class Attribute implements Comparable<Attribute> {
 	}
 
 	/**
+	 * Test whether the id of this product is valid.
+	 *
+	 * @return true if the id is valid, false otherwise
+	 */
+	public boolean hasValidID() {
+		return id >= 0;
+	}
+
+	/**
 	 * Get the id of this attribute.
 	 *
 	 * @return the id of this attribute
@@ -103,12 +123,33 @@ public class Attribute implements Comparable<Attribute> {
 	}
 
 	/**
+	 * Set the id of this attribute. This operation will be ignored if the id is already set. The purpose of this method
+	 * is to allow the persistence layer to assign an id to am attribute created in the domain layer.
+	 *
+	 * @param id the id of the attribute
+	 */
+	public void setID(int id) {
+		if (this.id < 0) {
+			this.id = id;
+		}
+	}
+
+	/**
 	 * Get the name of this attribute.
 	 *
 	 * @return the name of this attribute
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * Set the name of this attribute.
+	 *
+	 * @param name the name of this attribute
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
@@ -137,7 +178,7 @@ public class Attribute implements Comparable<Attribute> {
 
 	@Override
 	public int compareTo(Attribute o) {
-		return Integer.compare(getID(), o.getID());
+		return Integer.compare(this.getID(), o.getID());
 	}
 
 	/**
