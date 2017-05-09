@@ -203,13 +203,18 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public void deleteAttributeFromCategory(String categoryName) throws IOException {
-		//	    try{
-		//
-		//
-		//        }catch (IOException e){
-		//            e.printStackTrace();
-		//        }
+	public void deleteAttributeFromCategory(Category categoryName, Attribute attributeName) throws IOException {
+		if (categoryName.hasAttribute(attributeName)){
+			System.out.println("has: " + attributeName);
+			categoryName.removeAttribute(attributeName);
+		}
+		persistence.saveCategory(categoryName);
+	}
+
+	@Override
+	public void addAttributeToCategory(Category categoryName, Attribute attributeName) throws IOException {
+		categoryName.addAttribute(attributeName);
+		persistence.saveCategory(categoryName);
 	}
 
 	@Override

@@ -144,7 +144,9 @@ public interface PIM {
 	 * @param categoryName name of the selected category
 	 * @throws IOException if the operation failed
 	 */
-	void deleteAttributeFromCategory(String categoryName) throws IOException;
+	void deleteAttributeFromCategory(Category categoryName, Attribute attributeName) throws IOException;
+
+	void addAttributeToCategory (Category categoryName, Attribute attributeName) throws  IOException;
 
 	void addCategory (String categoryName);
 
