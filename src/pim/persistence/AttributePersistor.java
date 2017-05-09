@@ -111,9 +111,11 @@ class AttributePersistor {
 				//Should the immutability be violated, however, the issue lies elsewhere - not here. Thus the
 				//possibility of adding new legal values has not been handled. Also, this would not break anything
 				storeLegalValues.setInt(1, attribute.getID());
-				for (Object value : attribute.getLegalValues()) {
-					storeLegalValues.setObject(2, DatabaseFacade.objectToBytes(value));
-					storeLegalValues.executeUpdate();
+				if (attribute.getLegalValues() != null) {
+					for (Object value : attribute.getLegalValues()) {
+						storeLegalValues.setObject(2, DatabaseFacade.objectToBytes(value));
+						storeLegalValues.executeUpdate();
+					}
 				}
 
 				//Commit per attribute. This might result in only some of the attributes being saved, but that should be

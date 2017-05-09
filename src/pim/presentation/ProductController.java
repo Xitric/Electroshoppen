@@ -6,15 +6,15 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import pim.business.Category;
-import pim.business.PIM;
-import pim.business.Product;
-import pim.business.Tag;
+import pim.business.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,19 +54,25 @@ public class ProductController implements Initializable {
 	private TreeView<Object> productTreeView;
 
 	@FXML
-	private TextArea tagTextArea;
-
-	@FXML
 	private ListView<Category> availableCategoriesView;
 
 	@FXML
 	private ListView<Category> containedCategoriesView;
 
+	@FXML
+	private VBox attributeVBox;
+
+	@FXML
+	private TextArea tagTextArea;
+
 	private Image packageImage;
 	private Image redPackageImage;
+	private Image gearImage;
 
 	private ObservableList<Category> availableCategories;
 	private ObservableList<Category> containedCategories;
+
+	private Map<Button, Attribute.AttributeValue> attributeValues;
 
 	/**
 	 * The mediator for the business layer.
@@ -78,14 +84,21 @@ public class ProductController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
+		//Product list
 		packageImage = new Image(getClass().getResourceAsStream("../../package.png"));
 		redPackageImage = new Image(getClass().getResourceAsStream("../../packageRed.png"));
 		productTreeView.getSelectionModel().selectedItemProperty().addListener(this::treeViewSelectionChanged);
 		refreshButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("../../refreshButton.png"))));
+
+		//Category lists
 		availableCategories = FXCollections.observableArrayList();
 		containedCategories = FXCollections.observableArrayList();
 		availableCategoriesView.setItems(availableCategories);
 		containedCategoriesView.setItems(containedCategories);
+
+		//Attributes
+		attributeValues = new HashMap<>();
+		gearImage = new Image(getClass().getResourceAsStream("../../gear.png"));
 	}
 
 	/**
@@ -115,7 +128,7 @@ public class ProductController implements Initializable {
 	}
 
 	@FXML
-	void refreshButtonOnAction(ActionEvent event) {
+	private void refreshButtonOnAction(ActionEvent event) {
 		String searchValue = searchBar.getText();
 
 		try {
@@ -141,7 +154,29 @@ public class ProductController implements Initializable {
 	}
 
 	@FXML
-	void browseButtonOnAction(ActionEvent event) {
+	private void addButtonOnAction(ActionEvent event) {
+		Category selection = availableCategoriesView.getSelectionModel().getSelectedItem();
+		if (selection != null) {
+			availableCategories.remove(selection);
+			containedCategories.add(selection);
+
+			//TODO: How do we handle new attributes?
+		}
+	}
+
+	@FXML
+	private void removeButtonOnAction(ActionEvent event) {
+		Category selection = containedCategoriesView.getSelectionModel().getSelectedItem();
+		if (selection != null) {
+			availableCategories.add(selection);
+			containedCategories.remove(selection);
+
+			//TODO: How do we handle lost attributes?
+		}
+	}
+
+	@FXML
+	private void browseButtonOnAction(ActionEvent event) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Resource File");
 		fileChooser.getExtensionFilters().addAll(
@@ -153,17 +188,17 @@ public class ProductController implements Initializable {
 	}
 
 	@FXML
-	void cancelButtonOnAction(ActionEvent event) {
+	private void cancelButtonOnAction(ActionEvent event) {
 		browseTextField.clear();
 	}
 
 	@FXML
-	void saveButtonOnAction(ActionEvent event) {
+	private void saveButtonOnAction(ActionEvent event) {
 
 	}
 
 	@FXML
-	void uploadButtonOnAction(ActionEvent event) {
+	private void uploadButtonOnAction(ActionEvent event) {
 		try {
 			pim.business.Image img = new pim.business.Image(browseTextField.getText());
 			productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
@@ -183,6 +218,8 @@ public class ProductController implements Initializable {
 			nameLabel.setText(product.getName());
 			priceLabel.setText(product.getPrice() + "$");
 			descriptionTextArea.setText(product.getDescription());
+
+			//Categories
 			//TODO: Exception handling
 			try {
 				List<Category> categories = pim.getCategories();
@@ -192,7 +229,27 @@ public class ProductController implements Initializable {
 				e.printStackTrace();
 			}
 			containedCategories.setAll(product.getCategories());
-			//TODO: Attributes
+
+			//Attributes
+			for (Attribute.AttributeValue value : product.getAttributeValues()) {
+				HBox valueBox = new HBox(4);
+				valueBox.setAlignment(Pos.CENTER_LEFT);
+
+				//Labels
+				valueBox.getChildren().add(new Label(value.getParent().toString() + ": "));
+				Label valueLabel = new Label(value.getValue().toString());
+				valueLabel.setUnderline(true);
+				valueBox.getChildren().add(valueLabel);
+
+				//Change button
+				Button changeButton = new Button("", new ImageView(gearImage));
+				changeButton.setOnAction(this::attributeValueEditOnAction);
+				valueBox.getChildren().add(changeButton);
+				attributeVBox.getChildren().add(valueBox);
+
+				//Add to map for lookup
+				attributeValues.put(changeButton, value);
+			}
 
 			//Set tags
 			StringBuilder tagText = new StringBuilder();
@@ -215,10 +272,49 @@ public class ProductController implements Initializable {
 			descriptionTextArea.clear();
 			availableCategories.clear();
 			containedCategories.clear();
-			//TODO: Attributes
+			attributeVBox.getChildren().clear();
 			tagTextArea.clear();
 			productImagePane.getChildren().clear();
 
+		}
+	}
+
+	private void attributeValueEditOnAction(ActionEvent event) {
+		if (event.getSource() instanceof Button) {
+			Button button = (Button) event.getSource();
+			Attribute.AttributeValue attributeValue = attributeValues.get(button);
+			if (attributeValue != null) {
+				if (attributeValue.getParent().getLegalValues() == null) { //Unrestricted
+					//Show attribute dialog and get result
+					Optional result = ValueSelectorFactory.getDialogValueSelectorForType(
+							ValueSelectorFactory.AttributeType.fromClass(attributeValue.getValue().getClass())).showAndWait();
+
+					//If a value was selected, update it
+					if (result.isPresent()) {
+						Attribute.AttributeValue newValue = attributeValue.getParent().createValue(result.get());
+						attributeValues.put(button, newValue);
+
+						//TODO: Update label in a better way
+						//Please don't kill me, I know that this is the ugliest fucking code you have ever seen, but it is getting late!
+						((Label)((HBox)button.getParent()).getChildren().get(1)).setText(newValue.getValue().toString());
+					}
+				} else { //Restricted
+					//TODO: Show list of possibilities. Remove this code
+					//Show attribute dialog and get result
+					Optional result = ValueSelectorFactory.getDialogValueSelectorForType(
+							ValueSelectorFactory.AttributeType.fromClass(attributeValue.getValue().getClass())).showAndWait();
+
+					//If a value was selected, update it
+					if (result.isPresent()) {
+						Attribute.AttributeValue newValue = attributeValue.getParent().createValue(result.get());
+						attributeValues.put(button, newValue);
+
+						//TODO: Update label in a better way
+						//Please don't kill me, I know that this is the ugliest fucking code you have ever seen, but it is getting late!
+						((Label)((HBox)button.getParent()).getChildren().get(1)).setText(newValue.getValue().toString());
+					}
+				}
+			}
 		}
 	}
 

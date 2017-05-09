@@ -78,7 +78,7 @@
                         <Insets top="8.0" />
                      </padding>
                   </HBox>
-                  <TextArea fx:id="descriptionTextArea" minHeight="-Infinity" promptText="No description yet. Fill this out to let your customers know what makes this product special!" VBox.vgrow="ALWAYS">
+                  <TextArea fx:id="descriptionTextArea" maxHeight="1.7976931348623157E308" minHeight="-Infinity" promptText="No description yet. Fill this out to let your customers know what makes this product special!" VBox.vgrow="ALWAYS">
                      <VBox.margin>
                         <Insets bottom="16.0" />
                      </VBox.margin>
@@ -88,13 +88,13 @@
                         <Insets bottom="8.0" />
                      </padding>
                      <content>
-                        <HBox prefHeight="100.0" prefWidth="200.0">
+                        <HBox>
                            <children>
                               <ListView fx:id="availableCategoriesView" HBox.hgrow="ALWAYS" />
                               <VBox alignment="CENTER" spacing="4.0">
                                  <children>
-                                    <Button mnemonicParsing="false" text="Add &gt;&gt;" />
-                                    <Button mnemonicParsing="false" text="&lt;&lt; Remove" />
+                                    <Button mnemonicParsing="false" onAction="#addButtonOnAction" text="Add &gt;&gt;" />
+                                    <Button mnemonicParsing="false" onAction="#removeButtonOnAction" text="&lt;&lt; Remove" />
                                  </children>
                                  <HBox.margin>
                                     <Insets left="4.0" right="4.0" />
@@ -110,7 +110,7 @@
                         <Insets bottom="8.0" />
                      </padding>
                      <content>
-                        <VBox spacing="8.0">
+                        <VBox fx:id="attributeVBox" spacing="8.0">
                            <padding>
                               <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
                            </padding>
@@ -122,7 +122,7 @@
                         <Insets bottom="8.0" />
                      </padding>
                      <content>
-                        <TextArea fx:id="tagTextArea" minHeight="100.0" wrapText="true" />
+                        <TextArea fx:id="tagTextArea" minHeight="100.0" promptText="What a shame, this product has no tags! Write them here, separated by commas." wrapText="true" />
                      </content>
                   </TitledPane>
                   <TitledPane maxHeight="1.7976931348623157E308" minHeight="-Infinity" text="Images" VBox.vgrow="ALWAYS">
