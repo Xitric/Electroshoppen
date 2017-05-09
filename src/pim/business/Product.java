@@ -193,14 +193,22 @@ public class Product implements CategoryChangeListener {
 	 *
 	 * @param attribute the attribute to set the value for
 	 * @param value     the value to set
+	 * @throws IllegalArgumentException if the value is illegal for the specified attribute
 	 */
 	public void setAttribute(Attribute attribute, Object value) {
-		//Remove the existing value for this attribute
-		boolean attributeExists = attributes.removeIf(attributeValue -> attributeValue.getParent() == attribute);
-		if (!attributeExists) return;
+		try {
+			//Try to construct attribute value. If it fails, the rest is skipped
+			Attribute.AttributeValue aVal = attribute.createValue(value);
 
-		//Add new value
-		attributes.add(attribute.createValue(value));
+			//Remove the existing value for this attribute
+			boolean attributeExists = attributes.removeIf(attributeValue -> attributeValue.getParent() == attribute);
+			if (!attributeExists) return;
+
+			//Add new value
+			attributes.add(aVal);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Illegal value for attribute!", e);
+		}
 	}
 
 	/**
@@ -312,7 +320,7 @@ public class Product implements CategoryChangeListener {
 	public void attributeAdded(Attribute attribute) {
 		//Ensure that the attribute is not already present
 		if (!getAllAttributes().contains(attribute)) {
-			setAttribute(attribute, attribute.getDefaultValue());
+			attributes.add(attribute.createValue());
 		}
 	}
 

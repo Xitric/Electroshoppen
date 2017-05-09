@@ -13,10 +13,12 @@ import pim.business.Attribute;
 import pim.business.Category;
 import pim.business.PIM;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * @author Kasper
@@ -172,7 +174,7 @@ public class CategoryController implements Initializable {
             tempData.removeAll(categoryList);
             if (!tempData.isEmpty()) {
                 for (Category c : tempData) {
-                    pim.deleteCategory(c.getName());
+                    pim.removeCategory(c.getName());
                     System.out.println("Removed category: " + c.getName());
                 }
             }
