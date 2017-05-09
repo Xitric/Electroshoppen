@@ -172,7 +172,7 @@ public class CategoryController implements Initializable {
             tempData.removeAll(categoryList);
             if (!tempData.isEmpty()) {
                 for (Category c : tempData) {
-                    pim.deleteCategory(c.getName());
+                    pim.removeCategory(c.getName());
                     System.out.println("Removed category: " + c.getName());
                 }
             }
