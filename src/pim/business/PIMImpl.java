@@ -213,14 +213,9 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public void removeCategory(String categoryName) {
-		try {
-
-			if (categoryManager.getCategory(categoryName) != null) {
-				categoryManager.deleteCategory(categoryName);
-			}
-		} catch (IOException e){
-			e.printStackTrace();
+	public void removeCategory(String categoryName) throws IOException {
+		if (categoryManager.getCategory(categoryName) != null) {
+			categoryManager.deleteCategory(categoryName);
 		}
 	}
 

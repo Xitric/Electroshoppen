@@ -58,6 +58,7 @@
             <HBox alignment="CENTER_LEFT" spacing="4.0">
                <children>
                   <Label text="Default:" />
+                  <Button fx:id="editDefaultButton" disable="true" mnemonicParsing="false" onAction="#editDefaultButtonOnAction" />
                   <TextField fx:id="attributeDefaultValueField" editable="false" HBox.hgrow="ALWAYS" />
                   <Label fx:id="attributeDefaultTypeLabel" />
                </children>
@@ -78,7 +79,7 @@
                   <Insets bottom="8.0" />
                </VBox.margin>
             </ListView>
-            <Button mnemonicParsing="false" styleClass="raised" text="Save" />
+            <Button mnemonicParsing="false" onAction="#saveButtonOnAction" styleClass="raised" text="Save" />
          </children>
          <padding>
             <Insets bottom="8.0" left="8.0" right="8.0" />

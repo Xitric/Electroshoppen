@@ -162,6 +162,19 @@ public class Attribute implements Comparable<Attribute> {
 	}
 
 	/**
+	 * Set the default value of this attribute.
+	 *
+	 * @param value the default value
+	 * @throws IllegalArgumentException if the value is not allowed
+	 */
+	public void setDefaultValue(Object value) {
+		AttributeValue temp = this.createValue(value);
+
+		//If no error so far, set the value
+		this.defaultValue = temp.getValue();
+	}
+
+	/**
 	 * Get the set of legal values for this attribute or null if all values are allowed. This will return a copy of the
 	 * internal set, so changing it will not affect this instance.
 	 *
