@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -196,14 +197,47 @@ public class ProductController implements Initializable {
 
 	@FXML
 	private void saveButtonOnAction(ActionEvent event) {
+		TreeItem selection = productTreeView.getSelectionModel().getSelectedItem();
 
+		if (selection != null && selection.getValue() instanceof Product) { //If the selection is a product
+			Product product = (Product) selection.getValue();
+
+			//Description
+			product.setDescription(descriptionTextArea.getText());
+
+			//Categories
+			product.setCategories(containedCategories);
+
+			//Attribute values
+			for (Map.Entry<Button, Pair<Attribute.AttributeValue, Label>> entry: attributeValues.entrySet()) {
+				Attribute.AttributeValue value = entry.getValue().getKey();
+				product.setAttribute(value.getParent(), value.getValue());
+			}
+
+			//TODO: Tags
+
+			List<pim.business.Image> images = new ArrayList<>();
+			for (Node n: productImagePane.getChildren()) {
+				if (n instanceof RemoveableImage) {
+					RemoveableImage image = (RemoveableImage) n;
+					images.add(image.getImage());
+				}
+			}
+			product.setImages(images);
+
+			try {
+				pim.saveProduct(product);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@FXML
 	private void uploadButtonOnAction(ActionEvent event) {
 		try {
 			pim.business.Image img = new pim.business.Image(browseTextField.getText());
-			productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
+			productImagePane.getChildren().add(new RemoveableImage(img, this::removeImage));
 		} catch (IllegalArgumentException e) {
 			//TODO: Whatever
 		}
@@ -264,7 +298,7 @@ public class ProductController implements Initializable {
 			//Set images
 			productImagePane.getChildren().clear();
 			for (pim.business.Image img : product.getImages()) {
-				productImagePane.getChildren().add(new RemoveableImage(img.getImage(), this::removeImage));
+				productImagePane.getChildren().add(new RemoveableImage(img, this::removeImage));
 			}
 		} else { //Else clear the fields
 			idLabel.setText("");

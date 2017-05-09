@@ -172,7 +172,18 @@ public class AttributeController implements Initializable {
 
 	@FXML
 	private void saveButtonOnAction(ActionEvent event) {
+		Attribute selection = attributeListView.getSelectionModel().getSelectedItem();
+		if (selection == null) return;
 
+		selection.setName(attributeNameField.getText());
+		selection.setDefaultValue(defaultValue);
+		//TODO:
+		try {
+			pim.saveAttribute(selection);
+			attributeListView.refresh();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void listViewSelectionChanged(Observable observable) {

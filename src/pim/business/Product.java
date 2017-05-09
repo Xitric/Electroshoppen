@@ -1,9 +1,6 @@
 package pim.business;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A business entity representation of a product in the PIM.
@@ -169,6 +166,31 @@ public class Product implements CategoryChangeListener {
 	}
 
 	/**
+	 * Set the categories of this product to the ones in the specified collection.
+	 *
+	 * @param categories the categories to set
+	 */
+	public void setCategories(Collection<Category> categories) {
+		//Remove categories
+		//Prevent concurrent modification
+		List<Category> toRemove = new ArrayList<>();
+		for (Category c: this.categories) {
+			if (! categories.contains(c)) {
+				toRemove.add(c);
+			}
+		}
+
+		for (Category c: toRemove) {
+			removeCategory(c);
+		}
+
+		//Add attributes
+		for (Category c: categories) {
+			addCategory(c);
+		}
+	}
+
+	/**
 	 * Get the categories of this product. This will return a copy of the internal collection.
 	 *
 	 * @return the categories of this product
@@ -300,6 +322,19 @@ public class Product implements CategoryChangeListener {
 	 */
 	public void removeImage(Image image) {
 		this.images.remove(image);
+	}
+
+	/**
+	 * Set the images of this product to the ones in the specified collection.
+	 *
+	 * @param images the images to set
+	 */
+	public void setImages(Collection<Image> images) {
+		//Remove images
+		this.images.removeIf(image -> !images.contains(image));
+
+		//Add images
+		this.images.addAll(images);
 	}
 
 	/**

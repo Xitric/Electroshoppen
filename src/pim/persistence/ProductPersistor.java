@@ -170,11 +170,11 @@ class ProductPersistor {
 	public void saveProducts(Collection<Product> products) throws IOException {
 		Connection connection = dbf.getConnection();
 
-		try (PreparedStatement storeProductData = connection.prepareStatement("INSERT INTO product VALUES (?, ?, ?, ?) ON CONFLICT (productid) DO UPDATE SET name = Excluded.name, price = EXCLUDED.price;");
+		try (PreparedStatement storeProductData = connection.prepareStatement("INSERT INTO product VALUES (?, ?, ?, ?) ON CONFLICT (productid) DO UPDATE SET name = Excluded.name, price = EXCLUDED.price, description = Excluded.description;");
 		     PreparedStatement storeProductDataNew = connection.prepareStatement("INSERT INTO product VALUES (DEFAULT , ?, ?, ?) RETURNING productid;");
 		     PreparedStatement removeProductCategories = connection.prepareStatement("DELETE FROM productcategory WHERE productid = ?;");
 		     PreparedStatement addProductCategory = connection.prepareStatement("INSERT INTO productcategory VALUES(?, ?);");
-		     PreparedStatement addAttributeValue = connection.prepareStatement("INSERT INTO attributevalue VALUES(?, ?, ?);");
+		     PreparedStatement addAttributeValue = connection.prepareStatement("INSERT INTO attributevalue VALUES(?, ?, ?) ON CONFLICT (attributeid, productid) DO UPDATE SET value = Excluded.value;");
 		     PreparedStatement removeProductTags = connection.prepareStatement("DELETE FROM producttag WHERE productid = ?");
 		     PreparedStatement saveProductTags = connection.prepareStatement("INSERT INTO producttag VALUES(?, ?)");
 		     PreparedStatement removeProductImages = connection.prepareStatement("DELETE FROM image WHERE productid = ?");
