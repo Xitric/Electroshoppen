@@ -12,9 +12,13 @@ import javafx.scene.layout.GridPane;
 import pim.business.Attribute;
 import pim.business.Category;
 import pim.business.PIM;
+
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * @author Kasper
