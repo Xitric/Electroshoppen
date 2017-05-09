@@ -13,8 +13,9 @@ import java.util.Set;
  */
 public class Product implements CategoryChangeListener {
 
-	private final int id;
+	private int id;
 	private String name;
+	private String description;
 	private double price;
 	private Set<Category> categories;
 	private Set<Attribute.AttributeValue> attributes;
@@ -24,13 +25,15 @@ public class Product implements CategoryChangeListener {
 	/**
 	 * Constructs a new product.
 	 *
-	 * @param id    the id of the product
-	 * @param name  the name of the product
-	 * @param price the price of the product
+	 * @param id          the id of the product
+	 * @param name        the name of the product
+	 * @param description the description of the product
+	 * @param price       the price of the product
 	 */
-	public Product(int id, String name, double price) {
+	public Product(int id, String name, String description, double price) {
 		this.id = id;
 		this.name = name;
+		this.description = description;
 		this.price = price;
 
 		//Initialize lists
@@ -41,12 +44,33 @@ public class Product implements CategoryChangeListener {
 	}
 
 	/**
+	 * Test whether the id of this product is valid.
+	 *
+	 * @return true if the id is valid, false otherwise
+	 */
+	public boolean hasValidID() {
+		return id >= 0;
+	}
+
+	/**
 	 * Get the id of this product.
 	 *
 	 * @return the id of this product
 	 */
 	public int getID() {
 		return id;
+	}
+
+	/**
+	 * Set the id of this product. This operation will be ignored if the id is already set. The purpose of this method
+	 * is to allow the persistence layer to assign an id to a product created in the domain layer.
+	 *
+	 * @param id the id of the product
+	 */
+	public void setID(int id) {
+		if (this.id < 0) {
+			this.id = id;
+		}
 	}
 
 	/**
@@ -65,6 +89,24 @@ public class Product implements CategoryChangeListener {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * Get the description of this product.
+	 *
+	 * @return the description of this product
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * Set the description of this product.
+	 *
+	 * @param description the description of this product
+	 */
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	/**

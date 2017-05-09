@@ -1,6 +1,6 @@
 package pim.business;
 
-import pim.persistence.PersistenceMediator;
+import pim.persistence.PersistenceFacade;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,15 +16,15 @@ import java.util.stream.Collectors;
  */
 public class CategoryManager {
 
-	private final PersistenceMediator persistence;
+	private final PersistenceFacade persistence;
 	private HashMap<String, Category> categories;
 
 	/**
 	 * Constructs a new category manager.
 	 *
-	 * @param persistence the persistence mediator
+	 * @param persistence the persistence facade
 	 */
-	public CategoryManager(PersistenceMediator persistence) {
+	public CategoryManager(PersistenceFacade persistence) {
 		categories = new HashMap<>();
 		this.persistence = persistence;
 	}
@@ -73,7 +73,6 @@ public class CategoryManager {
 	public Category getCategory(String categoryName) throws IOException {
 		//Look in memory first
 		Category c = categories.get(categoryName);
-
 		//If this failed, look in persistence. This might also fail, leaving c as null
 		if (c == null) {
 			c = persistence.getCategoryByName(categoryName);
@@ -93,4 +92,14 @@ public class CategoryManager {
 		return categories.values().stream()
 				.filter(category -> category.hasAttribute(attribute)).collect(Collectors.toSet());
 	}
+
+	public void addCategory (Category categoryName) throws IOException {
+		persistence.saveCategory(categoryName);
+	}
+
+	public void deleteCategory (String categoryName) throws IOException {
+		categories.remove(categoryName);
+		persistence.deleteCategory(categoryName);
+	}
+
 }

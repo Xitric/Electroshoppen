@@ -1,10 +1,9 @@
 package pim.business;
 
-import pim.persistence.PersistenceMediator;
+import pim.persistence.PersistenceFacade;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -17,14 +16,14 @@ import java.util.Set;
 public class AttributeManager {
 
 	private final HashMap<Integer, Attribute> attributes;
-	private final PersistenceMediator persistence;
+	private final PersistenceFacade persistence;
 
 	/**
 	 * Constructs a new attribute manager.
 	 *
-	 * @param persistence the persistence mediator
+	 * @param persistence the persistence facade
 	 */
-	public AttributeManager(PersistenceMediator persistence) {
+	public AttributeManager(PersistenceFacade persistence) {
 		attributes = new HashMap<>();
 		this.persistence = persistence;
 	}
@@ -97,33 +96,23 @@ public class AttributeManager {
 	}
 
 	/**
-	 * Register a new attribute.
-	 *
-	 * @param name         the name of the attribute
-	 * @param defaultValue the default value of the attribute
-	 * @param legalValues  the legal values of the attribute, or null if all values are allowed
-	 * @return the id of the new attribute
-	 * @throws IOException if something goes wrong
-	 */
-	public int registerAttribute(String name, Object defaultValue, Set<Object> legalValues) throws IOException {
-		return persistence.createAttribute(name, defaultValue, legalValues == null ? new HashSet<>() : legalValues);
-	}
-
-	/**
 	 * Save the information about the specified attribute in the database.
 	 *
 	 * @param attribute the attribute to save
+	 * @throws IOException if something goes wrong
 	 */
-	public void saveAttribute(Attribute attribute) {
+	public void saveAttribute(Attribute attribute) throws IOException {
 		persistence.saveAttribute(attribute);
+		attributes.put(attribute.getID(), attribute);
 	}
 
 	/**
 	 * Delete the specified attribute in the database.
 	 *
 	 * @param attributeID the id of the attribute
+	 * @throws IOException if something goes wrong
 	 */
-	public void deleteAttribute(int attributeID) {
+	public void deleteAttribute(int attributeID) throws IOException {
 		attributes.remove(attributeID);
 		persistence.deleteAttribute(attributeID);
 	}
