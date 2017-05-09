@@ -14,6 +14,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.util.Pair;
 import pim.business.*;
 
 import java.io.File;
@@ -23,6 +24,7 @@ import java.util.*;
 
 /**
  * @author Kasper
+ * @author Mikkel
  */
 public class ProductController implements Initializable {
 
@@ -72,7 +74,7 @@ public class ProductController implements Initializable {
 	private ObservableList<Category> availableCategories;
 	private ObservableList<Category> containedCategories;
 
-	private Map<Button, Attribute.AttributeValue> attributeValues;
+	private Map<Button, Pair<Attribute.AttributeValue, Label>> attributeValues;
 
 	/**
 	 * The mediator for the business layer.
@@ -248,7 +250,7 @@ public class ProductController implements Initializable {
 				attributeVBox.getChildren().add(valueBox);
 
 				//Add to map for lookup
-				attributeValues.put(changeButton, value);
+				attributeValues.put(changeButton, new Pair<>(value, valueLabel));
 			}
 
 			//Set tags
@@ -282,7 +284,9 @@ public class ProductController implements Initializable {
 	private void attributeValueEditOnAction(ActionEvent event) {
 		if (event.getSource() instanceof Button) {
 			Button button = (Button) event.getSource();
-			Attribute.AttributeValue attributeValue = attributeValues.get(button);
+			Attribute.AttributeValue attributeValue = attributeValues.get(button).getKey();
+			Label attributeLabel = attributeValues.get(button).getValue();
+
 			if (attributeValue != null) {
 				if (attributeValue.getParent().getLegalValues() == null) { //Unrestricted
 					//Show attribute dialog and get result
@@ -292,11 +296,8 @@ public class ProductController implements Initializable {
 					//If a value was selected, update it
 					if (result.isPresent()) {
 						Attribute.AttributeValue newValue = attributeValue.getParent().createValue(result.get());
-						attributeValues.put(button, newValue);
-
-						//TODO: Update label in a better way
-						//Please don't kill me, I know that this is the ugliest fucking code you have ever seen, but it is getting late!
-						((Label)((HBox)button.getParent()).getChildren().get(1)).setText(newValue.getValue().toString());
+						attributeValues.put(button, new Pair<>(newValue, attributeLabel));
+						attributeLabel.setText(newValue.toString());
 					}
 				} else { //Restricted
 					//TODO: Show list of possibilities. Remove this code
@@ -307,11 +308,8 @@ public class ProductController implements Initializable {
 					//If a value was selected, update it
 					if (result.isPresent()) {
 						Attribute.AttributeValue newValue = attributeValue.getParent().createValue(result.get());
-						attributeValues.put(button, newValue);
-
-						//TODO: Update label in a better way
-						//Please don't kill me, I know that this is the ugliest fucking code you have ever seen, but it is getting late!
-						((Label)((HBox)button.getParent()).getChildren().get(1)).setText(newValue.getValue().toString());
+						attributeValues.put(button, new Pair<>(newValue, attributeLabel));
+						attributeLabel.setText(newValue.toString());
 					}
 				}
 			}
