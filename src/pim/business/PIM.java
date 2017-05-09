@@ -146,11 +146,7 @@ public interface PIM {
 	 */
 	void deleteAttributeFromCategory(String categoryName) throws IOException;
 
-	void deleteCategory (String categoryName);
-
 	void addCategory (String categoryName);
-
-	void addCategory(String categoryName);
 
 	void removeCategory(String categoryName);
 
