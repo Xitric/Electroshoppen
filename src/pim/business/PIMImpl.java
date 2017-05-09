@@ -123,6 +123,11 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
+	public void addImage(String url) {
+
+	}
+
+	@Override
 	public void removeImage(String url) throws IOException {
 		productManager.removeImage(url);
 	}
@@ -208,7 +213,7 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public void deleteCategory(String categoryName) {
+	public void removeCategory(String categoryName) {
 		try {
 
 			if (categoryManager.getCategory(categoryName) != null) {
@@ -231,6 +236,7 @@ public class PIMImpl implements PIM {
 			e.printStackTrace();
 		}
 	}
+
 
 
 }

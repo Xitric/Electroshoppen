@@ -40,6 +40,12 @@ public interface PIM {
 	BufferedImage getImage(String url) throws IOException;
 
 	/**
+	 * Add image with the given ulr
+	 * @param url the url of the image
+	 */
+	void addImage(String url);
+
+	/**
 	 * Remove image with the given url
 	 *
 	 * @param url the url of the image
@@ -140,8 +146,9 @@ public interface PIM {
 	 */
 	void deleteAttributeFromCategory(String categoryName) throws IOException;
 
-	void deleteCategory (String categoryName);
-
 	void addCategory (String categoryName);
+
+	void removeCategory(String categoryName);
+
 
 }
