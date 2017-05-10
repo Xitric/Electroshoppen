@@ -13,7 +13,6 @@ import javafx.scene.control.TextInputDialog;
 import pim.business.Attribute;
 import pim.business.Category;
 import pim.business.PIM;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
