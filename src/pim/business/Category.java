@@ -1,7 +1,6 @@
 package pim.business;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A category is used to group products. A category can also have attributes, that the products in the category will
@@ -77,6 +76,31 @@ public class Category implements Comparable<Category> {
 			for (CategoryChangeListener listener : changeListeners) {
 				listener.attributeRemoved(attribute);
 			}
+		}
+	}
+
+	/**
+	 * Set the attributes of this category to the ones in the specified collection.
+	 *
+	 * @param attributes the attributes to set
+	 */
+	public void setAttributes(Collection<Attribute> attributes) {
+		//Remove attributes
+		//Prevent concurrent modification
+		List<Attribute> toRemove = new ArrayList<>();
+		for (Attribute a: this.attributes) {
+			if (! attributes.contains(a)) {
+				toRemove.add(a);
+			}
+		}
+
+		for (Attribute a: toRemove) {
+			removeAttribute(a);
+		}
+
+		//Add attributes
+		for (Attribute a: attributes) {
+			addAttribute(a);
 		}
 	}
 

@@ -41,6 +41,7 @@ public interface PIM {
 
 	/**
 	 * Add image with the given ulr
+	 *
 	 * @param url the url of the image
 	 */
 	void addImage(String url);
@@ -69,6 +70,14 @@ public interface PIM {
 	 * @throws IOException if the operation failed
 	 */
 	List<Product> getProducts() throws IOException;
+
+	/**
+	 * Save the specified product.
+	 *
+	 * @param product the product to save
+	 * @throws IOException if the operation failed
+	 */
+	void saveProduct(Product product) throws IOException;
 
 	/**
 	 * To remove an attribute from the PIM. When removing an attribute it will also be removed from all the products and
@@ -121,7 +130,15 @@ public interface PIM {
 	 */
 	List<Category> getCategories() throws IOException;
 
-	Category getCategory (String categoryName);
+	/**
+	 * Get the category with the specified name.
+	 *
+	 * @param categoryName the name of the category
+	 * @return the category with the specified name
+	 * @throws IOException if the operation failed
+	 */
+	Category getCategory(String categoryName) throws IOException;
+
 	/**
 	 * Get all the attributes for the selected category
 	 *
@@ -139,16 +156,26 @@ public interface PIM {
 	List<Attribute> getAttributesNotInTheCategory(String categoryName) throws IOException;
 
 	/**
-	 * Remove an attribute from the selected category
+	 * Save the specified category.
 	 *
-	 * @param categoryName name of the selected category
+	 * @param category the category to save
 	 * @throws IOException if the operation failed
 	 */
-	void deleteAttributeFromCategory(String categoryName) throws IOException;
+	void saveCategory(Category category) throws IOException;
 
-	void addCategory (String categoryName);
+	/**
+	 * Add the specified category.
+	 *
+	 * @param categoryName the name of the category
+	 * @throws IOException if the operation failed
+	 */
+	void addCategory(String categoryName) throws IOException;
 
-	void removeCategory(String categoryName);
-
-
+	/**
+	 * Remove the specified category.
+	 *
+	 * @param categoryName the name of the category
+	 * @throws IOException if the operation failed
+	 */
+	void removeCategory(String categoryName) throws IOException;
 }

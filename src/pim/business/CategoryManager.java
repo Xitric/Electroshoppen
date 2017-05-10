@@ -93,6 +93,10 @@ public class CategoryManager {
 				.filter(category -> category.hasAttribute(attribute)).collect(Collectors.toSet());
 	}
 
+	public void saveCategory(Category category) throws IOException {
+		persistence.saveCategory(category);
+	}
+
 	public void addCategory (Category categoryName) throws IOException {
 		persistence.saveCategory(categoryName);
 	}

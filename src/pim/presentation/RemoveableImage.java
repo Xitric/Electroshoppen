@@ -9,7 +9,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
-import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
 
 /**
@@ -23,20 +22,23 @@ class RemoveableImage extends StackPane {
 	private final int HEIGHT = 200;
 	private final Consumer<RemoveableImage> removeListener;
 
+	private pim.business.Image image;
+
 	/**
 	 * Constructs a new control element consisting of an image with a close button in the top-right corner.
 	 *
-	 * @param bimg the buffered image to display
+	 * @param image the image to display
 	 */
-	RemoveableImage(BufferedImage bimg, Consumer<RemoveableImage> removeListener) {
+	RemoveableImage(pim.business.Image image, Consumer<RemoveableImage> removeListener) {
 		super();
+		this.image = image;
 
 		getStyleClass().add("RemoveableImage");
 		getStylesheets().add("pim/presentation/removeableImage.css");
 
 		//Set up canvas with image
 		Canvas canvas = new Canvas(WIDTH, HEIGHT);
-		Image img = SwingFXUtils.toFXImage(bimg, null);
+		Image img = SwingFXUtils.toFXImage(image.getImage(), null);
 
 		//Keep the aspect ratio of the image and center on either horizontal or vertical axis
 		double aspectRatio = img.getWidth() / img.getHeight();
@@ -66,6 +68,15 @@ class RemoveableImage extends StackPane {
 
 		closeButton.setOnAction(this::closeButtonOnAction);
 		this.removeListener = removeListener;
+	}
+
+	/**
+	 * Get the image.
+	 *
+	 * @return the image
+	 */
+	public pim.business.Image getImage() {
+		return image;
 	}
 
 	private void closeButtonOnAction(ActionEvent event) {

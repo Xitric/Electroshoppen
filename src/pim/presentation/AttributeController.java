@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import pim.business.Attribute;
 import pim.business.PIM;
 
@@ -33,6 +35,9 @@ public class AttributeController implements Initializable {
 	private TextField attributeDefaultValueField;
 
 	@FXML
+	private Button editDefaultButton;
+
+	@FXML
 	private Label attributeDefaultTypeLabel;
 
 	@FXML
@@ -43,6 +48,8 @@ public class AttributeController implements Initializable {
 	private ObservableList<Object> attributeLegalValuesList;
 
 	private Alert confirmationDialog;
+
+	private Object defaultValue;
 
 	/**
 	 * The mediator for the business layer.
@@ -62,6 +69,8 @@ public class AttributeController implements Initializable {
 		confirmationDialog.setTitle("Delete attribute");
 		confirmationDialog.setHeaderText("Confirm deletion");
 		confirmationDialog.setContentText("Are you sure that you wish to delete this attribute?");
+
+		editDefaultButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("../../gear.png"))));
 	}
 
 	/**
@@ -132,6 +141,19 @@ public class AttributeController implements Initializable {
 	}
 
 	@FXML
+	private void editDefaultButtonOnAction(ActionEvent event) {
+		//Show attribute dialog and get result
+		Optional result = ValueSelectorFactory.getDialogValueSelectorForType(
+				ValueSelectorFactory.AttributeType.fromClass(defaultValue.getClass())).showAndWait();
+
+		//If a value was selected, update it
+		if (result.isPresent()) {
+			defaultValue = attributeListView.getSelectionModel().getSelectedItem().createValue(result.get()).getValue();
+			attributeDefaultValueField.setText(defaultValue.toString());
+		}
+	}
+
+	@FXML
 	private void removeButtonOnAction(ActionEvent event) {
 		Attribute selection = attributeListView.getSelectionModel().getSelectedItem();
 		if (selection == null) return;
@@ -148,6 +170,22 @@ public class AttributeController implements Initializable {
 		}
 	}
 
+	@FXML
+	private void saveButtonOnAction(ActionEvent event) {
+		Attribute selection = attributeListView.getSelectionModel().getSelectedItem();
+		if (selection == null) return;
+
+		selection.setName(attributeNameField.getText());
+		selection.setDefaultValue(defaultValue);
+		//TODO:
+		try {
+			pim.saveAttribute(selection);
+			attributeListView.refresh();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void listViewSelectionChanged(Observable observable) {
 		Attribute selection = attributeListView.getSelectionModel().getSelectedItem();
 
@@ -157,6 +195,8 @@ public class AttributeController implements Initializable {
 			attributeNameField.setText("");
 			attributeDefaultValueField.setText("");
 			attributeDefaultTypeLabel.setText("");
+			defaultValue = null;
+			editDefaultButton.setDisable(true);
 			attributeLegalValuesList.clear();
 		} else {
 			//Set values
@@ -164,6 +204,8 @@ public class AttributeController implements Initializable {
 			attributeNameField.setText(selection.getName());
 			attributeDefaultValueField.setText(selection.getDefaultValue().toString());
 			attributeDefaultTypeLabel.setText("[" + selection.getDefaultValue().getClass().getSimpleName() + "]");
+			defaultValue = selection.getDefaultValue();
+			editDefaultButton.setDisable(false);
 
 			Set<Object> legals = selection.getLegalValues();
 			if (legals == null) {

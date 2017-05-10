@@ -1,9 +1,6 @@
 package pim.business;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A business entity representation of a product in the PIM.
@@ -169,6 +166,31 @@ public class Product implements CategoryChangeListener {
 	}
 
 	/**
+	 * Set the categories of this product to the ones in the specified collection.
+	 *
+	 * @param categories the categories to set
+	 */
+	public void setCategories(Collection<Category> categories) {
+		//Remove categories
+		//Prevent concurrent modification
+		List<Category> toRemove = new ArrayList<>();
+		for (Category c: this.categories) {
+			if (! categories.contains(c)) {
+				toRemove.add(c);
+			}
+		}
+
+		for (Category c: toRemove) {
+			removeCategory(c);
+		}
+
+		//Add attributes
+		for (Category c: categories) {
+			addCategory(c);
+		}
+	}
+
+	/**
 	 * Get the categories of this product. This will return a copy of the internal collection.
 	 *
 	 * @return the categories of this product
@@ -193,14 +215,22 @@ public class Product implements CategoryChangeListener {
 	 *
 	 * @param attribute the attribute to set the value for
 	 * @param value     the value to set
+	 * @throws IllegalArgumentException if the value is illegal for the specified attribute
 	 */
 	public void setAttribute(Attribute attribute, Object value) {
-		//Remove the existing value for this attribute
-		boolean attributeExists = attributes.removeIf(attributeValue -> attributeValue.getParent() == attribute);
-		if (!attributeExists) return;
+		try {
+			//Try to construct attribute value. If it fails, the rest is skipped
+			Attribute.AttributeValue aVal = attribute.createValue(value);
 
-		//Add new value
-		attributes.add(attribute.createValue(value));
+			//Remove the existing value for this attribute
+			boolean attributeExists = attributes.removeIf(attributeValue -> attributeValue.getParent() == attribute);
+			if (!attributeExists) return;
+
+			//Add new value
+			attributes.add(aVal);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Illegal value for attribute!", e);
+		}
 	}
 
 	/**
@@ -295,6 +325,19 @@ public class Product implements CategoryChangeListener {
 	}
 
 	/**
+	 * Set the images of this product to the ones in the specified collection.
+	 *
+	 * @param images the images to set
+	 */
+	public void setImages(Collection<Image> images) {
+		//Remove images
+		this.images.removeIf(image -> !images.contains(image));
+
+		//Add images
+		this.images.addAll(images);
+	}
+
+	/**
 	 * Get the set of images for this product. This returns a copy of the internal set.
 	 *
 	 * @return the set of images
@@ -312,7 +355,7 @@ public class Product implements CategoryChangeListener {
 	public void attributeAdded(Attribute attribute) {
 		//Ensure that the attribute is not already present
 		if (!getAllAttributes().contains(attribute)) {
-			setAttribute(attribute, attribute.getDefaultValue());
+			attributes.add(attribute.createValue());
 		}
 	}
 

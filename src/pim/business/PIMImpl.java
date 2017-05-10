@@ -124,7 +124,7 @@ public class PIMImpl implements PIM {
 
 	@Override
 	public void addImage(String url) {
-
+		//TODO
 	}
 
 	@Override
@@ -140,6 +140,11 @@ public class PIMImpl implements PIM {
 	@Override
 	public List<Product> getProducts() throws IOException {
 		return new ArrayList<>(productManager.getProducts());
+	}
+
+	@Override
+	public void saveProduct(Product product) throws IOException {
+		productManager.saveProduct(product);
 	}
 
 	@Override
@@ -176,6 +181,7 @@ public class PIMImpl implements PIM {
 
 	@Override
 	public List<Category> getCategoriesWithAttribute(int attributeID) throws IOException {
+		//TODO
 		return null;
 	}
 
@@ -185,8 +191,8 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public Category getCategory(String categoryName) {
-		return null;
+	public Category getCategory(String categoryName) throws IOException {
+		return categoryManager.getCategory(categoryName);
 	}
 
 	@Override
@@ -203,40 +209,24 @@ public class PIMImpl implements PIM {
 	}
 
 	@Override
-	public void deleteAttributeFromCategory(String categoryName) throws IOException {
-		//	    try{
-		//
-		//
-		//        }catch (IOException e){
-		//            e.printStackTrace();
-		//        }
+	public void saveCategory(Category category) throws IOException {
+		categoryManager.saveCategory(category);
 	}
 
 	@Override
-	public void removeCategory(String categoryName) {
-		try {
-
-			if (categoryManager.getCategory(categoryName) != null) {
-				categoryManager.deleteCategory(categoryName);
-			}
-		} catch (IOException e){
-			e.printStackTrace();
+	public void removeCategory(String categoryName) throws IOException {
+		if (categoryManager.getCategory(categoryName) != null) {
+			categoryManager.deleteCategory(categoryName);
 		}
 	}
 
 	@Override
-	public void addCategory(String categoryName) {
-		try{
-			if(!categoryManager.getCategories().contains(categoryName)){
-				Category c = categoryManager.createCategory(categoryName);
-				persistence.saveCategory(c);
-
-			}
-		} catch (IOException e){
-			e.printStackTrace();
+	public void addCategory(String categoryName) throws IOException {
+		//If no category exists with the specified name
+		//TODO: Could we delegate this responsibility to the database?
+		if (categoryManager.getCategories().stream().map(Category::getName).noneMatch(categoryName::equals)) {
+			Category c = categoryManager.createCategory(categoryName);
+			categoryManager.addCategory(c);
 		}
 	}
-
-
-
 }
