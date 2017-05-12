@@ -13,7 +13,7 @@ public class Tag {
 	 *
 	 * @param name name of the tag
 	 */
-	public Tag(String name) {
+	Tag(String name) {
 		this.name = name;
 	}
 

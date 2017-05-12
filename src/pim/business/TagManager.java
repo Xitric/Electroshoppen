@@ -10,7 +10,7 @@ import java.util.HashMap;
  * @author mstruntze
  * @author Kasper
  */
-public class TagManager {
+class TagManager {
 
 	private HashMap<String, Tag> tags;
 	private final PersistenceFacade persistence;

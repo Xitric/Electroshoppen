@@ -4,7 +4,6 @@ import pim.persistence.PersistenceFacade;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Manages loading products from the persistence layer and storing them in memory for faster retrieval. This manager
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
  *
  * @author Kasper
  */
-public class ProductManager {
+class ProductManager {
 
 	private final Map<Integer, Product> products;
 	private final PersistenceFacade persistence;
@@ -106,14 +105,14 @@ public class ProductManager {
 	}
 
 	/**
-	 * Get the products in the specified category that are currently in memory.
+	 * Remove the specified category from the currently loaded products.
 	 *
-	 * @param category the category
-	 * @return the products in the specified category
+	 * @param category the category to remove
 	 */
-	public Set<Product> getLoadedProductsByCategory(Category category) {
-		return products.values().stream()
-				.filter(product -> product.hasCategory(category)).collect(Collectors.toSet());
+	public void removeCategoryFromProducts(Category category) {
+		for (Product p: products.values()) {
+			p.removeCategory(category);
+		}
 	}
 
 	/**

@@ -31,14 +31,15 @@ public class Attribute implements Comparable<Attribute> {
 	private Object defaultValue;
 
 	/**
-	 * Constructs a new attribute with the specified name and with a missing id. The id is generated when the attribute
-	 * is saved to the database for the first time.
+	 * Constructs a new attribute with the specified name and with a missing id. The id should be generated when the
+	 * attribute is saved for the first time.
 	 *
 	 * @param name         the name of the attribute
 	 * @param defaultValue the default value of the attribute
+	 * @param legalValues  the set of legal values
 	 */
-	public Attribute(String name, Object defaultValue) {
-		this(-1, name, defaultValue);
+	Attribute(String name, Object defaultValue, Set<Object> legalValues) {
+		this(-1, name, defaultValue, legalValues);
 	}
 
 	/**
@@ -48,7 +49,7 @@ public class Attribute implements Comparable<Attribute> {
 	 * @param name         the name of the attribute
 	 * @param defaultValue the default value of the attribute
 	 */
-	public Attribute(int id, String name, Object defaultValue) {
+	Attribute(int id, String name, Object defaultValue) {
 		this.id = id;
 		this.name = name;
 		this.defaultValue = defaultValue;
@@ -62,9 +63,9 @@ public class Attribute implements Comparable<Attribute> {
 	 * @param id           the id of the attribute
 	 * @param name         the name of the attribute
 	 * @param defaultValue the default value of the attribute
-	 * @param legalValues  the list of legal values
+	 * @param legalValues  the set of legal values
 	 */
-	public Attribute(int id, String name, Object defaultValue, Set<Object> legalValues) {
+	Attribute(int id, String name, Object defaultValue, Set<Object> legalValues) {
 		//Ensure that default value is among legal values, if any
 		if (legalValues != null && !legalValues.contains(defaultValue)) {
 			throw new IllegalArgumentException("Default value is not legal!");

@@ -3,6 +3,7 @@ package pim.business;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Interface describing the functionality that must be provided by all PIM implementations.
@@ -97,6 +98,16 @@ public interface PIM {
 	void saveAttribute(Attribute attribute) throws IOException;
 
 	/**
+	 * Create a new attribute with the specified values.
+	 *
+	 * @param name         the name of the attribute
+	 * @param defaultValue the default value of the attribute
+	 * @param legalValues  allowed values for the attribute
+	 * @throws IOException if the operation failed
+	 */
+	Attribute createAttribute(String name, Object defaultValue, Set<Object>legalValues) throws IOException;
+
+	/**
 	 * Get a list of all attributes from the PIM.
 	 *
 	 * @return a list of all attributes, or null if the operation failed
@@ -164,15 +175,16 @@ public interface PIM {
 	void saveCategory(Category category) throws IOException;
 
 	/**
-	 * Add the specified category.
+	 * Create a new category with the specified name, if such a category does not already exist.
 	 *
 	 * @param categoryName the name of the category
 	 * @throws IOException if the operation failed
+	 * @throws IllegalArgumentException if a category with the specified name already exists
 	 */
-	void addCategory(String categoryName) throws IOException;
+	Category createCategory(String categoryName) throws IOException;
 
 	/**
-	 * Remove the specified category.
+	 * Remove the specified category from the PIM.
 	 *
 	 * @param categoryName the name of the category
 	 * @throws IOException if the operation failed

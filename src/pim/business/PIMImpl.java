@@ -14,7 +14,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Kasper
  */
-public class PIMImpl implements PIM {
+class PIMImpl implements PIM {
 
 	/**
 	 * Facade for the persistence layer.
@@ -154,19 +154,20 @@ public class PIMImpl implements PIM {
 		//Remove attribute from all categories (and thus also products) in memory. If the attribute is null, then no
 		//categories or products in memory are referring to it, and this step can be safely skipped
 		if (attribute != null) {
-			Set<Category> categories = categoryManager.getLoadedCategoriesWithAttribute(attribute);
-			for (Category category : categories) {
-				category.removeAttribute(attribute);
-			}
+			categoryManager.removeAttributeFromCategories(attribute);
 		}
 
-		//Delete attribute in database. This automatically resolves broken references to it
+		//Delete attribute in persistence. This automatically resolves broken references to it
 		attributeManager.deleteAttribute(attributeID);
 	}
 
 	@Override
 	public void saveAttribute(Attribute attribute) throws IOException {
 		attributeManager.saveAttribute(attribute);
+	}
+
+	public Attribute createAttribute(String name, Object defaultValue, Set<Object>legalValues) throws IOException {
+		return attributeManager.createAttribute(name, defaultValue, legalValues);
 	}
 
 	@Override
@@ -215,18 +216,17 @@ public class PIMImpl implements PIM {
 
 	@Override
 	public void removeCategory(String categoryName) throws IOException {
-		if (categoryManager.getCategory(categoryName) != null) {
-			categoryManager.deleteCategory(categoryName);
+		//Category needs oly be removed fro loaded products if the category itself is loaded
+		Category c = categoryManager.getCategoryIfLoaded(categoryName);
+		if (c != null) {
+			productManager.removeCategoryFromProducts(c);
 		}
+
+		categoryManager.deleteCategory(categoryName);
 	}
 
 	@Override
-	public void addCategory(String categoryName) throws IOException {
-		//If no category exists with the specified name
-		//TODO: Could we delegate this responsibility to the database?
-		if (categoryManager.getCategories().stream().map(Category::getName).noneMatch(categoryName::equals)) {
-			Category c = categoryManager.createCategory(categoryName);
-			categoryManager.addCategory(c);
-		}
+	public Category createCategory(String categoryName) throws IOException {
+		return categoryManager.createCategory(categoryName);
 	}
 }

@@ -105,7 +105,7 @@ public class CategoryController implements Initializable {
 		Optional<String> result = dialog.showAndWait();
 		result.ifPresent(name -> {
 			try {
-				pim.addCategory(name);
+				pim.createCategory(name);
 				categoryList.add(pim.getCategory(name));
 				Collections.sort(categoryList);
 			} catch (IOException e) {

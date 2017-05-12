@@ -5,16 +5,14 @@ import pim.persistence.PersistenceFacade;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
- * Manages category creation and ensures no duplicates (same name) are made. Also acts as the central storage of all
- * categories currently in memory.
+ * Manages category creation and ensures no duplicates (same name) are made.
  *
  * @author mstruntze
  * @author Kasper
  */
-public class CategoryManager {
+class CategoryManager {
 
 	private final PersistenceFacade persistence;
 	private HashMap<String, Category> categories;
@@ -30,26 +28,58 @@ public class CategoryManager {
 	}
 
 	/**
-	 * Creates a category if one with the given name does not exist already.
-	 * Otherwise a reference to the existing category will be returned.
+	 * Constructs a category if one with the given name does not exist already. Otherwise a reference to the existing
+	 * category will be returned.
 	 *
-	 * @param name Name of the category.
-	 * @return Returns a reference to the create/existing category with the given name.
+	 * @param name name of the category
+	 * @return a reference to the created/existing category with the given name
 	 */
-	public Category createCategory(String name) {
+	public Category constructCategory(String name) {
 		return categories.computeIfAbsent(name, Category::new);
 	}
 
 	/**
-	 * Creates a category if one with the given name does not exist already.
-	 * Otherwise a reference to the existing category will be returned.
+	 * Constructs a category if one with the given name does not exist already. Otherwise a reference to the existing
+	 * category will be returned.
 	 *
-	 * @param name       Name of the category
-	 * @param attributes The attributes of the category.
-	 * @return Returns a reference to the create/existing category with the given name.
+	 * @param name       name of the category
+	 * @param attributes the attributes of the category
+	 * @return a reference to the created/existing category with the given name
 	 */
-	public Category createCategory(String name, Set<Attribute> attributes) {
-		return categories.computeIfAbsent(name, n -> new Category(n, attributes));
+	public Category constructCategory(String name, Set<Attribute> attributes) {
+		Category c;
+
+		if (categories.get(name) == null) {
+			c = new Category(name, attributes);
+			categories.put(name, c);
+		} else {
+			c = categories.get(name);
+			c.setAttributes(attributes);
+		}
+
+		return c;
+	}
+
+	/**
+	 * Create a new category with the specified name in the PIM, if no such category already exists. This category will
+	 * automatically be saved.
+	 *
+	 * @param name the name of the category
+	 * @return the new category
+	 * @throws IOException              if something goes wrong
+	 * @throws IllegalArgumentException if a category with the specified name already exists
+	 */
+	public Category createCategory(String name) throws IOException {
+		//Ensure that the category does not exist - if it is loaded, we can save a trip to the db
+		if (categories.containsKey(name) || persistence.getCategoryByName(name) != null) {
+			throw new IllegalArgumentException("A category with the name " + name + " already exists!");
+		}
+
+		//Category guaranteed to not exist, so make it
+		Category category = new Category(name);
+		persistence.saveCategory(category);
+		categories.put(name, category); //Add to memory only is save is successful
+		return category;
 	}
 
 	/**
@@ -63,47 +93,56 @@ public class CategoryManager {
 	}
 
 	/**
-	 * Get the category with the specified name. If the category is not in memory, it will be loaded from the
-	 * persistence layer.
+	 * Get the category with the specified name.
 	 *
 	 * @param categoryName the name of the category
 	 * @return the category with the specified name, or null if no such category could be retrieved
 	 * @throws IOException if something goes wrong
 	 */
 	public Category getCategory(String categoryName) throws IOException {
-		//Look in memory first
-		Category c = categories.get(categoryName);
-		//If this failed, look in persistence. This might also fail, leaving c as null
-		if (c == null) {
-			c = persistence.getCategoryByName(categoryName);
-		}
-
-		return c;
+		return persistence.getCategoryByName(categoryName);
 	}
 
 	/**
-	 * Get the set of all categories with the specified attribute in memory. Categories that are not in memory are not
-	 * considered.
+	 * Get the instance of the category with the specified name if it is currently in memory. Otherwise, this method
+	 * will return null.
 	 *
-	 * @param attribute the attribute to filter by
-	 * @return the categories with the specified attribute currently in memory
+	 * @param name the name of the category
+	 * @return the category with the specified name, or null if it is not in memory
 	 */
-	public Set<Category> getLoadedCategoriesWithAttribute(Attribute attribute) {
-		return categories.values().stream()
-				.filter(category -> category.hasAttribute(attribute)).collect(Collectors.toSet());
+	public Category getCategoryIfLoaded(String name) {
+		return categories.get(name);
 	}
 
+	/**
+	 * Remove the specified attribute name from the currently loaded categories.
+	 *
+	 * @param attribute the attribute to remove
+	 */
+	public void removeAttributeFromCategories(Attribute attribute) {
+		for (Category c: categories.values()) {
+			c.removeAttribute(attribute);
+		}
+	}
+
+	/**
+	 * Save the specified category.
+	 *
+	 * @param category the category to save
+	 * @throws IOException if something goes wrong
+	 */
 	public void saveCategory(Category category) throws IOException {
 		persistence.saveCategory(category);
 	}
 
-	public void addCategory (Category categoryName) throws IOException {
-		persistence.saveCategory(categoryName);
-	}
-
-	public void deleteCategory (String categoryName) throws IOException {
-		categories.remove(categoryName);
+	/**
+	 * Delete the category with the specified name.
+	 *
+	 * @param categoryName the name of the category
+	 * @throws IOException if something goes wrong
+	 */
+	public void deleteCategory(String categoryName) throws IOException {
 		persistence.deleteCategory(categoryName);
+		categories.remove(categoryName);
 	}
-
 }

@@ -11,7 +11,7 @@ import java.util.Set;
  *
  * @author Kasper
  */
-public class DataCacheImpl implements DataCache {
+class DataCacheImpl implements DataCache {
 
 	private final ProductManager productManager;
 	private final AttributeManager attributeManager;
@@ -40,22 +40,22 @@ public class DataCacheImpl implements DataCache {
 
 	@Override
 	public Attribute createAttribute(int id, String name, Object defaultValue) {
-		return attributeManager.createAttribute(id, name, defaultValue);
+		return attributeManager.constructAttribute(id, name, defaultValue);
 	}
 
 	@Override
 	public Attribute createAttribute(int id, String name, Object defaultValue, Set<Object> legalValues) {
-		return attributeManager.createAttribute(id, name, defaultValue, legalValues);
+		return attributeManager.constructAttribute(id, name, defaultValue, legalValues);
 	}
 
 	@Override
 	public Category createCategory(String name) {
-		return categoryManager.createCategory(name);
+		return categoryManager.constructCategory(name);
 	}
 
 	@Override
 	public Category createCategory(String name, Set<Attribute> attributes) {
-		return categoryManager.createCategory(name, attributes);
+		return categoryManager.constructCategory(name, attributes);
 	}
 
 	@Override
