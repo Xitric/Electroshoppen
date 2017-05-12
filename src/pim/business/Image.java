@@ -1,13 +1,6 @@
 package pim.business;
 
-import pim.persistence.BufferedImageSerializable;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.Buffer;
-import java.util.Arrays;
 
 /**
  * A representation of an image in the PIM.

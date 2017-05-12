@@ -17,9 +17,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import pim.business.*;
-import pim.persistence.BufferedImageSerializable;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -244,9 +244,9 @@ public class ProductController implements Initializable {
 			if (!(new File(url).isFile() && Arrays.asList(ImageIO.getReaderFileSuffixes()).contains(url.substring(url.lastIndexOf('.') + 1)))) {
 				throw new IllegalArgumentException("The url must refer to a valid image file with one of these types: " + Arrays.toString(ImageIO.getReaderFileSuffixes()));
 			}
-			BufferedImageSerializable img;
+			BufferedImage img;
 			try {
-				img = BufferedImageSerializable.bis(ImageIO.read(new File(url)));
+				img = ImageIO.read(new File(url));
 
 			} catch(IOException e) {
 				throw new IllegalArgumentException("The url must refer to a valid image file with one of these types: " + Arrays.toString(ImageIO.getReaderFileSuffixes()));

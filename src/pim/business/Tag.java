@@ -3,7 +3,7 @@ package pim.business;
 /**
  * Tags are used to loosely group products by a string
  *
- * @author mstruntze
+ * @author Mikkel
  */
 public class Tag {
 	private final String name;

@@ -1,6 +1,5 @@
 package pim.business;
 
-import pim.persistence.BufferedImageSerializable;
 import pim.persistence.DataCache;
 
 import java.awt.image.BufferedImage;

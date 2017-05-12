@@ -1,11 +1,9 @@
 package pim.business;
 
 import erp.business.SupplierIntegrator;
-import pim.persistence.BufferedImageSerializable;
 import pim.persistence.PersistenceFacade;
 import pim.persistence.PersistenceFactory;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
