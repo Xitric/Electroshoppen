@@ -66,6 +66,7 @@ class ProductPersistor {
 			Set<Product> result = buildProducts(productData, productCategoryData, productValueData, productTagData, productImages);
 
 			connection.commit();
+			connection.setAutoCommit(true);
 			//If the set is empty, no product with the specified id was found. Otherwise, the set should contain only
 			//one value, that we return
 			if (result.size() == 0) {
@@ -181,6 +182,7 @@ class ProductPersistor {
 			productTags.close();
 			productImages.close();
 			connection.commit();
+			connection.setAutoCommit(true);
 
 			return products;
 		} catch (SQLException e) {
