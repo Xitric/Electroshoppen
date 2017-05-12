@@ -1,6 +1,7 @@
 package pim.business;
 
 import erp.business.SupplierIntegrator;
+import pim.persistence.BufferedImageSerializable;
 import pim.persistence.PersistenceFacade;
 import pim.persistence.PersistenceFactory;
 
@@ -117,10 +118,6 @@ public class PIMImpl implements PIM {
 		return productManager.getProduct(id);
 	}
 
-	@Override
-	public BufferedImage getImage(String url) throws IOException {
-		return productManager.createImage(url).getImage();
-	}
 
 	@Override
 	public void addImage(String url) {

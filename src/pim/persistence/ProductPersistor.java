@@ -2,6 +2,10 @@ package pim.persistence;
 
 import pim.business.*;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -124,7 +128,7 @@ class ProductPersistor {
 	 * @return the resulting set of products
 	 * @throws SQLException if something goes wrong
 	 */
-	private Set<Product> runStringQueries(String string, PreparedStatement getProducts, PreparedStatement getProductCategories, PreparedStatement getProductValues, PreparedStatement getProductTags, PreparedStatement getProductImages) throws SQLException {
+	private Set<Product> runStringQueries(String string, PreparedStatement getProducts, PreparedStatement getProductCategories, PreparedStatement getProductValues, PreparedStatement getProductTags, PreparedStatement getProductImages) throws SQLException, IOException {
 		getProducts.setString(1, string);
 		ResultSet productData = getProducts.executeQuery();
 
@@ -242,7 +246,9 @@ class ProductPersistor {
 				removeProductImages.executeUpdate();
 				saveProductImages.setInt(2, product.getID());
 				for (Image image : product.getImages()) {
-					saveProductImages.setString(1, image.getUrl());
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					ImageIO.write(image.getImage(), "png", baos);
+					saveProductImages.setObject(1, baos.toByteArray());
 					saveProductImages.executeUpdate();
 				}
 
@@ -280,7 +286,7 @@ class ProductPersistor {
 	public Set<Image> getImagesForProduct(int id) throws IOException {
 		Connection connection = dbf.getConnection();
 
-		try (PreparedStatement getImages = connection.prepareStatement("SELECT url FROM image WHERE productid = ?")) {
+		try (PreparedStatement getImages = connection.prepareStatement("SELECT imagedata FROM image WHERE productid = ?")) {
 
 			getImages.setInt(1, id);
 			ResultSet imageData = getImages.executeQuery();
@@ -294,7 +300,7 @@ class ProductPersistor {
 	public Set<Image> getImages() throws IOException {
 		Connection connection = dbf.getConnection();
 
-		try (PreparedStatement getImages = connection.prepareStatement("SELECT url FROM image")) {
+		try (PreparedStatement getImages = connection.prepareStatement("SELECT imagedata FROM image")) {
 
 			ResultSet imageData = getImages.executeQuery();
 
@@ -315,7 +321,7 @@ class ProductPersistor {
 	 * @return a set of all products that could be built from the data
 	 * @throws SQLException if something goes wrong
 	 */
-	private Set<Product> buildProducts(ResultSet productData, ResultSet productCategoryData, ResultSet productValueData, ResultSet productTags, ResultSet productImages) throws SQLException {
+	private Set<Product> buildProducts(ResultSet productData, ResultSet productCategoryData, ResultSet productValueData, ResultSet productTags, ResultSet productImages) throws SQLException, IOException {
 		Map<Integer, Product> products = new HashMap<>();
 
 		//Construct all products
@@ -364,11 +370,12 @@ class ProductPersistor {
 		}
 
 		//Add all images
+		// TODO: Use build images?
 		while (productImages.next()) {
-			String url = productImages.getString(1).trim();
-			Image img = dbf.getCache().createImage(url);
+			BufferedImage img = ImageIO.read(new ByteArrayInputStream(productImages.getBytes(1)));
+			Image image = dbf.getCache().createImage(img);
 			int productID = productImages.getInt(2);
-			products.get(productID).addImage(img);
+			products.get(productID).addImage(image);
 		}
 
 		//Return set of products
@@ -382,12 +389,12 @@ class ProductPersistor {
 	 * @return the set of images
 	 * @throws SQLException if something goes wrong
 	 */
-	private Set<Image> buildImages(ResultSet imageData) throws SQLException {
+	private Set<Image> buildImages(ResultSet imageData) throws SQLException, IOException {
 		Set<Image> images = new HashSet<>();
 
 		while (imageData.next()) {
-			String url = imageData.getString(1).trim();
-			images.add(dbf.getCache().createImage(url));
+			BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageData.getBytes(1)));
+			images.add(dbf.getCache().createImage(img));
 		}
 
 		return images;
