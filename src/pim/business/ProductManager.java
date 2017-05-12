@@ -15,7 +15,7 @@ import java.util.Set;
  *
  * @author Kasper
  */
-class ProductManager {
+class ProductManager implements ProductChangeListener {
 
 	private final Map<Integer, Product> products;
 	private final PersistenceFacade persistence;
@@ -47,6 +47,7 @@ class ProductManager {
 
 		if (products.get(id) == null) {
 			p = new Product(id, name, description, price);
+			p.addChangeListener(this);
 			products.put(id, p);
 		} else {
 			p = products.get(id);
@@ -152,13 +153,20 @@ class ProductManager {
 	}
 
 	/**
-	 * Removes an image from the list of images.
+	 * Called when an image is removed from a product. This will test if no more references to the image exist, and in
+	 * this case remove the image from memory.
 	 *
-	 * @param url the url of the image to remove
+	 * @param image the image that was removed
 	 */
-	//TODO: Remove image from product (id, product)
-	public void removeImage(String url) {
-		//TODO: Free from memory if all references are gone
-		images.remove(url);
+	@Override
+	public void imageRemoved(Image image) {
+		for (Product p : products.values()) {
+			if (p.getImages().contains(image)) {
+				return;
+			}
+		}
+
+		//No products contained the image, so free from memory (automatically removed from db)
+		images.remove(image.getID());
 	}
 }
