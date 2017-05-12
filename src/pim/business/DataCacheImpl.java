@@ -2,6 +2,7 @@ package pim.business;
 
 import pim.persistence.DataCache;
 
+import java.awt.image.BufferedImage;
 import java.util.Set;
 
 /**
@@ -64,7 +65,7 @@ public class DataCacheImpl implements DataCache {
 	}
 
 	@Override
-	public Image createImage(String url) {
-		return productManager.createImage(url);
+	public Image createImage(BufferedImage img) {
+		return productManager.createImage(img);
 	}
 }

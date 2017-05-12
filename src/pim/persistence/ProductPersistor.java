@@ -1,8 +1,15 @@
 package pim.persistence;
 
+import org.postgresql.largeobject.LargeObject;
+import org.postgresql.largeobject.LargeObjectManager;
 import pim.business.*;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,6 +21,7 @@ import java.util.*;
  * so closely linked to products.
  *
  * @author Kasper
+ * @author Mikkel
  */
 class ProductPersistor {
 
@@ -31,11 +39,15 @@ class ProductPersistor {
 	public Product getProductByID(int id) throws IOException {
 		Connection connection = dbf.getConnection();
 
+
+
 		try (PreparedStatement getProduct = connection.prepareStatement("SELECT * FROM product WHERE productid = ?;");
 		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT * FROM productcategory WHERE productid = ?;");
 		     PreparedStatement getProductValues = connection.prepareStatement("SELECT * FROM attributevalue WHERE productid = ?;");
 		     PreparedStatement getProductTags = connection.prepareStatement("SELECT * FROM producttag WHERE productid = ?");
 		     PreparedStatement getProductImages = connection.prepareStatement("SELECT * FROM image WHERE productid = ?")) {
+
+			connection.setAutoCommit(false);
 
 			getProduct.setInt(1, id);
 			ResultSet productData = getProduct.executeQuery();
@@ -54,6 +66,7 @@ class ProductPersistor {
 
 			Set<Product> result = buildProducts(productData, productCategoryData, productValueData, productTagData, productImages);
 
+			connection.commit();
 			//If the set is empty, no product with the specified id was found. Otherwise, the set should contain only
 			//one value, that we return
 			if (result.size() == 0) {
@@ -124,7 +137,7 @@ class ProductPersistor {
 	 * @return the resulting set of products
 	 * @throws SQLException if something goes wrong
 	 */
-	private Set<Product> runStringQueries(String string, PreparedStatement getProducts, PreparedStatement getProductCategories, PreparedStatement getProductValues, PreparedStatement getProductTags, PreparedStatement getProductImages) throws SQLException {
+	private Set<Product> runStringQueries(String string, PreparedStatement getProducts, PreparedStatement getProductCategories, PreparedStatement getProductValues, PreparedStatement getProductTags, PreparedStatement getProductImages) throws SQLException, IOException {
 		getProducts.setString(1, string);
 		ResultSet productData = getProducts.executeQuery();
 
@@ -152,12 +165,25 @@ class ProductPersistor {
 		     PreparedStatement getProductTags = connection.prepareStatement("SELECT * FROM producttag;");
 		     PreparedStatement getProductImages = connection.prepareStatement("SELECT * FROM image")) {
 
+			connection.setAutoCommit(false); // required when we use Large Objects
+
 			ResultSet productData = getProducts.executeQuery();
 			ResultSet productCategoryData = getProductCategories.executeQuery();
 			ResultSet productValueData = getProductValues.executeQuery();
 			ResultSet productTags = getProductTags.executeQuery();
 			ResultSet productImages = getProductImages.executeQuery();
-			return buildProducts(productData, productCategoryData, productValueData, productTags, productImages);
+
+			Set<Product> products = buildProducts(productData, productCategoryData, productValueData, productTags, productImages);
+
+			// Close statements
+			getProducts.close();
+			productCategoryData.close();
+			productValueData.close();
+			productTags.close();
+			productImages.close();
+			connection.commit();
+
+			return products;
 		} catch (SQLException e) {
 			throw new IOException("Unable to read products!", e);
 		}
@@ -178,7 +204,7 @@ class ProductPersistor {
 		     PreparedStatement removeProductTags = connection.prepareStatement("DELETE FROM producttag WHERE productid = ?");
 		     PreparedStatement saveProductTags = connection.prepareStatement("INSERT INTO producttag VALUES(?, ?)");
 		     PreparedStatement removeProductImages = connection.prepareStatement("DELETE FROM image WHERE productid = ?");
-		     PreparedStatement saveProductImages = connection.prepareStatement("INSERT INTO image VALUES(?, ?)")) {
+		     PreparedStatement saveProductImages = connection.prepareStatement("INSERT INTO image (imagedata, productid) VALUES(?, ?)")) {
 
 			//Turn of auto commit to ensure each product is saved fully
 			connection.setAutoCommit(false);
@@ -240,10 +266,30 @@ class ProductPersistor {
 				//Store images
 				removeProductImages.setInt(1, product.getID());
 				removeProductImages.executeUpdate();
+
 				saveProductImages.setInt(2, product.getID());
+
+				LargeObjectManager lobj = connection.unwrap(org.postgresql.PGConnection.class).getLargeObjectAPI();
+
+
 				for (Image image : product.getImages()) {
-					saveProductImages.setString(1, image.getUrl());
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					ImageIO.write(image.getImage(), "png", baos);
+					InputStream is = new ByteArrayInputStream(baos.toByteArray());
+					long oid = lobj.createLO(LargeObjectManager.READ | LargeObjectManager.WRITE);
+					LargeObject obj = lobj.open(oid, LargeObjectManager.WRITE);
+
+					byte buf[] = new byte[2048];
+					int s, tl = 0;
+					while ((s = is.read(buf, 0, 2048)) > 0)
+					{
+						obj.write(buf, 0, s);
+						tl += s;
+					}
+					obj.close();
+					saveProductImages.setLong(1, oid);
 					saveProductImages.executeUpdate();
+					is.close();
 				}
 
 				//Commit per product. This might result in only some of the products being saved, but that should be
@@ -280,7 +326,7 @@ class ProductPersistor {
 	public Set<Image> getImagesForProduct(int id) throws IOException {
 		Connection connection = dbf.getConnection();
 
-		try (PreparedStatement getImages = connection.prepareStatement("SELECT url FROM image WHERE productid = ?")) {
+		try (PreparedStatement getImages = connection.prepareStatement("SELECT imagedata FROM image WHERE productid = ?")) {
 
 			getImages.setInt(1, id);
 			ResultSet imageData = getImages.executeQuery();
@@ -294,7 +340,7 @@ class ProductPersistor {
 	public Set<Image> getImages() throws IOException {
 		Connection connection = dbf.getConnection();
 
-		try (PreparedStatement getImages = connection.prepareStatement("SELECT url FROM image")) {
+		try (PreparedStatement getImages = connection.prepareStatement("SELECT imagedata FROM image")) {
 
 			ResultSet imageData = getImages.executeQuery();
 
@@ -315,7 +361,7 @@ class ProductPersistor {
 	 * @return a set of all products that could be built from the data
 	 * @throws SQLException if something goes wrong
 	 */
-	private Set<Product> buildProducts(ResultSet productData, ResultSet productCategoryData, ResultSet productValueData, ResultSet productTags, ResultSet productImages) throws SQLException {
+	private Set<Product> buildProducts(ResultSet productData, ResultSet productCategoryData, ResultSet productValueData, ResultSet productTags, ResultSet productImages) throws SQLException, IOException {
 		Map<Integer, Product> products = new HashMap<>();
 
 		//Construct all products
@@ -327,6 +373,7 @@ class ProductPersistor {
 
 			products.put(id, dbf.getCache().createProduct(id, name, description, price));
 		}
+		productData.close();
 
 		//Add all product categories
 		while (productCategoryData.next()) {
@@ -340,6 +387,7 @@ class ProductPersistor {
 			} catch (IOException e) {
 			} //The database should guarantee that this exception never occurs
 		}
+		productCategoryData.close();
 
 		//Set all attribute values
 		while (productValueData.next()) {
@@ -354,6 +402,7 @@ class ProductPersistor {
 			} catch (IOException e) {
 			} //The database should guarantee that this exception never occurs
 		}
+		productValueData.close();
 
 		//Add all tags
 		while (productTags.next()) {
@@ -363,13 +412,24 @@ class ProductPersistor {
 			products.get(productID).addTag(t);
 		}
 
+		// access to large object manager (used for images)
+		LargeObjectManager lobj = dbf.getConnection().unwrap(org.postgresql.PGConnection.class).getLargeObjectAPI();
+
 		//Add all images
 		while (productImages.next()) {
-			String url = productImages.getString(1).trim();
-			Image img = dbf.getCache().createImage(url);
-			int productID = productImages.getInt(2);
-			products.get(productID).addImage(img);
+			// Partial source: https://jdbc.postgresql.org/documentation/head/binary-data.html
+			long oid = productImages.getLong(2);
+			LargeObject obj = lobj.open(oid, LargeObjectManager.READ);
+			byte buf[] = new byte[obj.size()];
+			obj.read(buf, 0, obj.size());
+			Image image = dbf.getCache().createImage(ImageIO.read(new ByteArrayInputStream(buf)));
+			obj.close();
+
+			int productID = productImages.getInt(3);
+
+			products.get(productID).addImage(image);
 		}
+		productImages.close();
 
 		//Return set of products
 		return new HashSet<>(products.values());
@@ -382,13 +442,24 @@ class ProductPersistor {
 	 * @return the set of images
 	 * @throws SQLException if something goes wrong
 	 */
-	private Set<Image> buildImages(ResultSet imageData) throws SQLException {
+	private Set<Image> buildImages(ResultSet imageData) throws SQLException, IOException {
 		Set<Image> images = new HashSet<>();
 
+		// access to large object manager (used for images)
+		LargeObjectManager lobj = dbf.getConnection().unwrap(org.postgresql.PGConnection.class).getLargeObjectAPI();
+
 		while (imageData.next()) {
-			String url = imageData.getString(1).trim();
-			images.add(dbf.getCache().createImage(url));
+			// Partial source: https://jdbc.postgresql.org/documentation/head/binary-data.html
+			long oid = imageData.getLong(2);
+			LargeObject obj = lobj.open(oid, LargeObjectManager.READ);
+			byte buf[] = new byte[obj.size()];
+			obj.read(buf, 0, obj.size());
+			Image image = dbf.getCache().createImage(ImageIO.read(new ByteArrayInputStream(buf)));
+			obj.close();
+			images.add(image);
 		}
+
+		imageData.close();
 
 		return images;
 	}

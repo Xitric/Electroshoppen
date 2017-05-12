@@ -10,7 +10,7 @@ import java.util.Set;
  * Manages attribute creation and ensures no duplicates (same id) are made. Also responsible of managing attributes in
  * memory.
  *
- * @author mstruntze
+ * @author Mikkel
  * @author Kasper
  */
 public class AttributeManager {

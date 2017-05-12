@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  * Manages category creation and ensures no duplicates (same name) are made. Also acts as the central storage of all
  * categories currently in memory.
  *
- * @author mstruntze
+ * @author Mikkel
  * @author Kasper
  */
 public class CategoryManager {

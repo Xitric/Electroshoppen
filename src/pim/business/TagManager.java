@@ -7,7 +7,7 @@ import java.util.HashMap;
 /**
  * Manages tags (creation, deletion) and prevents duplication
  *
- * @author mstruntze
+ * @author Mikkel
  * @author Kasper
  */
 public class TagManager {
