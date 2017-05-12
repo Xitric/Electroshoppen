@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Manages category creation and ensures no duplicates (same name) are made.
  *
- * @author mstruntze
+ * @author Mikkel
  * @author Kasper
  */
 class CategoryManager {

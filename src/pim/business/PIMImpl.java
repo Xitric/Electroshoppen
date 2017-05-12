@@ -4,7 +4,6 @@ import erp.business.SupplierIntegrator;
 import pim.persistence.PersistenceFacade;
 import pim.persistence.PersistenceFactory;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
@@ -117,10 +116,6 @@ class PIMImpl implements PIM {
 		return productManager.getProduct(id);
 	}
 
-	@Override
-	public BufferedImage getImage(String url) throws IOException {
-		return productManager.createImage(url).getImage();
-	}
 
 	@Override
 	public void addImage(String url) {

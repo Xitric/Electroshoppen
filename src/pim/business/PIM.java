@@ -38,7 +38,7 @@ public interface PIM {
 	 * @return the image with the specified url
 	 * @throws IOException if the operation failed
 	 */
-	BufferedImage getImage(String url) throws IOException;
+	//BufferedImage getImage(String url) throws IOException;
 
 	/**
 	 * Add image with the given ulr

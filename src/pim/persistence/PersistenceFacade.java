@@ -82,6 +82,10 @@ public interface PersistenceFacade {
 	void deleteProduct(int id) throws IOException;
 
 	/**
+	 * Saves an image
+	 */
+
+	/**
 	 * Get the category with the specified name.
 	 *
 	 * @param name the name of the category

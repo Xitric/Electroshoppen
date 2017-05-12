@@ -18,6 +18,8 @@ import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import pim.business.*;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -236,8 +238,22 @@ public class ProductController implements Initializable {
 	@FXML
 	private void uploadButtonOnAction(ActionEvent event) {
 		try {
-			pim.business.Image img = new pim.business.Image(browseTextField.getText());
-			productImagePane.getChildren().add(new RemoveableImage(img, this::removeImage));
+			String url = browseTextField.getText();
+
+			//Ensure that the url points to a valid image file (the file must exist and have a supported extension)
+			if (!(new File(url).isFile() && Arrays.asList(ImageIO.getReaderFileSuffixes()).contains(url.substring(url.lastIndexOf('.') + 1)))) {
+				throw new IllegalArgumentException("The url must refer to a valid image file with one of these types: " + Arrays.toString(ImageIO.getReaderFileSuffixes()));
+			}
+			BufferedImage img;
+			try {
+				img = ImageIO.read(new File(url));
+
+			} catch(IOException e) {
+				throw new IllegalArgumentException("The url must refer to a valid image file with one of these types: " + Arrays.toString(ImageIO.getReaderFileSuffixes()));
+			}
+
+			pim.business.Image image = new pim.business.Image(img);
+			productImagePane.getChildren().add(new RemoveableImage(image, this::removeImage));
 		} catch (IllegalArgumentException e) {
 			//TODO: Whatever
 		}

@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Manages attribute creation and ensures no duplicates (same id) are made.
  *
- * @author mstruntze
+ * @author Mikkel
  * @author Kasper
  */
 class AttributeManager {

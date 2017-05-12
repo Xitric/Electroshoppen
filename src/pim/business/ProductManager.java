@@ -2,6 +2,7 @@ package pim.business;
 
 import pim.persistence.PersistenceFacade;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
 
@@ -15,7 +16,7 @@ class ProductManager {
 
 	private final Map<Integer, Product> products;
 	private final PersistenceFacade persistence;
-	private HashMap<String, Image> images;
+	private HashMap<BufferedImage, Image> images;
 
 	/**
 	 * Constructs a new product manager.
@@ -143,11 +144,10 @@ class ProductManager {
 	/**
 	 * Creates an image or returns the existing one with the same url if it already exists.
 	 *
-	 * @param url the url of the image
 	 * @return the created image object
 	 */
-	public Image createImage(String url) {
-		return images.computeIfAbsent(url, Image::new);
+	public Image createImage(BufferedImage img) {
+		return images.computeIfAbsent(img, Image::new);
 	}
 
 	/**
