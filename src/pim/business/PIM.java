@@ -1,6 +1,5 @@
 package pim.business;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -32,28 +31,11 @@ public interface PIM {
 	Product getProductInformation(int id) throws IOException;
 
 	/**
-	 * To retrieve an image with the given url.
-	 *
-	 * @param url the url of the image
-	 * @return the image with the specified url
-	 * @throws IOException if the operation failed
-	 */
-	//BufferedImage getImage(String url) throws IOException;
-
-	/**
-	 * Add image with the given ulr
+	 * Create an image from the specified url.
 	 *
 	 * @param url the url of the image
 	 */
-	void addImage(String url);
-
-	/**
-	 * Remove image with the given url
-	 *
-	 * @param url the url of the image
-	 * @throws IOException if the operation failed
-	 */
-	void removeImage(String url) throws IOException;
+	Image createImage(String url) throws IOException;
 
 	/**
 	 * To retrieve products from a specific category

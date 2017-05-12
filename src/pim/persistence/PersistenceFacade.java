@@ -234,6 +234,14 @@ public interface PersistenceFacade {
 	void saveImage(Image image) throws IOException;
 
 	/**
+	 * Save the specified images.
+	 *
+	 * @param images the images to save
+	 * @throws IOException if the operation fails
+	 */
+	void saveImages(Collection<Image> images) throws IOException;
+
+	/**
 	 * Get the data cache used by this persistence facade.
 	 *
 	 * @return the data cache used by this persistence facade

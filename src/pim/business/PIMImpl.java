@@ -118,13 +118,8 @@ class PIMImpl implements PIM {
 
 
 	@Override
-	public void addImage(String url) {
-		//TODO
-	}
-
-	@Override
-	public void removeImage(String url) throws IOException {
-		productManager.removeImage(url);
+	public Image createImage(String url) throws IOException {
+		return productManager.createImage(url);
 	}
 
 	@Override

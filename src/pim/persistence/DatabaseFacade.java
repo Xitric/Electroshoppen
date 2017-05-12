@@ -240,6 +240,11 @@ class DatabaseFacade implements PersistenceFacade {
 	}
 
 	@Override
+	public void saveImages(Collection<Image> images) throws IOException {
+		productPersistor.saveImages(images);
+	}
+
+	@Override
 	public DataCache getCache() {
 		return cache;
 	}

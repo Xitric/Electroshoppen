@@ -156,6 +156,7 @@ class ProductManager {
 	 *
 	 * @param url the url of the image to remove
 	 */
+	//TODO: Remove image from product (id, product)
 	public void removeImage(String url) {
 		//TODO: Free from memory if all references are gone
 		images.remove(url);
