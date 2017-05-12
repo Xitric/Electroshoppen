@@ -5,7 +5,6 @@ import org.postgresql.largeobject.LargeObjectManager;
 import pim.business.*;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -350,6 +349,10 @@ class ProductPersistor {
 		}
 	}
 
+	public void saveImage(Image image) throws IOException {
+		//TODO
+	}
+
 	/**
 	 * Build a set of products from the specified data.
 	 *
@@ -422,12 +425,13 @@ class ProductPersistor {
 			LargeObject obj = lobj.open(oid, LargeObjectManager.READ);
 			byte buf[] = new byte[obj.size()];
 			obj.read(buf, 0, obj.size());
-			Image image = dbf.getCache().createImage(ImageIO.read(new ByteArrayInputStream(buf)));
+			//TODO
+//			Image image = dbf.getCache().createImage(ImageIO.read(new ByteArrayInputStream(buf)));
 			obj.close();
 
 			int productID = productImages.getInt(3);
 
-			products.get(productID).addImage(image);
+//			products.get(productID).addImage(image);
 		}
 		productImages.close();
 
@@ -454,9 +458,10 @@ class ProductPersistor {
 			LargeObject obj = lobj.open(oid, LargeObjectManager.READ);
 			byte buf[] = new byte[obj.size()];
 			obj.read(buf, 0, obj.size());
-			Image image = dbf.getCache().createImage(ImageIO.read(new ByteArrayInputStream(buf)));
+			//TODO
+//			Image image = dbf.getCache().createImage(ImageIO.read(new ByteArrayInputStream(buf)));
 			obj.close();
-			images.add(image);
+//			images.add(image);
 		}
 
 		imageData.close();

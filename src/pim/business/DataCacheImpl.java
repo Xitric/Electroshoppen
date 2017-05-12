@@ -36,7 +36,7 @@ class DataCacheImpl implements DataCache {
 
 	@Override
 	public Product createProduct(int id, String name, String description, double price) {
-		return productManager.createProduct(id, name, description, price);
+		return productManager.constructProduct(id, name, description, price);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ class DataCacheImpl implements DataCache {
 	}
 
 	@Override
-	public Image createImage(BufferedImage img) {
-		return productManager.createImage(img);
+	public Image createImage(int id, BufferedImage img) {
+		return productManager.constructImage(id, img);
 	}
 }

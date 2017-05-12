@@ -252,8 +252,9 @@ public class ProductController implements Initializable {
 				throw new IllegalArgumentException("The url must refer to a valid image file with one of these types: " + Arrays.toString(ImageIO.getReaderFileSuffixes()));
 			}
 
-			pim.business.Image image = new pim.business.Image(img);
-			productImagePane.getChildren().add(new RemoveableImage(image, this::removeImage));
+			//TODO: construct through PIM Facade
+//			pim.business.Image image = new pim.business.Image(img);
+//			productImagePane.getChildren().add(new RemoveableImage(image, this::removeImage));
 		} catch (IllegalArgumentException e) {
 			//TODO: Whatever
 		}
