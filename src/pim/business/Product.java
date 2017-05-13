@@ -18,6 +18,7 @@ public class Product implements CategoryChangeListener {
 	private Set<Attribute.AttributeValue> attributes;
 	private Set<Tag> tags;
 	private Set<Image> images;
+	private final Set<ProductChangeListener> changeListeners;
 
 	/**
 	 * Constructs a new product.
@@ -27,17 +28,18 @@ public class Product implements CategoryChangeListener {
 	 * @param description the description of the product
 	 * @param price       the price of the product
 	 */
-	public Product(int id, String name, String description, double price) {
+	Product(int id, String name, String description, double price) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.price = price;
 
-		//Initialize lists
+		//Initialize sets
 		categories = new HashSet<>();
 		attributes = new HashSet<>();
 		images = new HashSet<>();
 		tags = new HashSet<>();
+		changeListeners = new HashSet<>();
 	}
 
 	/**
@@ -321,7 +323,14 @@ public class Product implements CategoryChangeListener {
 	 * @param image the image to remove
 	 */
 	public void removeImage(Image image) {
-		this.images.remove(image);
+		boolean removed = this.images.remove(image);
+
+		//Notify listeners
+		if (removed) {
+			for (ProductChangeListener listener : changeListeners) {
+				listener.imageRemoved(image);
+			}
+		}
 	}
 
 	/**
@@ -344,6 +353,24 @@ public class Product implements CategoryChangeListener {
 	 */
 	public Set<Image> getImages() {
 		return new HashSet<>(images);
+	}
+
+	/**
+	 * Add a change listener to this product.
+	 *
+	 * @param listener the listener to add
+	 */
+	public void addChangeListener(ProductChangeListener listener) {
+		changeListeners.add(listener);
+	}
+
+	/**
+	 * Remove a change listener from this product.
+	 *
+	 * @param listener the listener to remove
+	 */
+	public void removeChangeListener(ProductChangeListener listener) {
+		changeListeners.remove(listener);
 	}
 
 	@Override

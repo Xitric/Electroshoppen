@@ -2,9 +2,12 @@ package pim.business;
 
 import pim.persistence.PersistenceFacade;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Manages loading products from the persistence layer and storing them in memory for faster retrieval. This manager
@@ -12,11 +15,11 @@ import java.util.stream.Collectors;
  *
  * @author Kasper
  */
-public class ProductManager {
+class ProductManager implements ProductChangeListener {
 
 	private final Map<Integer, Product> products;
 	private final PersistenceFacade persistence;
-	private HashMap<String, Image> images;
+	private HashMap<Integer, Image> images;
 
 	/**
 	 * Constructs a new product manager.
@@ -30,8 +33,8 @@ public class ProductManager {
 	}
 
 	/**
-	 * Creates a product if one with the given id does not exist already. Otherwise a reference to the existing product
-	 * will be returned.
+	 * Constructs a product if one with the given id does not exist already. Otherwise a reference to the existing
+	 * product will be returned.
 	 *
 	 * @param id          the id of the product
 	 * @param name        the name of the product
@@ -39,8 +42,21 @@ public class ProductManager {
 	 * @param price       the price of the product
 	 * @return the created product
 	 */
-	public Product createProduct(int id, String name, String description, double price) {
-		return products.computeIfAbsent(id, i -> new Product(id, name, description, price));
+	public Product constructProduct(int id, String name, String description, double price) {
+		Product p;
+
+		if (products.get(id) == null) {
+			p = new Product(id, name, description, price);
+			p.addChangeListener(this);
+			products.put(id, p);
+		} else {
+			p = products.get(id);
+			p.setName(name);
+			p.setDescription(description);
+			p.setPrice(price);
+		}
+
+		return p;
 	}
 
 	/**
@@ -54,42 +70,14 @@ public class ProductManager {
 	}
 
 	/**
-	 * Get a set of all products currently in memory.
-	 *
-	 * @return a set of all products in memory
-	 */
-	public Set<Product> getLoadedProducts() {
-		return new HashSet<>(products.values());
-	}
-
-	/**
-	 * Get the product with the specified id. If the product is not in memory, it will be loaded from the
-	 * persistence layer.
+	 * Get the product with the specified id.
 	 *
 	 * @param productID the id of the product
 	 * @return the product with the specified id, or null if no such product could be retrieved
 	 * @throws IOException if something goes wrong
 	 */
 	public Product getProduct(int productID) throws IOException {
-		//Look in memory first
-		Product p = products.get(productID);
-
-		//If this failed, look in persistence. This might also fail, leaving p as null
-		if (p == null) {
-			p = persistence.getProductByID(productID);
-		}
-
-		return p;
-	}
-
-	/**
-	 * Get the product with the specified id in memory.
-	 *
-	 * @param productID the id of the product
-	 * @return the product with the specified id, or null if no such product could be retrieved from memory
-	 */
-	public Product getLoadedProduct(int productID) {
-		return products.get(productID);
+		return persistence.getProductByID(productID);
 	}
 
 	/**
@@ -100,20 +88,18 @@ public class ProductManager {
 	 * @throws IOException if something goes wrong
 	 */
 	public Set<Product> getProductsByCategory(String categoryName) throws IOException {
-		//We cannot know how many products are in the category, so we need to retrieve all products in the category from
-		//the persistence layer
 		return persistence.getProductsByCategory(categoryName);
 	}
 
 	/**
-	 * Get the products in the specified category that are currently in memory.
+	 * Remove the specified category from the currently loaded products.
 	 *
-	 * @param category the category
-	 * @return the products in the specified category
+	 * @param category the category to remove
 	 */
-	public Set<Product> getLoadedProductsByCategory(Category category) {
-		return products.values().stream()
-				.filter(product -> product.hasCategory(category)).collect(Collectors.toSet());
+	public void removeCategoryFromProducts(Category category) {
+		for (Product p : products.values()) {
+			p.removeCategory(category);
+		}
 	}
 
 	/**
@@ -142,22 +128,45 @@ public class ProductManager {
 	}
 
 	/**
-	 * Creates an image or returns the existing one with the same url if it already exists.
+	 * Constructs an image or returns the existing one with the same id if it already exists.
 	 *
-	 * @param url the url of the image
+	 * @param id  the id of the image
+	 * @param img the image data
 	 * @return the created image object
 	 */
-	public Image createImage(String url) {
-		return images.computeIfAbsent(url, Image::new);
+	public Image constructImage(int id, BufferedImage img) {
+		return images.computeIfAbsent(id, (i) -> new Image(i, img));
 	}
 
 	/**
-	 * Removes an image from the list of images.
+	 * Create a new image from the specified url in the PIM. This image will automatically be saved.
 	 *
-	 * @param url the url of the image to remove
+	 * @param url the location of the image
+	 * @return the new image
+	 * @throws IOException if something goes wrong
 	 */
-	public void removeImage(String url) {
-		//TODO: Free from memory if all references are gone
-		images.remove(url);
+	public Image createImage(String url) throws IOException {
+		Image img = new Image(url);
+		persistence.saveImage(img);
+		images.put(img.getID(), img); //Image should have a valid id after it has been saved
+		return img;
+	}
+
+	/**
+	 * Called when an image is removed from a product. This will test if no more references to the image exist, and in
+	 * this case remove the image from memory.
+	 *
+	 * @param image the image that was removed
+	 */
+	@Override
+	public void imageRemoved(Image image) {
+		for (Product p : products.values()) {
+			if (p.getImages().contains(image)) {
+				return;
+			}
+		}
+
+		//No products contained the image, so free from memory (automatically removed from db)
+		images.remove(image.getID());
 	}
 }

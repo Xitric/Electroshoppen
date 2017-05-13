@@ -82,6 +82,10 @@ public interface PersistenceFacade {
 	void deleteProduct(int id) throws IOException;
 
 	/**
+	 * Saves an image
+	 */
+
+	/**
 	 * Get the category with the specified name.
 	 *
 	 * @param name the name of the category
@@ -220,6 +224,22 @@ public interface PersistenceFacade {
 	 * @throws IOException if the operation fails
 	 */
 	Set<Image> getImages() throws IOException;
+
+	/**
+	 * Save the specified image.
+	 *
+	 * @param image the image to save
+	 * @throws IOException if the operation fails
+	 */
+	void saveImage(Image image) throws IOException;
+
+	/**
+	 * Save the specified images.
+	 *
+	 * @param images the images to save
+	 * @throws IOException if the operation fails
+	 */
+	void saveImages(Collection<Image> images) throws IOException;
 
 	/**
 	 * Get the data cache used by this persistence facade.

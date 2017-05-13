@@ -2,6 +2,7 @@ package pim.persistence;
 
 import pim.business.*;
 
+import java.awt.image.BufferedImage;
 import java.util.Set;
 
 /**
@@ -77,8 +78,9 @@ public interface DataCache {
 	/**
 	 * Creates an image or returns the existing one with the same url if it already exists.
 	 *
-	 * @param url the url of the image
+	 * @param id  id of the image
+	 * @param img the image data
 	 * @return the created image object
 	 */
-	public Image createImage(String url);
+	public Image createImage(int id, BufferedImage img);
 }

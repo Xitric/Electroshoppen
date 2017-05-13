@@ -77,7 +77,7 @@ class AttributePersistor {
 		Connection connection = dbf.getConnection();
 
 		try (PreparedStatement storeAttributeData = connection.prepareStatement("INSERT INTO attribute VALUES (?, ?, ?) ON CONFLICT (attributeid) DO UPDATE SET name = EXCLUDED.name, defaultvalue = EXCLUDED.defaultvalue;");
-		     PreparedStatement storeAttributeDataNew = connection.prepareStatement("INSERT INTO attribute VALUES (DEFAULT , ?, ?) RETURNING attributeid;");
+		     PreparedStatement storeAttributeDataNew = connection.prepareStatement("INSERT INTO attribute VALUES (DEFAULT, ?, ?) RETURNING attributeid;");
 		     PreparedStatement storeLegalValues = connection.prepareStatement("INSERT INTO legalvalue VALUES (?, ?) ON CONFLICT (attributeid, value) DO NOTHING;")) {
 
 			//Turn of auto commit to ensure each attribute is saved fully

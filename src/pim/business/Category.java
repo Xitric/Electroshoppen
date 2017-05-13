@@ -20,7 +20,7 @@ public class Category implements Comparable<Category> {
 	 *
 	 * @param name the name of the category
 	 */
-	public Category(String name) {
+	Category(String name) {
 		this.name = name;
 		this.attributes = new HashSet<>();
 		this.changeListeners = new HashSet<>();
@@ -32,7 +32,7 @@ public class Category implements Comparable<Category> {
 	 * @param name       the name of the category
 	 * @param attributes the attributes of the category
 	 */
-	public Category(String name, Set<Attribute> attributes) {
+	Category(String name, Set<Attribute> attributes) {
 		this.name = name;
 		//We must ensure that the attribute set is not null (otherwise we cannot add new attributes), and that we copy
 		//the specified array so that new attributes can only be added using the methods below

@@ -3,7 +3,7 @@ package pim.business;
 /**
  * Tags are used to loosely group products by a string
  *
- * @author mstruntze
+ * @author Mikkel
  */
 public class Tag {
 	private final String name;
@@ -13,7 +13,7 @@ public class Tag {
 	 *
 	 * @param name name of the tag
 	 */
-	public Tag(String name) {
+	Tag(String name) {
 		this.name = name;
 	}
 

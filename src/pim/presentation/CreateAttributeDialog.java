@@ -93,11 +93,15 @@ public class CreateAttributeDialog implements Initializable {
 		if (nameField.getText().isEmpty() || defaultValue == null) return null;
 		String name = nameField.getText();
 
+		//TODO: Reference to pim, use createAttribute(...)
 		if (restrictedCheckBox.isSelected()) {
-			return new Attribute(-1, name, defaultValue, legalValues);
+			//return new Attribute(-1, name, defaultValue, legalValues);
 		} else {
-			return new Attribute(-1, name, defaultValue);
+			//return new Attribute(-1, name, defaultValue);
 		}
+
+		//TODO: Remove
+		return null;
 	}
 
 	private void dataTypeChanged(Observable observable) {

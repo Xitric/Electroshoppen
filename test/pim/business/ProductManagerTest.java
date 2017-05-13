@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import pim.persistence.PersistenceFacade;
 import pim.persistence.PersistenceFactory;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,7 +52,7 @@ class ProductManagerTest {
 			}
 
 			//Test attributes
-			Set<Integer> expectedAttributes = new HashSet<>(Arrays.asList(3, 4, 6, 7, 8, 16));
+			Set<Integer> expectedAttributes = new HashSet<>(Arrays.asList(3, 4, 6, 7, 8, 12));
 			Assertions.assertTrue(p.getAttributeValues().size() == expectedAttributes.size());
 			for (Attribute.AttributeValue a : p.getAttributeValues()) {
 				Assertions.assertTrue(expectedAttributes.contains(a.getParent().getID()));
@@ -63,10 +66,10 @@ class ProductManagerTest {
 			}
 
 			//Test images
-			Set<String> expectedImages = new HashSet<>(Collections.singletonList("res/omen-ax005no.jpg"));
-			Assertions.assertTrue(p.getImages().size() == expectedImages.size());
+			BufferedImage expectedImage = ImageIO.read(new File("res/omen-ax005no.jpg"));
+			Assertions.assertTrue(p.getImages().size() == 1);
 			for (Image i : p.getImages()) {
-				Assertions.assertTrue(expectedImages.contains(i.getUrl()));
+				Assertions.assertTrue(compareImages(i.getImage(), expectedImage));
 			}
 		} catch (IOException e) {
 			Assertions.fail("Database connection might be lost, try again", e);
@@ -78,5 +81,23 @@ class ProductManagerTest {
 		} catch (IOException e) {
 			Assertions.fail("Database connection might be lost, try again", e);
 		}
+	}
+
+	boolean compareImages(BufferedImage i1, BufferedImage i2) {
+		//Early out, if possible
+		if (i1.getWidth() != i2.getWidth() || i1.getHeight() != i2.getHeight()) {
+			return false;
+		}
+
+		//Images are the same size, test every pixel
+		for (int x = 0; x < i1.getWidth(); x++) {
+			for (int y = 0; y < i1.getHeight(); y++) {
+				if (i1.getRGB(x, y) != i2.getRGB(x, y)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 }

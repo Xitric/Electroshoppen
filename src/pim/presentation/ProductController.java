@@ -236,9 +236,10 @@ public class ProductController implements Initializable {
 	@FXML
 	private void uploadButtonOnAction(ActionEvent event) {
 		try {
-			pim.business.Image img = new pim.business.Image(browseTextField.getText());
-			productImagePane.getChildren().add(new RemoveableImage(img, this::removeImage));
-		} catch (IllegalArgumentException e) {
+			String url = browseTextField.getText();
+			pim.business.Image image = pim.createImage(url);
+			productImagePane.getChildren().add(new RemoveableImage(image, this::removeImage));
+		} catch (IOException e) {
 			//TODO: Whatever
 		}
 	}
