@@ -4,10 +4,7 @@ import pim.persistence.PersistenceFacade;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Manages loading products from the persistence layer and storing them in memory for faster retrieval. This manager

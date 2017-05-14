@@ -107,6 +107,7 @@ public class AttributeController implements Initializable {
 
 		try {
 			dialog.getDialogPane().setContent(loader.load());
+			((CreateAttributeDialog) loader.getController()).setPIM(pim);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -125,18 +126,29 @@ public class AttributeController implements Initializable {
 		});
 
 		//If a result could be gathered, register it
-		Optional<Attribute> result = dialog.showAndWait();
-		if (result.isPresent()) {
-			Attribute attribute = result.get();
-			//TODO:
-			try {
-				pim.saveAttribute(attribute);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		boolean resultWasBad = true;
+		while (resultWasBad) {
+			Optional<Attribute> result = dialog.showAndWait();
+			if (result.isPresent()) {
+				try {
+					Attribute attribute = result.get();
 
-			//Get the new attribute and add it to the list
-			attributeList.add(attribute);
+					try {
+						pim.saveAttribute(attribute);
+						resultWasBad = false;
+
+						//Get the new attribute and add it to the list
+						attributeList.add(attribute);
+					} catch (IOException e) {
+						//TODO: Error dialog
+						e.printStackTrace();
+					}
+				} catch (NoSuchElementException e) {
+					//TODO: Error dialog
+				}
+			} else {
+				resultWasBad = false;
+			}
 		}
 	}
 
@@ -148,7 +160,7 @@ public class AttributeController implements Initializable {
 
 		//If a value was selected, update it
 		if (result.isPresent()) {
-			defaultValue = attributeListView.getSelectionModel().getSelectedItem().createValue(result.get()).getValue();
+			defaultValue = result.get();
 			attributeDefaultValueField.setText(defaultValue.toString());
 		}
 	}
@@ -177,6 +189,7 @@ public class AttributeController implements Initializable {
 
 		selection.setName(attributeNameField.getText());
 		selection.setDefaultValue(defaultValue);
+
 		//TODO:
 		try {
 			pim.saveAttribute(selection);
