@@ -88,10 +88,10 @@ public class ProductController implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		//Product list
-		packageImage = new Image(getClass().getResourceAsStream("../../package.png"));
-		redPackageImage = new Image(getClass().getResourceAsStream("../../packageRed.png"));
+		packageImage = new Image(getClass().getResourceAsStream("res/package.png"));
+		redPackageImage = new Image(getClass().getResourceAsStream("res/packageRed.png"));
 		productTreeView.getSelectionModel().selectedItemProperty().addListener(this::treeViewSelectionChanged);
-		refreshButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("../../refreshButton.png"))));
+		refreshButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("res/refreshButton.png"))));
 
 		//Category lists
 		availableCategories = FXCollections.observableArrayList();
@@ -101,7 +101,7 @@ public class ProductController implements Initializable {
 
 		//Attributes
 		attributeValues = new HashMap<>();
-		gearImage = new Image(getClass().getResourceAsStream("../../gear.png"));
+		gearImage = new Image(getClass().getResourceAsStream("res/gear.png"));
 	}
 
 	/**
@@ -268,6 +268,7 @@ public class ProductController implements Initializable {
 			containedCategories.setAll(product.getCategories());
 
 			//Attributes
+			attributeVBox.getChildren().clear();
 			for (Attribute.AttributeValue value : product.getAttributeValues()) {
 				HBox valueBox = new HBox(4);
 				valueBox.setAlignment(Pos.CENTER_LEFT);

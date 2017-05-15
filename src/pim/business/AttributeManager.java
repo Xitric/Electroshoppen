@@ -37,18 +37,7 @@ class AttributeManager {
 	 * @return returns a reference to the created/existing attribute with the given id.
 	 */
 	public Attribute constructAttribute(int id, String name, Object defaultValue) {
-		Attribute a;
-
-		if (attributes.get(id) == null) {
-			a = new Attribute(id, name, defaultValue);
-			attributes.put(id, a);
-		} else {
-			a = attributes.get(id);
-			a.setName(name);
-			a.setDefaultValue(defaultValue);
-		}
-
-		return a;
+		return constructAttribute(id, name, defaultValue, null);
 	}
 
 	/**

@@ -309,6 +309,19 @@ public class Product implements CategoryChangeListener {
 	}
 
 	/**
+	 * Set the tags of this product to the ones in the specified collection.
+	 *
+	 * @param tags the tags to set
+	 */
+	public void setTags(Collection<Tag> tags) {
+		//Remove tags
+		this.tags.removeIf(tag -> !tags.contains(tag));
+
+		//Add tags
+		this.tags.addAll(tags);
+	}
+
+	/**
 	 * Add an image to this product.
 	 *
 	 * @param image the image to add

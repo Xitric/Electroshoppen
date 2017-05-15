@@ -12,9 +12,12 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import pim.business.Attribute;
+import pim.business.PIM;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 
 /**
@@ -47,6 +50,11 @@ public class CreateAttributeDialog implements Initializable {
 
 	@FXML
 	private BorderPane valueSelectionPane;
+
+	/**
+	 * The mediator for the business layer.
+	 */
+	private PIM pim;
 
 	/**
 	 * The set of legal values currently selected.
@@ -85,23 +93,33 @@ public class CreateAttributeDialog implements Initializable {
 	}
 
 	/**
+	 * Set the business mediator for this controller to use.
+	 *
+	 * @param pim the mediator for the pim
+	 */
+	public void setPIM(PIM pim) {
+		this.pim = pim;
+	}
+
+	/**
 	 * Get the attribute created by this dialog, or null if no proper attribute has been specified.
 	 *
 	 * @return the resulting attribute
 	 */
 	public Attribute getAttribute() {
-		if (nameField.getText().isEmpty() || defaultValue == null) return null;
+		if (nameField.getText().isEmpty() || defaultValue == null) throw new NoSuchElementException("Invalid attribute data");
 		String name = nameField.getText();
 
-		//TODO: Reference to pim, use createAttribute(...)
-		if (restrictedCheckBox.isSelected()) {
-			//return new Attribute(-1, name, defaultValue, legalValues);
-		} else {
-			//return new Attribute(-1, name, defaultValue);
+		try {
+			if (restrictedCheckBox.isSelected()) {
+				return pim.createAttribute(name, defaultValue, legalValues);
+			} else {
+				return pim.createAttribute(name, defaultValue, null);
+			}
+		} catch (IOException e) {
+			//TODO: Error dialog
+			throw new NoSuchElementException("Error creating attribute");
 		}
-
-		//TODO: Remove
-		return null;
 	}
 
 	private void dataTypeChanged(Observable observable) {

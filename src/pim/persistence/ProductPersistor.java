@@ -1,6 +1,5 @@
 package pim.persistence;
 
-import org.postgresql.largeobject.LargeObjectManager;
 import pim.business.*;
 
 import javax.imageio.ImageIO;
@@ -314,7 +313,7 @@ class ProductPersistor {
 		try (PreparedStatement storeImageData = connection.prepareStatement("INSERT INTO image VALUES (?, ?) ON CONFLICT (imageid) DO UPDATE SET imagedata = EXCLUDED.imagedata;");
 		     PreparedStatement storeImageDataNew = connection.prepareStatement("INSERT INTO image VALUES (DEFAULT, ?) RETURNING imageid;")) {
 
-			for (Image image: images) {
+			for (Image image : images) {
 				//Store image data
 				//If the image has an invalid id, generate a new one
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -350,11 +349,11 @@ class ProductPersistor {
 	 * @param productData         the data describing product ids, names and prices
 	 * @param productCategoryData the data describing product categories
 	 * @param productValueData    the data describing attribute values on products
-	 * @param productTags         the data describing product tags
+	 * @param productTagData      the data describing product tags
 	 * @return a set of all products that could be built from the data
 	 * @throws SQLException if something goes wrong
 	 */
-	private Set<Product> buildProducts(ResultSet productData, ResultSet productCategoryData, ResultSet productValueData, ResultSet productTags) throws SQLException, IOException {
+	private Set<Product> buildProducts(ResultSet productData, ResultSet productCategoryData, ResultSet productValueData, ResultSet productTagData) throws SQLException, IOException {
 		Map<Integer, Product> products = new HashMap<>();
 
 		//Construct all products
@@ -369,6 +368,7 @@ class ProductPersistor {
 		productData.close();
 
 		//Add all product categories
+		Map<Integer, Set<Category>> productCategories = new HashMap<>();
 		while (productCategoryData.next()) {
 			int productID = productCategoryData.getInt(1);
 			String categoryName = productCategoryData.getString(2).trim();
@@ -376,11 +376,17 @@ class ProductPersistor {
 			//noinspection EmptyCatchBlock
 			try {
 				Category category = dbf.getCategoryByName(categoryName);
-				products.get(productID).addCategory(category);
+				Set<Category> c = productCategories.getOrDefault(productID, new HashSet<>());
+				c.add(category);
+				productCategories.put(productID, c);
 			} catch (IOException e) {
 			} //The database should guarantee that this exception never occurs
 		}
 		productCategoryData.close();
+
+		for (Map.Entry<Integer, Set<Category>> entry : productCategories.entrySet()) {
+			products.get(entry.getKey()).setCategories(entry.getValue());
+		}
 
 		//Set all attribute values
 		while (productValueData.next()) {
@@ -398,15 +404,20 @@ class ProductPersistor {
 		productValueData.close();
 
 		//Add all tags
-		while (productTags.next()) {
-			String name = productTags.getString(1).trim();
-			Tag t = dbf.getCache().createTag(name);
-			int productID = productTags.getInt(2);
-			products.get(productID).addTag(t);
+		Map<Integer, Set<Tag>> productTags = new HashMap<>();
+		while (productTagData.next()) {
+			String name = productTagData.getString(1).trim();
+			Tag tag = dbf.getCache().createTag(name);
+			int productID = productTagData.getInt(2);
+
+			Set<Tag> t = productTags.getOrDefault(productID, new HashSet<>());
+			t.add(tag);
+			productTags.put(productID, t);
 		}
 
-		// access to large object manager (used for images)
-		LargeObjectManager lobj = dbf.getConnection().unwrap(org.postgresql.PGConnection.class).getLargeObjectAPI();
+		for (Map.Entry<Integer, Set<Tag>> entry : productTags.entrySet()) {
+			products.get(entry.getKey()).setTags(entry.getValue());
+		}
 
 		//Add all images
 		for (Map.Entry<Integer, Product> productEntry : products.entrySet()) {
