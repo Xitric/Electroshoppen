@@ -12,8 +12,7 @@
     -fx-background-color: #2196f3;
     -fx-background-radius: 0;
     -fx-padding: 4;
-    /*TODO: Make this work universally somehow*/
-    -fx-graphic: url("../../cross.png");
+    -fx-graphic: url("res/cross.png");
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 10, 0, -1, 1);
 }
 

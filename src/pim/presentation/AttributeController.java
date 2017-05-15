@@ -70,7 +70,7 @@ public class AttributeController implements Initializable {
 		confirmationDialog.setHeaderText("Confirm deletion");
 		confirmationDialog.setContentText("Are you sure that you wish to delete this attribute?");
 
-		editDefaultButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("../../gear.png"))));
+		editDefaultButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("res/gear.png"))));
 	}
 
 	/**
