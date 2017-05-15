@@ -268,6 +268,7 @@ public class ProductController implements Initializable {
 			containedCategories.setAll(product.getCategories());
 
 			//Attributes
+			attributeVBox.getChildren().clear();
 			for (Attribute.AttributeValue value : product.getAttributeValues()) {
 				HBox valueBox = new HBox(4);
 				valueBox.setAlignment(Pos.CENTER_LEFT);

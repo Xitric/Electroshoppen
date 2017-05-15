@@ -31,6 +31,7 @@ public class Image {
 		}
 
 		this.url = url;
+		this.id = -1;
 	}
 
 	/**
