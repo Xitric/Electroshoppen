@@ -253,7 +253,7 @@ public class ProductController implements Initializable {
 			//Set basic information
 			idLabel.setText(String.valueOf(product.getID()));
 			nameLabel.setText(product.getName());
-			priceLabel.setText(product.getPrice() + "$");
+			priceLabel.setText("$" + product.getPrice());
 			descriptionTextArea.setText(product.getDescription());
 
 			//Categories
