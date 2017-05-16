@@ -13,12 +13,13 @@ import javafx.scene.control.TextInputDialog;
 import pim.business.Attribute;
 import pim.business.Category;
 import pim.business.PIM;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
 /**
- * @author Kasper
+ * @author Kasper, Emil
  */
 public class CategoryController implements Initializable {
 
@@ -29,22 +30,11 @@ public class CategoryController implements Initializable {
 	@FXML
 	private ListView<Attribute> listViewRemove;
 	@FXML
-	private Button btnAddCategory;
-	@FXML
-	private Button btnRemoveCategory;
-	@FXML
-	private Button btnAddAttribute;
-	@FXML
-	private Button btnRemoveAttribute;
-	@FXML
-	private Button btnSave;
-	@FXML
 	private Label nameOutput;
 
 	private ObservableList<Category> categoryList;
 	private ObservableList<Attribute> attributeAddList, attributeRemoveList;
-	//private List<Attribute> tempAdd;
-	//private List<Attribute> tempRemove;
+
 	/**
 	 * The mediator for the business layer.
 	 */
@@ -117,11 +107,11 @@ public class CategoryController implements Initializable {
 	@FXML
 	private void removeCategory(ActionEvent event) {
 		Category selected = listViewCategory.getSelectionModel().getSelectedItem();
-		try {
-			pim.removeCategory(selected.getName());
-			categoryList.remove(selected);
-		} catch (IOException e) {
-			e.printStackTrace();
+			try {
+				pim.removeCategory(selected.getName());
+				categoryList.remove(selected);
+			} catch (IOException e) {
+				e.printStackTrace();
 		}
 	}
 
