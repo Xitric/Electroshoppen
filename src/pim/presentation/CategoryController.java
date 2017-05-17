@@ -6,10 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import pim.business.Attribute;
 import pim.business.Category;
 import pim.business.PIM;
@@ -99,7 +96,11 @@ public class CategoryController implements Initializable {
 				categoryList.add(pim.getCategory(name));
 				Collections.sort(categoryList);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Changes are not accepted!");
+				alert.setHeaderText("Error when creating a category");
+				alert.setContentText("Something went wrong when creating a category");
+				alert.showAndWait();
 			}
 		});
 	}
@@ -111,7 +112,11 @@ public class CategoryController implements Initializable {
 				pim.removeCategory(selected.getName());
 				categoryList.remove(selected);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Changes are not accepted!");
+				alert.setHeaderText("Error when removing category");
+				alert.setContentText("Could not remove selected category");
+				alert.showAndWait();
 		}
 	}
 
@@ -143,7 +148,11 @@ public class CategoryController implements Initializable {
 		try {
 			pim.saveCategory(selection);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Changes are not accepted!");
+			alert.setHeaderText("Error when saving");
+			alert.setContentText("Something went wrong when saving");
+			alert.showAndWait();
 		}
 	}
 }
