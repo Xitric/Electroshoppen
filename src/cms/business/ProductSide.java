@@ -5,7 +5,17 @@ import java.awt.image.BufferedImage;
 /**
  * @author Emil
  */
-public class ProductSide implements DynamicPage {
+public class ProductSide extends AbstractDynamicPage {
+
+	/**
+	 * Constructs a new dynamic page with the specified html content.
+	 *
+	 * @param html the content of the page
+	 */
+	public ProductSide(String html) {
+		super(html);
+	}
+
 	@Override
 	public void insertHTML(DocumentMarker marker, String html) {
 

@@ -1,10 +1,10 @@
 package cms.business;
 
-import org.w3c.dom.html.HTMLElement;
+import org.w3c.dom.Element;
 
 /**
  * An object that can be used to refer to a specific location in the content of a {@link DynamicPage}. This object will
- * keep track of both the selected {@link HTMLElement} and the range of selected text (if any) in that element.
+ * keep track of both the id of the selected element and the range of selected text (if any) in that element.
  *
  * @author Kasper
  */
@@ -20,8 +20,8 @@ public class DocumentMarker {
 	 * @param element the selected element
 	 * @param range   the range of text selected in the element, if any.
 	 */
-	public DocumentMarker(HTMLElement element, String range) {
-		this.id = element.getId();
+	public DocumentMarker(Element element, String range) {
+		this.id = element.getAttribute(DynamicPage.ID_ATTRIB);
 
 		if (!range.isEmpty() && element.getTextContent().contains(range)) {
 			this.range = range;

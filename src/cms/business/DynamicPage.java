@@ -10,6 +10,11 @@ import java.awt.image.BufferedImage;
 public interface DynamicPage {
 
 	/**
+	 * The name of the attribute to use as id.
+	 */
+	String ID_ATTRIB = "id";
+
+	/**
 	 * Insert the specified html markup at the location specified by the {@link DocumentMarker}.
 	 *
 	 * @param marker the location to insert the markup into
@@ -23,6 +28,21 @@ public interface DynamicPage {
 	 * @param marker the location to remove the markup from
 	 */
 	void removeHTML(DocumentMarker marker);
+
+	/**
+	 * Insert the specified text at the location specified by the {@link DocumentMarker}.
+	 *
+	 * @param marker the location to insert the text into
+	 * @param text   the text to insert
+	 */
+	void insertText(DocumentMarker marker, String text);
+
+	/**
+	 * Remove the text at the location specified by the {@link DocumentMarker}.
+	 *
+	 * @param marker the location to remove the text from
+	 */
+	void removeText(DocumentMarker marker);
 
 	/**
 	 * Insert the specified image at the location specified by the {@link DocumentMarker}.
