@@ -52,16 +52,16 @@ public class TestCMS extends Application implements Initializable {
 //				"</div>" +
 //				"</html>");
 		swv.setContent("<html><head></head>\n" +
-				"<body>\n" +
+				"<body id=\"b1\">\n" +
 				"\n" +
-				"<form action=\"/action_page.php\">\n" +
-				"  First name: <input type=\"text\" name=\"fname\"><br>\n" +
-				"  Last name: <input type=\"text\" name=\"lname\"><br>\n" +
-				"  <input type=\"submit\" value=\"Submit as normal\">\n" +
-				"  <input type=\"submit\" formtarget=\"_blank\" value=\"Submit to a new window/tab\">\n" +
+				"<form action=\"/action_page.php\" id=\"f1\">\n" +
+				"First name: <input id=\"i1\" type=\"text\" name=\"fname\"><br>\n" +
+				"Last name: <input id=\"i2\" type=\"text\" name=\"lname\"><br>\n" +
+				"<input id=\"i3\" type=\"submit\" value=\"Submit as normal\">\n" +
+				"<input id=\"i4\" type=\"submit\" formtarget=\"_blank\" value=\"Submit to a new window/tab\">\n" +
 				"</form>\n" +
 				"\n" +
-				"<p><strong>Note:</strong> The formtarget attribute of the input tag is not supported in Internet Explorer 9 and earlier versions.</p>\n" +
+				"<p id=\"p1\"><strong id=\"s1\">Note:</strong> The formtarget attribute of the input tag is not supported in Internet Explorer 9 and earlier versions.</p>\n" +
 				"\n" +
 				"</body>\n" +
 				"</html>\n");
