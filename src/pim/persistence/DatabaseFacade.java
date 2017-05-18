@@ -131,6 +131,11 @@ class DatabaseFacade implements PersistenceFacade {
 	}
 
 	@Override
+	public Set<ProductReview> getProductReviews() throws IOException {
+		return productPersistor.getProductReviews();
+	}
+
+	@Override
 	public Set<Product> getProducts() throws IOException {
 		return productPersistor.getProducts();
 	}

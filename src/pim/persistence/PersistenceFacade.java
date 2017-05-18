@@ -50,6 +50,12 @@ public interface PersistenceFacade {
 	Set<Product> getProductsByTag(String name) throws IOException;
 
 	/**
+	 * Get all the product reviews from the database
+	 * @return set of ProductReviews
+	 */
+	Set<ProductReview> getProductReviews() throws  IOException;
+
+	/**
 	 * Get all products.
 	 *
 	 * @return all products

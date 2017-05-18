@@ -56,6 +56,62 @@ class ProductManager implements ProductChangeListener {
 		return p;
 	}
 
+	public Set<Product> getPopularProducts(int amount) throws IOException {
+		Set<ProductReview> reviews = persistence.getProductReviews();
+		HashMap<Integer, ArrayList<Double>> reviewMap = new HashMap<>();
+		Set<Integer> popularProductIds = new HashSet<>();
+		Set<Product> popularProducts = new HashSet<>();
+
+		Iterator<ProductReview> it = reviews.iterator();
+		while (it.hasNext()) {
+			ProductReview next = it.next();
+			int productId = next.getProductid();
+			Date date = next.getTime();
+			int rating = next.getRating();
+
+			Calendar c = Calendar.getInstance();
+			c.add(Calendar.MONTH, -2);
+			Date currentDate = c.getTime();
+
+			if (!reviewMap.containsKey(productId)) {
+				reviewMap.put(productId, new ArrayList<Double>());
+			}
+
+			if (date.compareTo(currentDate) > 0) {
+				reviewMap.get(productId).add((double) next.getRating());
+			} else {
+				reviewMap.get(productId).add(next.getRating() * 0.5);
+			}
+
+		}
+
+		for (int i = 0; i < amount; i++) {
+			double biggest = 0;
+			int productId = 0;
+			for (Map.Entry<Integer, ArrayList<Double>> entry : reviewMap.entrySet()) {
+				double ratingSum = 0;
+				for (int j = 0; j < entry.getValue().size(); j++) {
+					ratingSum += entry.getValue().get(j);
+				}
+				ratingSum = ratingSum / entry.getValue().size();
+				if (ratingSum > biggest) {
+					productId = entry.getKey();
+					biggest = ratingSum;
+				}
+			}
+
+			reviewMap.remove(productId);
+			popularProductIds.add(productId);
+
+		}
+
+		Iterator<Integer> ite = popularProductIds.iterator();
+		while (ite.hasNext()){
+			popularProducts.add(persistence.getProductByID(ite.next()));
+		}
+		return  popularProducts;
+	}
+
 	/**
 	 * Get a set of all products.
 	 *
@@ -73,6 +129,7 @@ class ProductManager implements ProductChangeListener {
 	 * @return the product with the specified id, or null if no such product could be retrieved
 	 * @throws IOException if something goes wrong
 	 */
+
 	public Product getProduct(int productID) throws IOException {
 		return persistence.getProductByID(productID);
 	}
