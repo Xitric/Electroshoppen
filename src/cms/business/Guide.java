@@ -13,7 +13,7 @@ public class Guide extends AbstractDynamicPage {
 	 * @param html the content of the page
 	 */
 	public Guide(String html) {
-		super(html);
+		super(null);
 	}
 
 	@Override

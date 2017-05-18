@@ -11,6 +11,6 @@ public class Article extends AbstractDynamicPage {
 	 * @param html the content of the page
 	 */
 	public Article(String html) {
-		super(html);
+		super(null);
 	}
 }

@@ -13,7 +13,7 @@ public class LandingPage extends AbstractDynamicPage {
 	 * @param html the content of the page
 	 */
 	public LandingPage(String html) {
-		super(html);
+		super(null);
 	}
 
 	@Override

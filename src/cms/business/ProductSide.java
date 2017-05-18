@@ -13,7 +13,7 @@ public class ProductSide extends AbstractDynamicPage {
 	 * @param html the content of the page
 	 */
 	public ProductSide(String html) {
-		super(html);
+		super(null);
 	}
 
 	@Override
