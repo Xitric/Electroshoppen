@@ -1,6 +1,8 @@
 package cms.business;
 
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Abstract implementation of the {@link DynamicPage} interface.
@@ -10,30 +12,48 @@ import java.awt.image.BufferedImage;
 abstract class AbstractDynamicPage implements DynamicPage {
 
 	/**
-	 * The root of the XHTML that makes up the content of this page.
+	 * The roots of the XHTML that makes up the content of this page along with the ids of those elements to associate
+	 * the content with in the template.
 	 */
-	private XMLElement content;
+	private Map<String, XMLElement> content;
 
 	/**
 	 * Constructs a new dynamic page with the specified html content.
 	 *
-	 * @param html the content of the page
+	 * @param content the content of the page
 	 */
-	public AbstractDynamicPage(String html) {
-		content = new XMLParser().parse(html);
+	public AbstractDynamicPage(Map<String, String> content) {
+		this.content = new HashMap<>();
+		XMLParser parser = new XMLParser();
+
+		for (Map.Entry<String, String> entry : content.entrySet()) {
+			this.content.put(entry.getKey(), parser.parse(entry.getValue()));
+		}
+	}
+
+	@Override
+	public XMLElement getContentForID(String id) {
+		XMLElement result = content.get(id);
+
+		if (result == null) {
+			result = XMLElement.createRoot("p");
+			result.setTextContent("Missing content");
+		}
+
+		return result;
 	}
 
 	@Override
 	public void insertHTML(DocumentMarker marker, String html) {
-		//Get the element described by the marker
-		XMLElement reference = content.getChildByID(marker.getSelectedElementID());
-
-		//Generate a new XMLElement that describes the html
-		XMLElement newElement = new XMLParser().parse(html);
-
-		//TODO: Generate a new parent if reference is a "root"
-		//Insert this new element after the reference element
-		reference.getParent().addChildAfter(newElement, reference);
+		//		//Get the element described by the marker
+		//		XMLElement reference = content.getChildByID(marker.getSelectedElementID());
+		//
+		//		//Generate a new XMLElement that describes the html
+		//		XMLElement newElement = new XMLParser().parse(html);
+		//
+		//		//TODO: Generate a new parent if reference is a "root"
+		//		//Insert this new element after the reference element
+		//		reference.getParent().addChildAfter(newElement, reference);
 	}
 
 	@Override

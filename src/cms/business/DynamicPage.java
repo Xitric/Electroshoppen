@@ -15,6 +15,14 @@ public interface DynamicPage {
 	String ID_ATTRIB = "id";
 
 	/**
+	 * Get the content for the template element with the specified id.
+	 *
+	 * @param id the id of the template element
+	 * @return the content for the template element with the specified id
+	 */
+	XMLElement getContentForID(String id);
+
+	/**
 	 * Insert the specified html markup at the location specified by the {@link DocumentMarker}.
 	 *
 	 * @param marker the location to insert the markup into
