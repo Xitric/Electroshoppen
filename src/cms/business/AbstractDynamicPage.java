@@ -10,9 +10,9 @@ import java.awt.image.BufferedImage;
 abstract class AbstractDynamicPage implements DynamicPage {
 
 	/**
-	 * The html that makes up the contents of this page.
+	 * The root of the XHTML that makes up the content of this page.
 	 */
-	private String html;
+	private XMLElement content;
 
 	/**
 	 * Constructs a new dynamic page with the specified html content.
@@ -20,12 +20,20 @@ abstract class AbstractDynamicPage implements DynamicPage {
 	 * @param html the content of the page
 	 */
 	public AbstractDynamicPage(String html) {
-		this.html = html;
+		content = new XMLParser().parse(html);
 	}
 
 	@Override
 	public void insertHTML(DocumentMarker marker, String html) {
+		//Get the element described by the marker
+		XMLElement reference = content.getChildByID(marker.getSelectedElementID());
 
+		//Generate a new XMLElement that describes the html
+		XMLElement newElement = new XMLParser().parse(html);
+
+		//TODO: Generate a new parent if reference is a "root"
+		//Insert this new element after the reference element
+		reference.getParent().addChildAfter(newElement, reference);
 	}
 
 	@Override
@@ -80,7 +88,7 @@ abstract class AbstractDynamicPage implements DynamicPage {
 	 */
 	@Override
 	public String toString() {
-		return html;
+		return content.toString();
 	}
 
 	public static void main(String[] args) {
@@ -95,5 +103,6 @@ abstract class AbstractDynamicPage implements DynamicPage {
 				"<p id=\"p1\"><strong id=\"s1\">Note:</strong> The formtarget attribute of the input tag is not supported in Internet Explorer 9 and earlier versions.</p>" +
 				"</body>" +
 				"</html>");
+		System.out.println(p);
 	}
 }

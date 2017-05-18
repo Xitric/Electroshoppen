@@ -1,11 +1,13 @@
 package cms.presentation;
 
 import cms.business.DocumentMarker;
+import cms.business.XMLElement;
+import cms.business.XMLParser;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Worker;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.w3c.dom.NodeList;
@@ -16,7 +18,7 @@ import org.w3c.dom.html.HTMLElement;
  *
  * @author Kasper
  */
-public class SelectableWebView extends Region {
+public class SelectableWebView extends StackPane {
 
 	/**
 	 * The script that is responsible for handling element selection and forwarding the events to this controller.
@@ -29,7 +31,8 @@ public class SelectableWebView extends Region {
 			"document.addEventListener('DOMContentLoaded', function() {" +
 			"document.body.addEventListener('click', bodyClick, true);" +
 			"});" +
-			"</script>" +
+			"</script>";
+	private static final String stylesheet =
 			"<link rel=\"stylesheet\" type=\"text/css\" href=\"" + SelectableWebView.class.getResource("selectablewebview.css") + "\"/>";
 
 	/**
@@ -57,15 +60,21 @@ public class SelectableWebView extends Region {
 	 * @throws IllegalArgumentException if the html markup is badly formatted
 	 */
 	public void setContent(String html) {
-		//Detect the end of the head element
-		int index = html.indexOf("</head");
-		if (index == -1) throw new IllegalArgumentException("Invalid html: No head element detected!");
+		//Detect head element of html
+		XMLElement root = new XMLParser().parse(html);
+		XMLElement head = root.getChildrenByTag("head").get(0);
+		if (head == null) {
+			throw new IllegalArgumentException("Invalid html: No head element detected!");
+		}
 
-		//Inject selection script
-		String adaptedHtml = html.substring(0, index) + selectScript + html.substring(index);
+		//Inject script into head
+		XMLElement script = new XMLParser().parse(selectScript);
+		head.addChild(script);
+		XMLElement style = new XMLParser().parse(stylesheet);
+		head.addChild(style);
 
-		//Load up html and bind this controller to it
-		webView.getEngine().loadContent(adaptedHtml);
+		//Show result in web view
+		webView.getEngine().loadContent(root.toString());
 		webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue.equals(Worker.State.SUCCEEDED)) {
 				bindDocumentToController();
@@ -89,6 +98,13 @@ public class SelectableWebView extends Region {
 	@SuppressWarnings("unused")
 	public void selectionChanged(Object selection, Object range) {
 		try {
+			HTMLElement element = (HTMLElement) selection;
+
+			//The 'nonselectable' class is used to annotate those elements, that cannot be selected
+			if (element.getClassName() != null && element.getClassName().contains("nonselectable")) {
+				return;
+			}
+
 			DocumentMarker marker = new DocumentMarker((HTMLElement) selection, range.toString());
 			if (marker.hasRangeSelection()) {
 				System.out.println("You selected part of an element: " + marker.getRangeSelection());
@@ -99,7 +115,7 @@ public class SelectableWebView extends Region {
 
 			System.out.println("Selected element: " + marker.getSelectedElementID());
 			System.out.println("--------------------------------------------------------------------------");
-		} catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

@@ -553,7 +553,7 @@ public class XMLElement {
 			} else {
 				builder.append('\n');
 				for (XMLElement child : children) {
-					builder.append(child.toString(indentation + "  "));
+					builder.append(child.toString(indentation + '\t'));
 				}
 
 				builder.append(indentation);
