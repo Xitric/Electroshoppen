@@ -1,6 +1,7 @@
 package pim.persistence;
 
 import pim.business.*;
+import shared.DBUtil;
 
 import java.io.*;
 import java.sql.Connection;
@@ -13,6 +14,7 @@ import java.util.Set;
  * Implementation of the PersistenceFacade interface for use with JDBC.
  *
  * @author Kasper
+ * @author Niels
  */
 class DatabaseFacade implements PersistenceFacade {
 

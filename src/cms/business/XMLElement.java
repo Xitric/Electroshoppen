@@ -1,9 +1,6 @@
 package cms.business;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -18,6 +15,7 @@ import java.util.stream.Collectors;
 public class XMLElement {
 
 	//TODO: Should we handle both text content and child elements?
+	//TODO: Remove parent again when adding to another element. Make some method for performing deep clones
 
 	/**
 	 * The name of the attribute to consider as the id of an element.
@@ -159,8 +157,7 @@ public class XMLElement {
 	/**
 	 * Add the specified element as a child to this xml element. The new element will be added to the end of this
 	 * element's list of children. The new element must not already be among the children of this xml element, be the
-	 * element itself, and it must not be a parent of this element. The element will be removed from its current parent,
-	 * if it has any.
+	 * element itself, and it must not be a parent of this element.
 	 *
 	 * @param element the element to add
 	 * @throws IllegalArgumentException if the new child element is already a child of this xml element, if the new
@@ -174,8 +171,7 @@ public class XMLElement {
 	/**
 	 * Add the specified element as a child to this xml element at the specified index. This index must be within the
 	 * range of this element's children. Also, the new element must not already be among the children of this xml
-	 * element, be the element itself, and it must not be a parent of this element. The element will be removed from its
-	 * current parent, if it has any.
+	 * element, be the element itself, and it must not be a parent of this element.
 	 *
 	 * @param element the element to add
 	 * @param index   the position to add the new element into
@@ -193,11 +189,6 @@ public class XMLElement {
 
 		//Ensure that the new element is not a parent of this element
 		if (element.contains(this)) throw new IllegalArgumentException("Cannot add an element to its own child!");
-
-		//Remove from current parent, if any
-		if (!element.isRoot()) {
-			element.getParent().removeChild(element);
-		}
 
 		//Add to this element
 		children.add(index, element);
@@ -237,6 +228,23 @@ public class XMLElement {
 	}
 
 	/**
+	 * Add the specified elements as children to this xml element. The new elements will be added to the end of this
+	 * element's list of children. The new elements must not already be among the children of this xml element, be the
+	 * element itself, and they must not be a parent of this element.
+	 *
+	 * @param elements the elements to add
+	 * @throws IllegalArgumentException if one of the new child elements is already a child of this xml element, if one
+	 *                                  of the new child elements is the element itself, or if one of the new child
+	 *                                  elements is a parent of this xml element
+	 */
+	public void addChildren(Collection<XMLElement> elements) {
+		//TODO: Should we keep adding, even if one insertion fails?
+		for (XMLElement element: elements) {
+			addChild(element);
+		}
+	}
+
+	/**
 	 * Remove the specified child element from this xml element. If this element does not contain the specified child
 	 * element, nothing will happen. Otherwise the child element will be removed and become a root element.
 	 *
@@ -246,6 +254,17 @@ public class XMLElement {
 		if (children.remove(element)) {
 			element.setParent(null);
 		}
+	}
+
+	/**
+	 * Remove all child elements from this xml element.
+	 */
+	public void clear() {
+		for (XMLElement child: children) {
+			child.setParent(null);
+		}
+
+		children.clear();
 	}
 
 	/**
@@ -388,7 +407,7 @@ public class XMLElement {
 	 * Helper method for getting the value of the attribute with the name specified by {@link #ID_ATTRIBUTE}. If this
 	 * element has no id, this will return null.
 	 *
-	 * @return the is of this element, or null if it has no id
+	 * @return the id of this element, or null if it has no id
 	 */
 	public String getID() {
 		return getAttribute(ID_ATTRIBUTE);
@@ -580,7 +599,7 @@ public class XMLElement {
 		p1.addClass("third");
 		p1.removeClass("second");
 		p1.removeClass("first");
-//		p1.removeClass("third");
+		//		p1.removeClass("third");
 		p1.setAttribute("name", "a_paragraph");
 		p2.setAttribute("id", "booyah");
 		System.out.println(root);

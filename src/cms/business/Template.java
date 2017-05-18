@@ -1,187 +1,118 @@
 package cms.business;
 
-import com.sun.org.apache.xpath.internal.SourceTree;
-
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by Bruger on 18-05-2017.
+ * A representation of a static page layout that is used as the basis for creating pages in the CMS.
+ *
+ * @author Niels
+ * @author Kasper
  */
 public class Template {
-	private XMLElement template;
 
-	public Template() {
-		template = getProductTemplate();
+	private final String type;
+	private final XMLElement template;
+	private int id;
+
+	/**
+	 * Constructs a new template from the specified html layout.
+	 *
+	 * @param id   the id of this template, or -1 if it has no id yet
+	 * @param type the type of page that this template is intended for
+	 * @param html the html layout
+	 */
+	public Template(int id, String type, String html) {
+		this.id = id;
+		this.type = type;
+		template = new XMLParser().parse(html);
 	}
 
-	public Set<String> getIds() {
-		return getXMLId(template);
+	/**
+	 * Test whether the id of this template is valid.
+	 *
+	 * @return true if the id is valid, false otherwise
+	 */
+	public boolean hasValidID() {
+		return id >= 0;
 	}
 
-	private Set<String> getXMLId(XMLElement element) {
+	/**
+	 * Get the id of this template.
+	 *
+	 * @return the id of this template
+	 */
+	public int getID() {
+		return id;
+	}
+
+	/**
+	 * Set the id of this template. This operation will be ignored if the id is already set. The purpose of this method
+	 * is to allow the persistence layer to assign an id to a template created in the domain layer.
+	 *
+	 * @param id the id of the template
+	 */
+	public void setID(int id) {
+		if (this.id < 0) {
+			this.id = id;
+		}
+	}
+
+	/**
+	 * Get the type of the page that this template is intended for.
+	 *
+	 * @return the type of the page that this template is intended for
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * Get the ids of the container elements in this template.
+	 *
+	 * @return the ids of the container elements in this template
+	 */
+	public Set<String> getElementIDs() {
+		return getElementIDs(template);
+	}
+
+	/**
+	 * Internal method for getting the container ids recursively.
+	 *
+	 * @param element the element to scan through
+	 * @return the ids in the specified element
+	 */
+	private Set<String> getElementIDs(XMLElement element) {
 		if (element.getID() != null) {
+			//If this element has an id, then no child elements can legally have ids too
 			return Collections.singleton(element.getID());
 		} else {
+			//Recursively get the ids of the children
 			Set<String> idSet = new HashSet<>();
 			for (XMLElement child : element.getChildren()) {
-				idSet.addAll(getXMLId(child));
+				idSet.addAll(getElementIDs(child));
 			}
 			return idSet;
 		}
 	}
 
-	public XMLElement getArticleTemplate() {
-		XMLElement article = new XMLParser().parse("<html><head><title>Example</title>\n" +
-				"<style>\n" +
-				".wrapper {\n" +
-				"  display: flex;\n" +
-				"}\n" +
-				".wrapper > div {\n" +
-				"  font-size: 4vh;\n" +
-				"  color: black;\n" +
-				"  background: white;\n" +
-				"  margin: .3em;\n" +
-				"  padding: .3em;\n" +
-				"  outline:2px #125688 solid;\n" +
-				"  flex: 1;\n" +
-				"}\n" +
-				"</style>\n" +
-				"</head><body class=\"nonselectable\">" +
-				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div id = \"1\">Title</div>\n" +
-				"</div>\n" +
-				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div id = \"2\">1 Column</div>\n" +
-				"</div>\n" +
-				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div id = \"3\">2 Columns</div>\n" +
-				"  <div id = \"4\">2 Columns</div>\n" +
-				"</div>\n" +
-				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div id = \"5\">3 Columns</div>\n" +
-				"  <div id = \"6\">3 Columns</div>\n" +
-				"  <div id = \"7\">3 Columns</div>\n" +
-				"</div>\n" +
-				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div id = \"8\">Footer</div>\n" +
-				"</div></body></html>");
-		return article;
-	}
+	/**
+	 * Use the content of the specified dynamic page along with this template to create a complete web page.
+	 *
+	 * @param page the page to use
+	 * @return a complete web page containing the content of the specified dynamic page
+	 */
+	public XMLElement enrichPage(DynamicPage page) {
+		Set<String> ids = getElementIDs();
 
-	public XMLElement getProductTemplate() {
-		XMLElement product = new XMLParser().parse("<html>\n" +
-				"<head>\n" +
-				"  <style>\n" +
-				"    .wrapper {\n" +
-				"      display: flex;\n" +
-				"    }\n" +
-				"    .wrapper > div {\n" +
-				"      font-size: 4vh;\n" +
-				"      color: black;\n" +
-				"      background: white;\n" +
-				"      margin: .3em;\n" +
-				"      padding: .3em;\n" +
-				"      border-radius: 3px;\n" +
-				"      outline:2px #125688 solid;\n" +
-				"      flex: 1;\n" +
-				"    }\n" +
-				"  </style>\n" +
-				"</head>\n" +
-				"<body class=\"nonselectable\">\n" +
-				"  <div class=\"wrapper nonselectable\">\n" +
-				"    <div id = \"1\">Product name</div>\n" +
-				"  </div>\n" +
-				"  <div class=\"wrapper nonselectable\" style=\"min-height:100px;\">\n" +
-				"    <div id = \"2\" style=\"min-width:60%;\">Image</div>\n" +
-				"    <div id = \"3\">Price/purchase</div>\n" +
-				"  </div>\n" +
-				"  <div class=\"wrapper nonselectable\">\n" +
-				"    <div id = \"4\">Product information</div>\n" +
-				"  </div>\n" +
-				"</body>\n" +
-				"</html>");
-		return product;
-	}
-
-	public XMLElement getGuideTemplate() {
-		XMLElement template = new XMLParser().parse("<html>\n" +
-				"<head>\n" +
-				"  <style>\n" +
-				"    .wrapper {\n" +
-				"      display: flex;\n" +
-				"    }\n" +
-				"    .wrapper > div {\n" +
-				"      font-size: 4vh;\n" +
-				"      color: black;\n" +
-				"      background: white;\n" +
-				"      margin: .3em;\n" +
-				"      padding: .3em;\n" +
-				"      border-radius: 3px;\n" +
-				"      outline:2px #125688 solid;\n" +
-				"      flex: 1;\n" +
-				"    }\n" +
-				"  </style>\n" +
-				"</head>\n" +
-				"<body class=\"nonselectable\">\n" +
-				"  <div class=\"wrapper nonselectable\">\n" +
-				"    <div id = \"1\">Guidenavn</div>\n" +
-				"  </div>\n" +
-				"  <div class=\"wrapper nonselectable\">\n" +
-				"    <div id = \"2\">Image</div>\n" +
-				"  </div>\n" +
-				"  <div class=\"wrapper nonselectable\" style=\"min-height:100px;\">\n" +
-				"    <div id = \"3\" style=\"min-width:60%;\">Guidetekst</div>\n" +
-				"    <div id = \"4\">Produktbeskrivelse</div>\n" +
-				"  </div>\n" +
-				"</body>\n" +
-				"</html>");
-		return template;
-	}
-
-	public XMLElement getLandingPageTemplate() {
-		XMLElement landingPage = new XMLParser().parse("<html>\n" +
-				"<head>\n" +
-				"  <style>\n" +
-				"    .wrapper {\n" +
-				"      display: flex;\n" +
-				"    }\n" +
-				"    .wrapper > div {\n" +
-				"      font-size: 4vh;\n" +
-				"      color: black;\n" +
-				"      background: white;\n" +
-				"      margin: .3em;\n" +
-				"      padding: .3em;\n" +
-				"      border-radius: 3px;\n" +
-				"      outline:2px #125688 solid;\n" +
-				"      flex: 1;\n" +
-				"    }\n" +
-				"  </style>\n" +
-				"</head>\n" +
-				"<body class=\"nonselectable\">\n" +
-				"  <div class=\"wrapper nonselectable\">\n" +
-				"    <div id = \"1\">Header</div>\n" +
-				"  </div>\n" +
-				"  <div class=\"wrapper nonselectable\">\n" +
-				"    <div id = \"2\" >Produkter</div>\n" +
-				"  </div>\n" +
-				"</body>\n" +
-				"</html>");
-		return landingPage;
-	}
-
-	public XMLElement enrichPage(DynamicPage page){
-		Set<String> ids = getIds();
-		XMLElement temaplateCopy = new XMLParser().parse(template.toString());
-		for(String id: ids){
-			temaplateCopy.getChildByID(id).addChild(page.getContentForID(id));
+		//We want to retain the template, so we make a copy of it
+		XMLElement templateCopy = new XMLParser().parse(template.toString());
+		for (String id : ids) {
+			XMLElement child = templateCopy.getChildByID(id);
+			child.clear();
+			child.addChildren(page.getContentForID(id).getChildren());
 		}
-		return temaplateCopy;
-	}
-
-
-	public static void main(String[] args) {
+		return templateCopy;
 	}
 }

@@ -10,6 +10,7 @@ import java.util.Set;
  * Interface describing a class that can be used for accessing the persistence layer.
  *
  * @author Kasper
+ * @author Niels
  */
 public interface PersistenceFacade {
 
@@ -52,6 +53,7 @@ public interface PersistenceFacade {
 	/**
 	 * Get all the product reviews from the database
 	 * @return set of ProductReviews
+	 * @throws IOException if the operation fails
 	 */
 	Set<ProductReview> getProductReviews() throws  IOException;
 

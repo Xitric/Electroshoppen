@@ -1,6 +1,10 @@
 package cms.presentation;
 
-import cms.business.XMLParser;
+import cms.business.DynamicPage;
+import cms.business.Template;
+import cms.business.XMLElement;
+import cms.persistence.CMSPersistenceFacade;
+import cms.persistence.CMSPersistenceFactory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -8,6 +12,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.StackPane;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -32,51 +37,17 @@ public class CMSViewController implements Initializable {
 		editor = new SelectableWebView();
 		editorPane.getChildren().add(editor);
 
-//		String html = "<html><head/><body>" +
-//				"<div style=\"background-color:green;\">" +
-//				"<h1>Hello, world!</h1>" +
-//				"</div>" +
-//				"<div style=\"background-color:cyan;\">" +
-//				"<p>Another paragraph</p>" +
-//				"<p>And another line</p>" +
-//				"</div>" +
-//				"</body></html>";
-		String html = "<html><head><title>Example</title>\n" +
-				"<style>\n" +
-				".wrapper {\n" +
-				"  display: flex;\n" +
-				"}\n" +
-				".wrapper > div {\n" +
-				"  font-size: 4vh;\n" +
-				"  color: black;\n" +
-				"  background: white;\n" +
-				"  margin: .3em;\n" +
-				"  padding: .3em;\n" +
-				"  outline:2px #125688 solid;\n" +
-				"  flex: 1;\n" +
-				"}\n" +
-				"</style>\n" +
-				"</head><body class=\"nonselectable\">" +
-				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div>Title</div>\n" +
-				"</div>\n" +
-				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div>1 Column</div>\n" +
-				"</div>\n" +
-				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div>2 Columns</div>\n" +
-				"  <div>2 Columns</div>\n" +
-				"</div>\n" +
-				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div>3 Columns</div>\n" +
-				"  <div>3 Columns</div>\n" +
-				"  <div>3 Columns</div>\n" +
-				"</div>\n" +
-				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div>Footer</div>\n" +
-				"</div></body></html>";
-		editor.setContent(html);
-		htmlPreview.setText(new XMLParser().parse(html).getChildrenByTag("body").get(0).toString());
+		CMSPersistenceFacade persistence = CMSPersistenceFactory.createDatabaseMediator();
+		try {
+			DynamicPage page = persistence.getPage(1);
+			Template template = persistence.getTemplateForPage(1);
+			XMLElement layout = template.enrichPage(page);
+
+			editor.setContent(layout.toString());
+			htmlPreview.setText(layout.getChildrenByTag("body").get(0).toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML

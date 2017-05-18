@@ -15,7 +15,30 @@ public interface DynamicPage {
 	String ID_ATTRIB = "id";
 
 	/**
-	 * Get the content for the template element with the specified id.
+	 * Test whether the id of this page is valid.
+	 *
+	 * @return true if the id is valid, false otherwise
+	 */
+	boolean hasValidID();
+
+	/**
+	 * Get the id of this page.
+	 *
+	 * @return the id of this page
+	 */
+	int getID();
+
+	/**
+	 * Set the id of this page. This operation will be ignored if the id is already set. The purpose of this method is
+	 * to allow the persistence layer to assign an id to a page created in the domain layer.
+	 *
+	 * @param id the id of the page
+	 */
+	void setID(int id);
+
+	/**
+	 * Get the content for the template element with the specified id. The content will be wrapped in a {@code <div>}
+	 * element, and should thus be unwrapped by calling {@link XMLElement#getChildren()}.
 	 *
 	 * @param id the id of the template element
 	 * @return the content for the template element with the specified id

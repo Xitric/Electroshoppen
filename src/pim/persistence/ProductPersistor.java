@@ -1,6 +1,7 @@
 package pim.persistence;
 
 import pim.business.*;
+import shared.DBUtil;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
@@ -16,6 +17,7 @@ import java.util.Date;
  *
  * @author Kasper
  * @author Mikkel
+ * @author Niels
  */
 class ProductPersistor {
 

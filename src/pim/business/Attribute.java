@@ -106,7 +106,7 @@ public class Attribute implements Comparable<Attribute> {
 	}
 
 	/**
-	 * Test whether the id of this product is valid.
+	 * Test whether the id of this attribute is valid.
 	 *
 	 * @return true if the id is valid, false otherwise
 	 */
@@ -125,7 +125,7 @@ public class Attribute implements Comparable<Attribute> {
 
 	/**
 	 * Set the id of this attribute. This operation will be ignored if the id is already set. The purpose of this method
-	 * is to allow the persistence layer to assign an id to am attribute created in the domain layer.
+	 * is to allow the persistence layer to assign an id to an attribute created in the domain layer.
 	 *
 	 * @param id the id of the attribute
 	 */

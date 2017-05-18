@@ -2,6 +2,7 @@ package pim.persistence;
 
 import pim.business.Attribute;
 import pim.business.Category;
+import shared.DBUtil;
 
 import java.io.IOException;
 import java.sql.*;

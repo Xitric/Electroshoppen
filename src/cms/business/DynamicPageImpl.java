@@ -9,7 +9,9 @@ import java.util.Map;
  *
  * @author Kasper
  */
-abstract class AbstractDynamicPage implements DynamicPage {
+public class DynamicPageImpl implements DynamicPage {
+
+	private int id;
 
 	/**
 	 * The roots of the XHTML that makes up the content of this page along with the ids of those elements to associate
@@ -20,14 +22,32 @@ abstract class AbstractDynamicPage implements DynamicPage {
 	/**
 	 * Constructs a new dynamic page with the specified html content.
 	 *
+	 * @param id      the id of this dynamic page, or -1 if it has no id yet
 	 * @param content the content of the page
 	 */
-	public AbstractDynamicPage(Map<String, String> content) {
+	public DynamicPageImpl(int id, Map<String, String> content) {
 		this.content = new HashMap<>();
 		XMLParser parser = new XMLParser();
 
 		for (Map.Entry<String, String> entry : content.entrySet()) {
 			this.content.put(entry.getKey(), parser.parse(entry.getValue()));
+		}
+	}
+
+	@Override
+	public boolean hasValidID() {
+		return id >= 0;
+	}
+
+	@Override
+	public int getID() {
+		return id;
+	}
+
+	@Override
+	public void setID(int id) {
+		if (this.id < 0) {
+			this.id = id;
 		}
 	}
 
@@ -109,20 +129,5 @@ abstract class AbstractDynamicPage implements DynamicPage {
 	@Override
 	public String toString() {
 		return content.toString();
-	}
-
-	public static void main(String[] args) {
-		DynamicPage p = new Article("<html id=\"h1\"><head></head>" +
-				"<body id=\"b1\">" +
-				"<form action=\"/action_page.php\" id=\"f1\">" +
-				"First name: <input id=\"i1\" type=\"text\" name=\"fname\"/><br/>" +
-				"Last name: <input id=\"i2\" type=\"text\" name=\"lname\"/><br/>" +
-				"<input id=\"i3\" type=\"submit\" value=\"Submit as normal\"/>" +
-				"<input id=\"i4\" type=\"submit\" formtarget=\"_blank\" value=\"Submit to a new window/tab\"/>" +
-				"</form>" +
-				"<p id=\"p1\"><strong id=\"s1\">Note:</strong> The formtarget attribute of the input tag is not supported in Internet Explorer 9 and earlier versions.</p>" +
-				"</body>" +
-				"</html>");
-		System.out.println(p);
 	}
 }

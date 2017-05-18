@@ -1,4 +1,4 @@
-package pim.persistence;
+package shared;
 
 import java.sql.*;
 
@@ -7,7 +7,7 @@ import java.sql.*;
  *
  * @author Kasper
  */
-class DBUtil {
+public class DBUtil {
 
 	/**
 	 * Safely close the specified statement.
