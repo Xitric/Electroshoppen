@@ -172,9 +172,16 @@ public class Template {
 		return landingPage;
 	}
 
+	public XMLElement enrichPage(DynamicPage page){
+		Set<String> ids = getIds();
+		XMLElement temaplateCopy = new XMLParser().parse(template.toString());
+		for(String id: ids){
+			temaplateCopy.getChildByID(id).addChild(page.getContentForID(id));
+		}
+		return temaplateCopy;
+	}
+
 
 	public static void main(String[] args) {
-		Template test = new Template();
-		System.out.println(Arrays.toString(test.getIds().toArray()));
 	}
 }
