@@ -1,8 +1,7 @@
 package cms.presentation;
 
-import cms.business.Article;
-import cms.business.DocumentMarker;
-import cms.business.DynamicPage;
+import cms.business.XMLElement;
+import cms.business.XMLParser;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -40,8 +39,6 @@ public class TestCMS extends Application implements Initializable {
 
 	private HTMLElement remembered;
 
-	private DynamicPage page;
-
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		swv = new SelectableWebView();
@@ -55,18 +52,36 @@ public class TestCMS extends Application implements Initializable {
 		//				"<p>Bar</p>" +
 		//				"</div>" +
 		//				"</html>");
-		page = new Article("<html id=\"h1\"><head></head>" +
-				"<body id=\"b1\">" +
-				"<form action=\"/action_page.php\" id=\"f1\">" +
-				"First name: <input id=\"i1\" type=\"text\" name=\"fname\"/><br/>" +
-				"Last name: <input id=\"i2\" type=\"text\" name=\"lname\"/><br/>" +
-				"<input id=\"i3\" type=\"submit\" value=\"Submit as normal\"/>" +
-				"<input id=\"i4\" type=\"submit\" formtarget=\"_blank\" value=\"Submit to a new window/tab\"/>" +
-				"</form>" +
-				"<p id=\"p1\"><strong id=\"s1\">Note:</strong> The formtarget attribute of the input tag is not supported in Internet Explorer 9 and earlier versions.</p>" +
+//		page = new Article("<html id=\"h1\"><head></head>" +
+//				"<body id=\"b1\">" +
+//				"<form action=\"/action_page.php\" id=\"f1\">" +
+//				"First name: <input id=\"i1\" type=\"text\" name=\"fname\"/><br/>" +
+//				"Last name: <input id=\"i2\" type=\"text\" name=\"lname\"/><br/>" +
+//				"<input id=\"i3\" type=\"submit\" value=\"Submit as normal\"/>" +
+//				"<input id=\"i4\" type=\"submit\" formtarget=\"_blank\" value=\"Submit to a new window/tab\"/>" +
+//				"</form>" +
+//				"<p id=\"p1\"><strong id=\"s1\">Note:</strong> The formtarget attribute of the input tag is not supported in Internet Explorer 9 and earlier versions.</p>" +
+//				"</body>" +
+//				"</html>");
+
+		XMLElement root = new XMLParser().parse("<html>" +
+				"<head>" +
+				"<title>Skrammelshop varer</title>" +
+				"</head>" +
+				"<body>" +
+				"<label>Favorite" +
+				"Town:</label><br />" +
+				"<select title=\"Please choose your favorite town\" name=\"ddlTown\" " +
+				"id=\"ddlTown\">" +
+				"<option value=\"\">Please Select ... </option>" +
+				"<option value=\"Swindon\">Swindon</option>" +
+				"<option value=\"London\">London</option>" +
+				"<option value=\"Burkino Faso\">Burkino Faso</option>" +
+				"</select>" +
 				"</body>" +
 				"</html>");
-		swv.setContent(page.toString());
+		swv.setContent(root.toString());
+		System.out.println(root);
 
 		//		swv.setContent("<html><head></head>\n" +
 		//				"<body id=\"b1\">\n" +
@@ -131,10 +146,10 @@ public class TestCMS extends Application implements Initializable {
 	public void insertTextOnAction(ActionEvent event) {
 		HTMLElement e = swv.selectedElementProperty().getValue();
 
-		if (!textInput.getText().isEmpty() && e != null) {
-			page.insertText(new DocumentMarker(e, ""), textInput.getText());
-			swv.setContent(page.toString());
-		}
+//		if (!textInput.getText().isEmpty() && e != null) {
+//			page.insertText(new DocumentMarker(e, ""), textInput.getText());
+//			swv.setContent(page.toString());
+//		}
 
 		//		HTMLElement e = swv.selectedElementProperty().getValue();
 		//
