@@ -140,11 +140,18 @@ public class AttributeController implements Initializable {
 						//Get the new attribute and add it to the list
 						attributeList.add(attribute);
 					} catch (IOException e) {
-						//TODO: Error dialog
-						e.printStackTrace();
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle("Changes are not accepted!");
+						alert.setHeaderText("Could not save attribute");
+						alert.setContentText("Something went wrong when saving the attribute");
+						alert.showAndWait();
 					}
 				} catch (NoSuchElementException e) {
-					//TODO: Error dialog
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Changes are not accepted!");
+					alert.setHeaderText("Critical error");
+					alert.setContentText("No element could be found");
+					alert.showAndWait();
 				}
 			} else {
 				resultWasBad = false;
@@ -175,10 +182,14 @@ public class AttributeController implements Initializable {
 			//TODO:
 			try {
 				pim.removeAttribute(selection.getID());
+				attributeList.remove(selection);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Changes are not accepted!");
+				alert.setHeaderText("Could not remove attribute");
+				alert.setContentText("Something went wrong when removing the attribute");
+				alert.showAndWait();
 			}
-			attributeList.remove(selection);
 		}
 	}
 
@@ -195,7 +206,11 @@ public class AttributeController implements Initializable {
 			pim.saveAttribute(selection);
 			attributeListView.refresh();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Changes are not accepted!");
+			alert.setHeaderText("Could not save attribute");
+			alert.setContentText("Something went wrong when saving the attribute");
+			alert.showAndWait();
 		}
 	}
 

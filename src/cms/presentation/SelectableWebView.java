@@ -1,5 +1,6 @@
 package cms.presentation;
 
+import cms.business.DocumentMarker;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -23,7 +24,7 @@ public class SelectableWebView extends Region {
 	private static final String selectScript = "<script>" +
 			"function bodyClick(event) {" +
 			"var element = event.srcElement;" +
-			"controller.selectionChanged(element.nodeType == 1? element : element.parentNode);" +
+			"controller.selectionChanged(element.nodeType == 1? element : element.parentNode, window.getSelection());" +
 			"}" +
 			"document.addEventListener('DOMContentLoaded', function() {" +
 			"document.body.addEventListener('click', bodyClick, true);" +
@@ -86,7 +87,22 @@ public class SelectableWebView extends Region {
 	 * @param selection the user's selection
 	 */
 	@SuppressWarnings("unused")
-	public void selectionChanged(Object selection) {
+	public void selectionChanged(Object selection, Object range) {
+		try {
+			DocumentMarker marker = new DocumentMarker((HTMLElement) selection, range.toString());
+			if (marker.hasRangeSelection()) {
+				System.out.println("You selected part of an element: " + marker.getRangeSelection());
+				System.out.println("The selection begins at index " + marker.getStartSelection() + " and ends at " + marker.getEndSelection());
+			} else {
+				System.out.println("You selected the entire element!");
+			}
+
+			System.out.println("Selected element: " + marker.getSelectedElementID());
+			System.out.println("--------------------------------------------------------------------------");
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+
 		selectInternal((HTMLElement) selection);
 	}
 

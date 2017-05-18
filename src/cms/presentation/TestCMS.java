@@ -1,6 +1,7 @@
 package cms.presentation;
 
-import com.sun.webkit.dom.HTMLParagraphElementImpl;
+import cms.business.XMLElement;
+import cms.business.XMLParser;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -42,29 +43,60 @@ public class TestCMS extends Application implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		swv = new SelectableWebView();
 		content.getChildren().setAll(swv);
-//		swv.setContent("<html><head></head><body>" +
-//				"<div>" +
-//				"<p>Hello, world!</p>" +
-//				"<p>Foo</p>" +
-//				"</div>" +
-//				"<div>" +
-//				"<p>Bar</p>" +
-//				"</div>" +
+		//		swv.setContent("<html><head></head><body>" +
+		//				"<div>" +
+		//				"<p>Hello, world!</p>" +
+		//				"<p>Foo</p>" +
+		//				"</div>" +
+		//				"<div>" +
+		//				"<p>Bar</p>" +
+		//				"</div>" +
+		//				"</html>");
+//		page = new Article("<html id=\"h1\"><head></head>" +
+//				"<body id=\"b1\">" +
+//				"<form action=\"/action_page.php\" id=\"f1\">" +
+//				"First name: <input id=\"i1\" type=\"text\" name=\"fname\"/><br/>" +
+//				"Last name: <input id=\"i2\" type=\"text\" name=\"lname\"/><br/>" +
+//				"<input id=\"i3\" type=\"submit\" value=\"Submit as normal\"/>" +
+//				"<input id=\"i4\" type=\"submit\" formtarget=\"_blank\" value=\"Submit to a new window/tab\"/>" +
+//				"</form>" +
+//				"<p id=\"p1\"><strong id=\"s1\">Note:</strong> The formtarget attribute of the input tag is not supported in Internet Explorer 9 and earlier versions.</p>" +
+//				"</body>" +
 //				"</html>");
-		swv.setContent("<html><head></head>\n" +
-				"<body>\n" +
-				"\n" +
-				"<form action=\"/action_page.php\">\n" +
-				"  First name: <input type=\"text\" name=\"fname\"><br>\n" +
-				"  Last name: <input type=\"text\" name=\"lname\"><br>\n" +
-				"  <input type=\"submit\" value=\"Submit as normal\">\n" +
-				"  <input type=\"submit\" formtarget=\"_blank\" value=\"Submit to a new window/tab\">\n" +
-				"</form>\n" +
-				"\n" +
-				"<p><strong>Note:</strong> The formtarget attribute of the input tag is not supported in Internet Explorer 9 and earlier versions.</p>\n" +
-				"\n" +
-				"</body>\n" +
-				"</html>\n");
+
+		XMLElement root = new XMLParser().parse("<html>" +
+				"<head>" +
+				"<title>Skrammelshop varer</title>" +
+				"</head>" +
+				"<body>" +
+				"<label>Favorite" +
+				"Town:</label><br />" +
+				"<select title=\"Please choose your favorite town\" name=\"ddlTown\" " +
+				"id=\"ddlTown\">" +
+				"<option value=\"\">Please Select ... </option>" +
+				"<option value=\"Swindon\">Swindon</option>" +
+				"<option value=\"London\">London</option>" +
+				"<option value=\"Burkino Faso\">Burkino Faso</option>" +
+				"</select>" +
+				"</body>" +
+				"</html>");
+		swv.setContent(root.toString());
+		System.out.println(root);
+
+		//		swv.setContent("<html><head></head>\n" +
+		//				"<body id=\"b1\">\n" +
+		//				"\n" +
+		//				"<form action=\"/action_page.php\" id=\"f1\">\n" +
+		//				"First name: <input id=\"i1\" type=\"text\" name=\"fname\"><br>\n" +
+		//				"Last name: <input id=\"i2\" type=\"text\" name=\"lname\"><br>\n" +
+		//				"<input id=\"i3\" type=\"submit\" value=\"Submit as normal\">\n" +
+		//				"<input id=\"i4\" type=\"submit\" formtarget=\"_blank\" value=\"Submit to a new window/tab\">\n" +
+		//				"</form>\n" +
+		//				"\n" +
+		//				"<p id=\"p1\"><strong id=\"s1\">Note:</strong> The formtarget attribute of the input tag is not supported in Internet Explorer 9 and earlier versions.</p>\n" +
+		//				"\n" +
+		//				"</body>\n" +
+		//				"</html>\n");
 		swv.selectedElementProperty().addListener((observable, oldValue, newValue) -> selectLabel.setText(newValue.toString()));
 	}
 
@@ -114,11 +146,18 @@ public class TestCMS extends Application implements Initializable {
 	public void insertTextOnAction(ActionEvent event) {
 		HTMLElement e = swv.selectedElementProperty().getValue();
 
-		if (! textInput.getText().isEmpty() && e != null) {
-			HTMLParagraphElementImpl newText = (HTMLParagraphElementImpl) e.getOwnerDocument().createElement("p");
-			newText.setTextContent(textInput.getText());
-			e.getParentNode().insertBefore(newText, e);
-		}
+//		if (!textInput.getText().isEmpty() && e != null) {
+//			page.insertText(new DocumentMarker(e, ""), textInput.getText());
+//			swv.setContent(page.toString());
+//		}
+
+		//		HTMLElement e = swv.selectedElementProperty().getValue();
+		//
+		//		if (! textInput.getText().isEmpty() && e != null) {
+		//			HTMLParagraphElementImpl newText = (HTMLParagraphElementImpl) e.getOwnerDocument().createElement("p");
+		//			newText.setTextContent(textInput.getText());
+		//			e.getParentNode().insertBefore(newText, e);
+		//		}
 	}
 
 	@FXML
