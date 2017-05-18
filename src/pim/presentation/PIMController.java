@@ -5,6 +5,7 @@
  */
 package pim.presentation;
 
+import cms.presentation.CMSViewController;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -31,6 +32,9 @@ public class PIMController implements Initializable {
 	private BorderPane productTabPage;
 
 	@FXML
+	private BorderPane cmsTabPage;
+
+	@FXML
 	private CategoryController categoryTabPageController;
 
 	@FXML
@@ -38,6 +42,9 @@ public class PIMController implements Initializable {
 
 	@FXML
 	private ProductController productTabPageController;
+
+	@FXML
+	private CMSViewController cmsTabPageController;
 
 	/**
 	 * The mediator for the business layer.

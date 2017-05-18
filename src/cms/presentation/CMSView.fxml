@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cms.presentation.CMSViewController">
+   <left>
+      <TitledPane animated="false" maxHeight="1.7976931348623157E308" text="Page Browser" BorderPane.alignment="CENTER">
+         <content>
+            <TreeView fx:id="existingPageTreeView" prefHeight="200.0" prefWidth="200.0" />
+         </content>
+      </TitledPane>
+   </left>
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem mnemonicParsing="false" text="New Page..." />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="How to use" />
+               </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <center>
+      <VBox alignment="BOTTOM_LEFT" spacing="8.0" BorderPane.alignment="CENTER">
+         <children>
+            <StackPane fx:id="editorPane" VBox.vgrow="ALWAYS" />
+            <GridPane hgap="4.0" vgap="4.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" />
+                <ColumnConstraints hgrow="SOMETIMES" />
+                  <ColumnConstraints hgrow="SOMETIMES" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints vgrow="SOMETIMES" />
+                <RowConstraints vgrow="SOMETIMES" />
+                <RowConstraints vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Button mnemonicParsing="false" onAction="#insertTextAfterOnAction" text="Insert Text After" />
+                  <Button mnemonicParsing="false" onAction="#insertTextBeforeOnAction" text="Insert Text Before" GridPane.columnIndex="1" />
+                  <TextField fx:id="insertTextField" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" />
+                  <Button mnemonicParsing="false" onAction="#insertImageAfterOnAction" text="Insert Image After" GridPane.rowIndex="1" />
+                  <Button mnemonicParsing="false" onAction="#insertImageBeforeOnAction" text="Insert Image Before" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <HBox alignment="CENTER_LEFT" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                     <children>
+                        <TextField fx:id="browseTextField" HBox.hgrow="ALWAYS" />
+                        <Button mnemonicParsing="false" onAction="#browseOnAction" text="Browse" />
+                     </children>
+                  </HBox>
+                  <Button mnemonicParsing="false" onAction="#insertHTMLAfterOnAction" text="Insert HTML After" GridPane.rowIndex="2" />
+                  <Button mnemonicParsing="false" onAction="#insertHTMLBeforeOnAction" text="InsertHTML Before" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Button mnemonicParsing="false" onAction="#removeSelectionOnAction" text="Remove Selection" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+               </VBox.margin>
+            </GridPane>
+         </children>
+      </VBox>
+   </center>
+   <right>
+      <VBox maxWidth="300.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="HTML Preview">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="8.0" top="4.0" />
+               </VBox.margin>
+            </Label>
+            <TextArea fx:id="htmlPreview" editable="false" promptText="No content to preview" VBox.vgrow="ALWAYS" />
+         </children>
+      </VBox>
+   </right>
+</BorderPane>
