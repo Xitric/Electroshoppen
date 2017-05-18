@@ -29,22 +29,22 @@ public class Template {
 				"</style>\n" +
 				"</head><body class=\"nonselectable\">" +
 				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div>Title</div>\n" +
+				"  <div id = \"1\">Title</div>\n" +
 				"</div>\n" +
 				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div>1 Column</div>\n" +
+				"  <div id = \"2\">1 Column</div>\n" +
 				"</div>\n" +
 				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div>2 Columns</div>\n" +
-				"  <div>2 Columns</div>\n" +
+				"  <div id = \"3\">2 Columns</div>\n" +
+				"  <div id = \"4\">2 Columns</div>\n" +
 				"</div>\n" +
 				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div>3 Columns</div>\n" +
-				"  <div>3 Columns</div>\n" +
-				"  <div>3 Columns</div>\n" +
+				"  <div id = \"5\">3 Columns</div>\n" +
+				"  <div id = \"6\">3 Columns</div>\n" +
+				"  <div id = \"7\">3 Columns</div>\n" +
 				"</div>\n" +
 				"<div class=\"wrapper nonselectable\">\n" +
-				"  <div>Footer</div>\n" +
+				"  <div id = \"8\">Footer</div>\n" +
 				"</div></body></html>");
 		return article;
 	}
@@ -70,14 +70,14 @@ public class Template {
 				"</head>\n" +
 				"<body class=\"nonselectable\">\n" +
 				"  <div class=\"wrapper nonselectable\">\n" +
-				"    <div>Product name</div>\n" +
+				"    <div id = \"1\">Product name</div>\n" +
 				"  </div>\n" +
 				"  <div class=\"wrapper nonselectable\" style=\"min-height:100px;\">\n" +
-				"    <div style=\"min-width:60%;\">Image</div>\n" +
-				"    <div>Price/purchase</div>\n" +
+				"    <div id = \"2\" style=\"min-width:60%;\">Image</div>\n" +
+				"    <div> id = \"3\"Price/purchase</div>\n" +
 				"  </div>\n" +
 				"  <div class=\"wrapper nonselectable\">\n" +
-				"    <div>Product information</div>\n" +
+				"    <div id = \"4\">Product information</div>\n" +
 				"  </div>\n" +
 				"</body>\n" +
 				"</html>");
@@ -105,14 +105,14 @@ public class Template {
 				"</head>\n" +
 				"<body class=\"nonselectable\">\n" +
 				"  <div class=\"wrapper nonselectable\">\n" +
-				"    <div>Guidenavn</div>\n" +
+				"    <div id = \"1\">Guidenavn</div>\n" +
 				"  </div>\n" +
 				"  <div class=\"wrapper nonselectable\">\n" +
-				"    <div>Image</div>\n" +
+				"    <div id = \"2\">Image</div>\n" +
 				"  </div>\n" +
 				"  <div class=\"wrapper nonselectable\" style=\"min-height:100px;\">\n" +
-				"    <div style=\"min-width:60%;\">Guidetekst</div>\n" +
-				"    <div>Produktbeskrivelse</div>\n" +
+				"    <div id = \"3\" style=\"min-width:60%;\">Guidetekst</div>\n" +
+				"    <div id = \"4\">Produktbeskrivelse</div>\n" +
 				"  </div>\n" +
 				"</body>\n" +
 				"</html>");
@@ -140,10 +140,10 @@ public class Template {
 				"</head>\n" +
 				"<body class=\"nonselectable\">\n" +
 				"  <div class=\"wrapper nonselectable\">\n" +
-				"    <div>Header</div>\n" +
+				"    <div id = \"1\">Header</div>\n" +
 				"  </div>\n" +
 				"  <div class=\"wrapper nonselectable\">\n" +
-				"    <div>Produkter</div>\n" +
+				"    <div id = \"2\" >Produkter</div>\n" +
 				"  </div>\n" +
 				"</body>\n" +
 				"</html>");
