@@ -331,9 +331,18 @@ public class ProductController implements Initializable {
 
 					//If a value was selected, update it
 					if (result.isPresent()) {
-						Attribute.AttributeValue newValue = attributeValue.getParent().createValue(result.get());
-						attributeValues.put(button, new Pair<>(newValue, attributeLabel));
-						attributeLabel.setText(newValue.toString());
+
+						try {
+							Attribute.AttributeValue newValue = attributeValue.getParent().createValue(result.get());
+							attributeValues.put(button, new Pair<>(newValue, attributeLabel));
+							attributeLabel.setText(newValue.toString());
+						} catch (IllegalArgumentException e) {
+							Alert alert = new Alert(Alert.AlertType.ERROR);
+							alert.setTitle("Changes are not accepted!");
+							alert.setHeaderText("Illegal Value!");
+							alert.setContentText("Please choose a legal value as input");
+							alert.showAndWait();
+						}
 					}
 				} else { //Restricted
 					//TODO: Show list of possibilities. Remove this code
@@ -343,9 +352,17 @@ public class ProductController implements Initializable {
 
 					//If a value was selected, update it
 					if (result.isPresent()) {
-						Attribute.AttributeValue newValue = attributeValue.getParent().createValue(result.get());
-						attributeValues.put(button, new Pair<>(newValue, attributeLabel));
-						attributeLabel.setText(newValue.toString());
+						try {
+							Attribute.AttributeValue newValue = attributeValue.getParent().createValue(result.get());
+							attributeValues.put(button, new Pair<>(newValue, attributeLabel));
+							attributeLabel.setText(newValue.toString());
+						} catch (IllegalArgumentException e) {
+							Alert alert = new Alert(Alert.AlertType.ERROR);
+							alert.setTitle("Changes are not accepted!");
+							alert.setHeaderText("Illegal Value!");
+							alert.setContentText("Please choose a legal value as input");
+							alert.showAndWait();
+						}
 					}
 				}
 			}
