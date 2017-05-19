@@ -1,6 +1,7 @@
 package pim.business;
 
 import pim.persistence.DataCache;
+import shared.Image;
 
 import java.awt.image.BufferedImage;
 import java.util.Set;

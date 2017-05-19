@@ -4,13 +4,13 @@ import cms.business.DynamicPage;
 import cms.business.DynamicPageImpl;
 import cms.business.Template;
 import shared.DBUtil;
+import shared.Image;
 
+import javax.imageio.ImageIO;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Implementation of the CMSPersistenceFacade interface for use with JDBC.
@@ -144,7 +144,7 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 	public DynamicPage getPage(int id) throws IOException {
 		Connection connection = getConnection();
 		try (PreparedStatement getPage = connection.prepareStatement("SELECT * FROM page WHERE pageid = ?;");
-		     PreparedStatement getPageContent = connection.prepareStatement("SELECT * FROM content WHERE pageid = ?")) {
+			 PreparedStatement getPageContent = connection.prepareStatement("SELECT * FROM content WHERE pageid = ?")) {
 
 			getPage.setInt(1, id);
 			ResultSet pageData = getPage.executeQuery();
@@ -176,6 +176,44 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 		} catch (SQLException e) {
 			throw new IOException("Unable to read template with id " + id + "!", e);
 		}
+	}
+
+	public void saveImage(Image image) throws IOException {
+		Connection connection = getConnection();
+
+		try (PreparedStatement storeImageData = connection.prepareStatement("INSERT INTO image VALUES (?, ?) ON CONFLICT (imageid) DO UPDATE SET imagedata = EXCLUDED.imagedata;");
+			 PreparedStatement storeImageDataNew = connection.prepareStatement("INSERT INTO image VALUES (DEFAULT, ?) RETURNING imageid;")) {
+
+			//Store image data
+			//If the image has an invalid id, generate a new one
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(image.getImage(), "png", baos);
+
+			if (image.hasValidID()) {
+				storeImageData.setInt(1, image.getID());
+				storeImageData.setObject(2, baos.toByteArray());
+				storeImageData.executeUpdate();
+			} else {
+				storeImageDataNew.setObject(1, baos.toByteArray());
+				if (storeImageDataNew.execute()) {
+					//Get generated id
+					ResultSet result = storeImageDataNew.getResultSet();
+					result.next();
+					int id = result.getInt(1);
+					image.setID(id); //Subsequent calls to image.getID() are now safe for use
+				} else {
+					//Nothing returned, so something must have gone wrong
+					connection.rollback();
+					throw new IOException("Unable to save image! No ID returned from database");
+				}
+			}
+		} catch (
+				SQLException e)
+
+		{
+			throw new IOException("Unable to save image!", e);
+		}
+
 	}
 
 	@Override

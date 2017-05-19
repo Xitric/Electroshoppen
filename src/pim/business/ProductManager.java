@@ -1,6 +1,7 @@
 package pim.business;
 
 import pim.persistence.PersistenceFacade;
+import shared.Image;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;

@@ -216,7 +216,7 @@ public class ProductController implements Initializable {
 
 			//TODO: Tags
 
-			List<pim.business.Image> images = new ArrayList<>();
+			List<shared.Image> images = new ArrayList<>();
 			for (Node n: productImagePane.getChildren()) {
 				if (n instanceof RemoveableImage) {
 					RemoveableImage image = (RemoveableImage) n;
@@ -237,7 +237,7 @@ public class ProductController implements Initializable {
 	private void uploadButtonOnAction(ActionEvent event) {
 		try {
 			String url = browseTextField.getText();
-			pim.business.Image image = pim.createImage(url);
+			shared.Image image = pim.createImage(url);
 			productImagePane.getChildren().add(new RemoveableImage(image, this::removeImage));
 		} catch (IOException e) {
 			//TODO: Whatever
@@ -299,7 +299,7 @@ public class ProductController implements Initializable {
 
 			//Set images
 			productImagePane.getChildren().clear();
-			for (pim.business.Image img : product.getImages()) {
+			for (shared.Image img : product.getImages()) {
 				productImagePane.getChildren().add(new RemoveableImage(img, this::removeImage));
 			}
 		} else { //Else clear the fields

@@ -2,6 +2,7 @@ package pim.persistence;
 
 import pim.business.*;
 import shared.DBUtil;
+import shared.Image;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
