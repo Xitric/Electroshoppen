@@ -24,7 +24,7 @@ public class Image {
 	 * @param url the url of the image
 	 * @throws IllegalArgumentException if the url points to an invalid image file
 	 */
-	Image(String url) {
+	public Image(String url) {
 		//Ensure that the url points to a valid image file (the file must exist and have a supported extension)
 		if (!(new File(url).isFile() && Arrays.asList(ImageIO.getReaderFileSuffixes()).contains(url.substring(url.lastIndexOf('.') + 1)))) {
 			throw new IllegalArgumentException("The url must refer to a valid image file with one of these types: " + Arrays.toString(ImageIO.getReaderFileSuffixes()));
@@ -41,7 +41,7 @@ public class Image {
 	 * @param img the image to wrap
 	 * @throws IllegalArgumentException if the image is null
 	 */
-	Image(BufferedImage img) {
+	public Image(BufferedImage img) {
 		this(-1, img);
 	}
 
@@ -52,7 +52,7 @@ public class Image {
 	 * @param img the image to wrap
 	 * @throws IllegalArgumentException if the image is null
 	 */
-	Image(int id, BufferedImage img) {
+	public Image(int id, BufferedImage img) {
 		this.id = id;
 
 		if (img == null) {

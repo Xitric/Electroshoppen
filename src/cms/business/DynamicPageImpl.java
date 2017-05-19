@@ -130,6 +130,7 @@ public class DynamicPageImpl implements DynamicPage {
 		//TODO: ID generation
 		//Create an XMLElement describing the image
 		XMLElement img = XMLElement.createRoot("img");
+		img.setID("img1");
 
 		//Attempt to transform the buffered image to a format supported in the web view
 		try {

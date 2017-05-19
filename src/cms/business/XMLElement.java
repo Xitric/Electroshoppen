@@ -638,7 +638,7 @@ public class XMLElement implements Cloneable {
 		XMLElement div = body.createChild("div");
 		div.createChild("p", "Hello, world!");
 		XMLElement p1 = div.createChild("p", "Here is a text string!");
-		XMLElement p2 = div.createChild("p", "Another paragraph, isn't this awesome?");
+		XMLElement p2 = div.createChild("p", "");
 		p1.addClass("first");
 		p1.addClass("second");
 		p1.addClass("third");

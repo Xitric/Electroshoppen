@@ -12,8 +12,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.html.HTMLElement;
 
 import javax.imageio.ImageIO;
@@ -78,7 +76,7 @@ public class CMSViewController implements Initializable {
 	 */
 	public void onEnter() {
 
-    }
+	}
 
 	/**
 	 * Called when a double click is performed on the editor
@@ -87,13 +85,10 @@ public class CMSViewController implements Initializable {
 		//Get current selection. This should be the one that the user double clicked
 		HTMLElement selection = editor.selectedElementProperty().getValue();
 
-		//We oly want to select text elements, so we ensure that the only child of the selected element is a text node.
-		//An element containing text should not have more than this, single child
-		NodeList children = selection.getChildNodes();
-		if (children.getLength() == 1 && children.item(0).getNodeType() == Node.TEXT_NODE) {
-			//TODO: Call to CMS
-			children.item(0).setNodeValue(showTextEditDialog(children.item(0).getNodeValue()));
-		}
+		//We only want to select meaningful text elements, so we ensure that the only child (other than inserters) of
+		//the selected element is a text node. An element containing text should not have more than this, single child
+		//(and possibly the inserters)
+		//TODO: Move to business layer, presentation is too cluttered to work with!
 	}
 
 	/**
@@ -190,8 +185,8 @@ public class CMSViewController implements Initializable {
 	}
 
 	// needs to build the pages to show them in the TreeView?
-    private void populateTreeView() {
+	private void populateTreeView() {
 
-    }
+	}
 
 }

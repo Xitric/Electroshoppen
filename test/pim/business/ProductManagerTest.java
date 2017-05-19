@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import pim.persistence.PersistenceFacade;
 import pim.persistence.PersistenceFactory;
+import shared.Image;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

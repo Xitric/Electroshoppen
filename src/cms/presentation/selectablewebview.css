@@ -8,27 +8,28 @@
 
 .inserter {
     height:0px;
-
+    font-size: 5vh;
+    z-index: 1000;
 }
 
 .inserterbef {
     position:absolute;
-    height:30px;
-    width:30px;
+    height:1.5em;
+    width:1.5em;
     display:block;
     left:50%;
-    margin-left:-15px;
-    margin-top:-30px;
+    margin-left:-0.75em;
+    margin-top:-1.5em;
     border-radius:50%;
     background-color:#2980b9;
     color:white;
 }
 .inserteraft {
     position:absolute;
-    height:30px;
-    width:30px;
+    height:1.5em;
+    width:1.5em;
     left:50%;
-    margin-left:-15px;
+    margin-left:-0.75em;
     display:block;
     border-radius:50%;
     background-color:#2980b9;
