@@ -106,15 +106,15 @@ public class SelectableWebView extends StackPane {
 			}
 
 			DocumentMarker marker = new DocumentMarker((HTMLElement) selection, range.toString());
-			if (marker.hasRangeSelection()) {
-				System.out.println("You selected part of an element: " + marker.getRangeSelection());
-				System.out.println("The selection begins at index " + marker.getStartSelection() + " and ends at " + marker.getEndSelection());
-			} else {
-				System.out.println("You selected the entire element!");
-			}
-
-			System.out.println("Selected element: " + marker.getSelectedElementID());
-			System.out.println("--------------------------------------------------------------------------");
+			//			if (marker.hasRangeSelection()) {
+			//				System.out.println("You selected part of an element: " + marker.getRangeSelection());
+			//				System.out.println("The selection begins at index " + marker.getStartSelection() + " and ends at " + marker.getEndSelection());
+			//			} else {
+			//				System.out.println("You selected the entire element!");
+			//			}
+			//
+			//			System.out.println("Selected element: " + marker.getSelectedElementID());
+			//			System.out.println("--------------------------------------------------------------------------");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -161,7 +161,6 @@ public class SelectableWebView extends StackPane {
 			int breakIndex = currentClassName.indexOf(selectedClass);
 			String oldClassName = currentClassName.substring(0, breakIndex) + currentClassName.substring(breakIndex + selectedClass.length());
 			currentSelection.getValue().setClassName(oldClassName);
-			//TODO: Handle repeating spaces
 		}
 
 		//Change selection

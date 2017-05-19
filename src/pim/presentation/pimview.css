@@ -4,10 +4,7 @@
  */
 
 .mainFxmlClass {
-    -blue-base: #2196f3;
-    -blue-dark1: #1a77c9;
-    -blue-dark2: #176bb5;
-    -javafx-bg: #f4f4f4;
+
 }
 
 /* ----- General ----- */
@@ -18,14 +15,14 @@
 
 .label.header {
     -fx-font-size: 28;
-    -fx-text-fill: -blue-base;
+    -fx-text-fill: #2196f3;
     -fx-padding: 8 0 32 16;
 }
 
 /* ----- Button ----- */
 .button {
     -fx-font-size: 21;
-    -fx-text-fill: -blue-base;
+    -fx-text-fill: #2196f3;
     -fx-background-color: transparent;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
@@ -42,17 +39,17 @@
 }
 
 .button.raised {
-    -fx-background-color: -blue-base;
+    -fx-background-color: #2196f3;
     -fx-text-fill: white;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 1, 1);
 }
 
 .button.raised:hover {
-    -fx-background-color: -blue-dark1;
+    -fx-background-color: #1a77c9;
 }
 
 .button.raised:armed {
-    -fx-background-color: -blue-dark2;
+    -fx-background-color: #176bb5;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 20, 0, 4, 4);
 }
 
@@ -104,7 +101,7 @@
 .text-field:focused {
     -fx-border-width: 0 0 2 0;
     -fx-border-insets: 0 0 -1 0;
-    -fx-border-color: -blue-base;
+    -fx-border-color: #2196f3;
 }
 
 .text-area .content {
@@ -124,18 +121,18 @@
 /* ----- Scroll Bar ----- */
 .scroll-bar:horizontal .thumb,
 .scroll-bar:vertical .thumb {
-    -fx-background-color: -blue-base;
+    -fx-background-color: #2196f3;
     -fx-background-radius: 0;
 }
 
 .scroll-bar:horizontal:hover .thumb,
 .scroll-bar:vertical:hover .thumb {
-    -fx-background-color: -blue-dark1;
+    -fx-background-color: #1a77c9;
 }
 
 .scroll-bar:horizontal:pressed .thumb,
 .scroll-bar:vertical:pressed .thumb {
-    -fx-background-color: -blue-dark2;
+    -fx-background-color: #176bb5;
 }
 
 .scroll-bar:horizontal .track,

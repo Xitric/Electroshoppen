@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Abstract implementation of the {@link DynamicPage} interface.
+ * Implementation of the {@link DynamicPage} interface.
  *
  * @author Kasper
  */
@@ -56,8 +56,10 @@ public class DynamicPageImpl implements DynamicPage {
 		XMLElement result = content.get(id);
 
 		if (result == null) {
-			result = XMLElement.createRoot("p");
-			result.setTextContent("Missing content");
+			//If no content could be gathered, return a paragraph element wrapped in a div
+			result = XMLElement.createRoot("div");
+			XMLElement p = result.createChild("p", "Missing content");
+			p.setID("missingElement" + id);
 		}
 
 		return result;
@@ -65,6 +67,8 @@ public class DynamicPageImpl implements DynamicPage {
 
 	@Override
 	public void insertHTML(DocumentMarker marker, String html) {
+
+
 		//		//Get the element described by the marker
 		//		XMLElement reference = content.getChildByID(marker.getSelectedElementID());
 		//
