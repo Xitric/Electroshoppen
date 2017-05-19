@@ -53,9 +53,10 @@ public interface CMSPersistenceFacade {
 	 * Save the specified page. If the page has no id, a new one will be generated.
 	 *
 	 * @param page the page to save
+	 * @param template the template associated with the page
 	 * @throws IOException if the operation fails
 	 */
-	void savePage(DynamicPage page) throws IOException;
+	void savePage(DynamicPage page, Template template) throws IOException;
 
 	/**
 	 * Dispose all resources used by this persistence facade. This includes closing all currently open connections.
