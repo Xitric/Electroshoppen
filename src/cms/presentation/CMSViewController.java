@@ -37,6 +37,9 @@ public class CMSViewController implements Initializable {
 	@FXML
 	private StackPane editorPane;
 
+	@FXML
+	private MenuItem newPage;
+
 	private SelectableWebView editor;
 
 	//TODO: Temp
@@ -68,6 +71,14 @@ public class CMSViewController implements Initializable {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Executes every time the tab is opened to populate the TreeView
+	 * showing existing pages.
+	 */
+	public void onEnter() {
+
+    }
 
 	/**
 	 * Called when a double click is performed on the editor
@@ -177,4 +188,10 @@ public class CMSViewController implements Initializable {
 	private void browseOnAction(ActionEvent event) {
 
 	}
+
+	// needs to build the pages to show them in the TreeView?
+    private void populateTreeView() {
+
+    }
+
 }

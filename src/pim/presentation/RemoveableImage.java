@@ -22,14 +22,14 @@ class RemoveableImage extends StackPane {
 	private final int HEIGHT = 200;
 	private final Consumer<RemoveableImage> removeListener;
 
-	private pim.business.Image image;
+	private shared.Image image;
 
 	/**
 	 * Constructs a new control element consisting of an image with a close button in the top-right corner.
 	 *
 	 * @param image the image to display
 	 */
-	RemoveableImage(pim.business.Image image, Consumer<RemoveableImage> removeListener) {
+	RemoveableImage(shared.Image image, Consumer<RemoveableImage> removeListener) {
 		super();
 		this.image = image;
 
@@ -75,7 +75,7 @@ class RemoveableImage extends StackPane {
 	 *
 	 * @return the image
 	 */
-	public pim.business.Image getImage() {
+	public shared.Image getImage() {
 		return image;
 	}
 

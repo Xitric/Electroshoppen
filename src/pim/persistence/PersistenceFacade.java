@@ -1,6 +1,7 @@
 package pim.persistence;
 
 import pim.business.*;
+import shared.Image;
 
 import java.io.IOException;
 import java.util.Collection;

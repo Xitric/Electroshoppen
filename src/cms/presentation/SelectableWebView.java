@@ -23,15 +23,21 @@ public class SelectableWebView extends StackPane {
 	/**
 	 * The script that is responsible for handling element selection and forwarding the events to this controller.
 	 */
-	private static final String selectScript = "<script>" +
-			"function bodyClick(event) {" +
-			"var element = event.srcElement;" +
-			"controller.selectionChanged(element.nodeType == 1? element : element.parentNode, window.getSelection());" +
-			"}" +
-			"document.addEventListener('DOMContentLoaded', function() {" +
-			"document.body.addEventListener('click', bodyClick, true);" +
-			"});" +
-			"</script>";
+	private static final String selectScript = "<script>function bodyClick(event) {\n" +
+			"var element = event.srcElement;\n" +
+			"element = element.nodeType == 1? element : element.parentNode;\n" +
+			"if(!element.classList.contains('nonselectable') &amp;&amp; !element.parentNode.classList.contains('nonselectable')) {\n" +
+			"var inserters = document.getElementsByClassName(\"inserter\");\n" +
+			"for (i = inserters.length - 1; i >= 0; i--) {\n" +
+			"inserters[i].parentNode.removeChild(inserters[i]); } " +
+			"element.innerHTML = '<div class=\"inserter\"><button class=\"inserterbef\">+</button></div>'+element.innerHTML;\n" +
+			"element.innerHTML += '<div class=\"inserter\"><button class=\"inserteraft\">+</button></div>';\n" +
+			"} " +
+			"controller.selectionChanged(element, window.getSelection());\n" +
+			"} " +
+			"document.addEventListener('DOMContentLoaded', function() {\n" +
+			"document.body.addEventListener('click', bodyClick, true);\n" +
+			"});</script>";
 	private static final String stylesheet =
 			"<link rel=\"stylesheet\" type=\"text/css\" href=\"" + SelectableWebView.class.getResource("selectablewebview.css") + "\"/>";
 
