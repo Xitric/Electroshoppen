@@ -114,6 +114,7 @@ public class Template {
 			//We clone the content from the dynamic page to prevent changing the parent of the initial content
 			child.addChildren(page.getContentForID(id).clone().getChildren());
 		}
+
 		return templateCopy;
 	}
 }

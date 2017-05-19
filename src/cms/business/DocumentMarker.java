@@ -35,14 +35,14 @@ public class DocumentMarker {
 	 * Constructs a new document marker. If the specified range is not contained in the element, it will be disregarded.
 	 *
 	 * @param element the selected element
-	 * @param range   the range of text selected in the element, if any.
+	 * @param range   the range of text selected in the element, if any
 	 * @param before  true if this marker points to before itself, false if it points to after itself
 	 */
 	public DocumentMarker(Element element, String range, boolean before) {
 		this.id = element.getAttribute(DynamicPage.ID_ATTRIB);
 		this.before = before;
 
-		if (!range.isEmpty() && element.getTextContent().contains(range)) {
+		if (range != null && !range.isEmpty() && element.getTextContent().contains(range)) {
 			this.range = range;
 			startIndex = element.getTextContent().indexOf(range);
 		} else {

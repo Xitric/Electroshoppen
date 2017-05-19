@@ -1,5 +1,6 @@
 package cms.presentation;
 
+import cms.business.DocumentMarker;
 import cms.business.DynamicPage;
 import cms.business.Template;
 import cms.business.XMLElement;
@@ -15,6 +16,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.html.HTMLElement;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -35,6 +39,10 @@ public class CMSViewController implements Initializable {
 
 	private SelectableWebView editor;
 
+	//TODO: Temp
+	private DynamicPage page;
+	private Template template;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		editor = new SelectableWebView();
@@ -50,8 +58,8 @@ public class CMSViewController implements Initializable {
 
 		CMSPersistenceFacade persistence = CMSPersistenceFactory.createDatabaseMediator();
 		try {
-			DynamicPage page = persistence.getPage(1);
-			Template template = persistence.getTemplateForPage(1);
+			page = persistence.getPage(1);
+			template = persistence.getTemplateForPage(1);
 			XMLElement layout = template.enrichPage(page);
 
 			editor.setContent(layout.toString());
@@ -128,7 +136,21 @@ public class CMSViewController implements Initializable {
 
 	@FXML
 	private void insertImageAfterOnAction(ActionEvent event) {
+		try {
+			BufferedImage image = ImageIO.read(new File("C:\\Users\\Kasper\\Desktop\\test.jpg"));
+			DocumentMarker marker = new DocumentMarker(editor.selectedElementProperty().get(), null, false);
+			page.insertImage(marker, image);
 
+			XMLElement layout = template.enrichPage(page);
+			editor.setContent(layout.toString());
+			String preview = layout.getChildrenByTag("body").get(0).toString();
+			//Remove the image encoding from the html preview
+			//Made with the help of https://www.freeformatter.com/java-regex-tester.html
+			preview = preview.replaceAll("(<img src=\"data:base64,)[\\w+/\n\r=]+[^\"]", "<img src=\"data:base64,...");
+			htmlPreview.setText(preview);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML

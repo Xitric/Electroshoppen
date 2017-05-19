@@ -105,7 +105,8 @@ public class SelectableWebView extends StackPane {
 				return;
 			}
 
-			DocumentMarker marker = new DocumentMarker((HTMLElement) selection, range.toString());
+			//TODO: Before vs after
+			DocumentMarker marker = new DocumentMarker((HTMLElement) selection, range.toString(), true);
 			//			if (marker.hasRangeSelection()) {
 			//				System.out.println("You selected part of an element: " + marker.getRangeSelection());
 			//				System.out.println("The selection begins at index " + marker.getStartSelection() + " and ends at " + marker.getEndSelection());

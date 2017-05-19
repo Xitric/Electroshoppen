@@ -10,7 +10,7 @@ public class PIMFacade {
 	/**
 	 * Get an object for interacting with the business layer.
 	 *
-	 * @return an object for persistence with the business layer
+	 * @return an object for interacting with the business layer
 	 */
 	public static PIM createPIM() {
 		//Currently the only implementation
