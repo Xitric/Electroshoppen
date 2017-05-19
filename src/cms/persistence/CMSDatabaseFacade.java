@@ -3,6 +3,7 @@ package cms.persistence;
 import cms.business.DynamicPage;
 import cms.business.DynamicPageImpl;
 import cms.business.Template;
+import cms.business.XMLElement;
 import shared.DBUtil;
 
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static org.postgresql.jdbc.EscapedFunctions.INSERT;
 
 /**
  * Implementation of the CMSPersistenceFacade interface for use with JDBC.
@@ -179,8 +182,36 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 	}
 
 	@Override
-	public void savePage(DynamicPage page) throws IOException {
-		//TODO
+	public void savePage(DynamicPage page, Template template) throws IOException {
+		//TODO Add ON CONFLICT conditions to the SQL statements?
+
+		int pageID = page.getID();
+		int templateID = template.getID();
+		XMLElement content = page.getContentForID(String.valueOf(pageID));
+		String elementID = content.getID();
+		Connection connection = getConnection();
+
+		try (PreparedStatement saveContent = connection.prepareStatement("INSERT INTO content(elementid, pageid, html) VALUES (?, ?, ?)");
+				PreparedStatement savePageID = connection.prepareStatement("INSERT INTO page(pageid) VALUES (?)");
+				PreparedStatement saveTemplate = connection.prepareStatement("INSERT INTO template (templateid) VALUES (?)");
+				PreparedStatement savePageLayout = connection.prepareStatement("INSERT INTO pagelayout (pageid, templateid) VALUES (?, ?)")){
+
+			if (page.hasValidID() && template.hasValidID()) {
+				saveContent.setString(1, elementID);
+				saveContent.setInt(2, pageID);
+				saveContent.setString(3, String.valueOf(content));
+				savePageID.setInt(1, pageID);
+				saveTemplate.setInt(1, templateID);
+				savePageLayout.setInt(1, pageID);
+				savePageLayout.setInt(2, templateID);
+			}
+			else {
+				throw new IOException("page or template has invalid IDs!");
+			}
+
+		} catch (SQLException e) {
+			throw new IOException("Could not save page!", e);
+		}
 	}
 
 	@Override
