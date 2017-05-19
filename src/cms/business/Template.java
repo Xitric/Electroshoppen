@@ -107,11 +107,12 @@ public class Template {
 		Set<String> ids = getElementIDs();
 
 		//We want to retain the template, so we make a copy of it
-		XMLElement templateCopy = new XMLParser().parse(template.toString());
+		XMLElement templateCopy = template.clone();
 		for (String id : ids) {
 			XMLElement child = templateCopy.getChildByID(id);
 			child.clear();
-			child.addChildren(page.getContentForID(id).getChildren());
+			//We clone the content from the dynamic page to prevent changing the parent of the initial content
+			child.addChildren(page.getContentForID(id).clone().getChildren());
 		}
 		return templateCopy;
 	}

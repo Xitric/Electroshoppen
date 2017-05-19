@@ -12,10 +12,9 @@ import java.util.stream.Collectors;
  *
  * @author Kasper
  */
-public class XMLElement {
+public class XMLElement implements Cloneable {
 
 	//TODO: Should we handle both text content and child elements?
-	//TODO: Remove parent again when adding to another element. Make some method for performing deep clones
 
 	/**
 	 * The name of the attribute to consider as the id of an element.
@@ -37,13 +36,13 @@ public class XMLElement {
 	 */
 	private final String tagName;
 	/**
-	 * The attributes of this element.
-	 */
-	private final Map<String, String> attributes;
-	/**
 	 * The child elements of this xml element.
 	 */
-	private final List<XMLElement> children;
+	private List<XMLElement> children;
+	/**
+	 * The attributes of this element.
+	 */
+	private Map<String, String> attributes;
 	/**
 	 * The parent of this element. If the parent is null, this element is the root element.
 	 */
@@ -157,7 +156,8 @@ public class XMLElement {
 	/**
 	 * Add the specified element as a child to this xml element. The new element will be added to the end of this
 	 * element's list of children. The new element must not already be among the children of this xml element, be the
-	 * element itself, and it must not be a parent of this element.
+	 * element itself, and it must not be a parent of this element. The element will be removed from its current parent,
+	 * if it has any.
 	 *
 	 * @param element the element to add
 	 * @throws IllegalArgumentException if the new child element is already a child of this xml element, if the new
@@ -171,7 +171,8 @@ public class XMLElement {
 	/**
 	 * Add the specified element as a child to this xml element at the specified index. This index must be within the
 	 * range of this element's children. Also, the new element must not already be among the children of this xml
-	 * element, be the element itself, and it must not be a parent of this element.
+	 * element, be the element itself, and it must not be a parent of this element. The element will be removed from its
+	 * current parent, if it has any.
 	 *
 	 * @param element the element to add
 	 * @param index   the position to add the new element into
@@ -190,6 +191,11 @@ public class XMLElement {
 		//Ensure that the new element is not a parent of this element
 		if (element.contains(this)) throw new IllegalArgumentException("Cannot add an element to its own child!");
 
+		//Remove from current parent, if any
+		if (!element.isRoot()) {
+			element.getParent().removeChild(element);
+		}
+
 		//Add to this element
 		children.add(index, element);
 		element.setParent(this);
@@ -198,7 +204,8 @@ public class XMLElement {
 	/**
 	 * Add a new child to this xml element after the specified reference element. The reference element must be among
 	 * the children of this xml element. Also, the child cannot be added, if it is already among this element's
-	 * children, if it is the element itself, or if it is a parent of this element.
+	 * children, if it is the element itself, or if it is a parent of this element. The element will be removed from its
+	 * current parent, if it has any.
 	 *
 	 * @param newChild       the new child element to add
 	 * @param referenceChild the current child element to insert after
@@ -214,7 +221,8 @@ public class XMLElement {
 	/**
 	 * Add a new child to this xml element before the specified reference element. The reference element must be among
 	 * the children of this xml element. Also, the child cannot be added, if it is already among this element's
-	 * children, if it is the element itself, or if it is a parent of this element.
+	 * children, if it is the element itself, or if it is a parent of this element. The element will be removed from its
+	 * current parent, if it has any.
 	 *
 	 * @param newChild       the new child element to add
 	 * @param referenceChild the current child element to insert before
@@ -230,7 +238,8 @@ public class XMLElement {
 	/**
 	 * Add the specified elements as children to this xml element. The new elements will be added to the end of this
 	 * element's list of children. The new elements must not already be among the children of this xml element, be the
-	 * element itself, and they must not be a parent of this element.
+	 * element itself, and they must not be a parent of this element. The elements will be removed from their current
+	 * parents, if they have any.
 	 *
 	 * @param elements the elements to add
 	 * @throws IllegalArgumentException if one of the new child elements is already a child of this xml element, if one
@@ -239,7 +248,7 @@ public class XMLElement {
 	 */
 	public void addChildren(Collection<XMLElement> elements) {
 		//TODO: Should we keep adding, even if one insertion fails?
-		for (XMLElement element: elements) {
+		for (XMLElement element : elements) {
 			addChild(element);
 		}
 	}
@@ -260,7 +269,7 @@ public class XMLElement {
 	 * Remove all child elements from this xml element.
 	 */
 	public void clear() {
-		for (XMLElement child: children) {
+		for (XMLElement child : children) {
 			child.setParent(null);
 		}
 
@@ -585,6 +594,42 @@ public class XMLElement {
 		return builder.toString();
 	}
 
+	/**
+	 * Get a deep clone of this XMLElement. The clone will be a new instance of the same class, and the clone will also
+	 * be independent of the element from which it is cloned. The cloned element will by convention be a root element,
+	 * however, and is thus not strictly equal to the element from which it is cloned. This does not violate the
+	 * contract of the {@link Object#clone()} method.
+	 *
+	 * @return a clone of this XMLElement
+	 */
+	@Override
+	public XMLElement clone() {
+		try {
+			//By convention, we should retrieve the cloned object by calling super.clone()
+			XMLElement e = (XMLElement) super.clone();
+
+			//We then perform a deep clone
+			//The tag name is immutable
+			//We make a new attributes map, but the content (Strings) is immutable
+			e.attributes = new HashMap<>(attributes);
+			//Perform a deep copy of the children using recursion
+			e.children = new ArrayList<>();
+			for (XMLElement child : children) {
+				e.addChild(child.clone()); //The child will no longer be a root when it is added
+			}
+			//To avoid potential problems, we define that the clone is a root element
+			e.parent = null;
+			//The text content is also immutable
+
+			return e;
+		} catch (CloneNotSupportedException e1) {
+			//This should never happen, because XMLElement implements Cloneable
+		}
+
+		//Return null, although this line should never be executed
+		return null;
+	}
+
 	public static void main(String[] args) {
 		XMLElement root = XMLElement.createRoot("html");
 		XMLElement head = root.createChild("head");
@@ -605,5 +650,7 @@ public class XMLElement {
 		System.out.println(root);
 		System.out.println("-----------------------------------------------------------------");
 		System.out.println(root.getChildByID("booyah").getTextContent());
+
+		root.clone();
 	}
 }
