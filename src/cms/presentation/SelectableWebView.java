@@ -17,6 +17,7 @@ import org.w3c.dom.html.HTMLElement;
  * A wrapper for a {@link WebView} that lets the user select html elements on the web page.
  *
  * @author Kasper
+ * @author Mikkel
  */
 public class SelectableWebView extends StackPane {
 
@@ -26,7 +27,7 @@ public class SelectableWebView extends StackPane {
 	private static final String selectScript = "<script>function bodyClick(event) {\n" +
 			"var element = event.srcElement;\n" +
 			"element = element.nodeType == 1? element : element.parentNode;\n" +
-			"if(!element.classList.contains('nonselectable') &amp;&amp; !element.parentNode.classList.contains('nonselectable')) {\n" +
+			"if(element.classList.contains('nonselectable') || element.parentNode.classList.contains('nonselectable')) { } else {\n" +
 			"var inserters = document.getElementsByClassName(\"inserter\");\n" +
 			"for (i = inserters.length - 1; i >= 0; i--) {\n" +
 			"inserters[i].parentNode.removeChild(inserters[i]); } " +
