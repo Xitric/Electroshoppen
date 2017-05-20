@@ -52,7 +52,7 @@ public class DynamicPageImpl implements DynamicPage {
 			int max = getMaxIdIn(this.content.get(entry.getKey()));
 			if (max > maxID) maxID = max;
 		}
-
+		System.out.println(maxID);
 		//The next available id will either be 0 or one above the current, max id
 		nextID = maxID + 1;
 	}

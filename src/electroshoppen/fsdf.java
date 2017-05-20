@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
+//This looks important :)
 public class fsdf extends Application {
     @Override public void start(Stage stage) {
         WebView web = new WebView();

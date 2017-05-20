@@ -1,24 +1,19 @@
 package cms.presentation;
 
-import cms.business.DocumentMarker;
-import cms.business.DynamicPage;
-import cms.business.Template;
-import cms.business.XMLElement;
-import cms.persistence.CMSPersistenceFacade;
-import cms.persistence.CMSPersistenceFactory;
+import cms.business.CMS;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.util.Pair;
 import org.w3c.dom.html.HTMLElement;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -35,14 +30,21 @@ public class CMSViewController implements Initializable {
 	@FXML
 	private StackPane editorPane;
 
-	@FXML
-	private MenuItem newPage;
-
 	private SelectableWebView editor;
 
-	//TODO: Temp
-	private DynamicPage page;
-	private Template template;
+	/**
+	 * The mediator for the business layer.
+	 */
+	private CMS cms;
+
+	/**
+	 * Set the business mediator for this controller to use.
+	 *
+	 * @param cms the mediator for the cms
+	 */
+	public void setCMS(CMS cms) {
+		this.cms = cms;
+	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -56,23 +58,10 @@ public class CMSViewController implements Initializable {
 		});
 
 		editorPane.getChildren().add(editor);
-
-		CMSPersistenceFacade persistence = CMSPersistenceFactory.createDatabaseMediator();
-		try {
-			page = persistence.getPage(1);
-			template = persistence.getTemplateForPage(1);
-			XMLElement layout = template.enrichPage(page);
-
-			editor.setContent(layout.toString());
-			htmlPreview.setText(layout.getChildrenByTag("body").get(0).toString());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
-	 * Executes every time the tab is opened to populate the TreeView
-	 * showing existing pages.
+	 * Executes every time the tab is opened to populate the TreeView showing existing pages.
 	 */
 	public void onEnter() {
 
@@ -131,6 +120,49 @@ public class CMSViewController implements Initializable {
 	}
 
 	@FXML
+	private void newPageOnAction(ActionEvent event) {
+		Dialog<Pair<CMS.PageType, Integer>> newPageDialog = new Dialog<>();
+		newPageDialog.setTitle("Create a new page");
+		newPageDialog.setHeaderText("Specify page options");
+
+		//Style the dialog
+		DialogPane dialogPane = newPageDialog.getDialogPane();
+		dialogPane.getStylesheets().add(
+				getClass().getResource("../../pim/presentation/pimview.css").toExternalForm());
+
+		//TODO: Create new fxml and controller for this
+		HBox content = new HBox(16);
+		ComboBox<CMS.PageType> pageTypes = new ComboBox<>(FXCollections.observableArrayList(CMS.PageType.values()));
+		TextField templateIDField = new TextField();
+		templateIDField.setPromptText("Template id");
+		content.getChildren().addAll(pageTypes, templateIDField);
+		newPageDialog.getDialogPane().setContent(content);
+
+		ButtonType confirmButtonType = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
+		newPageDialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, ButtonType.CANCEL);
+
+		//Specify how a result is gathered from the dialog
+		newPageDialog.setResultConverter(button -> {
+			if (button == confirmButtonType) {
+				try {
+					return new Pair<>(pageTypes.getValue(), Integer.parseInt(templateIDField.getText()));
+				} catch (NumberFormatException e) {
+					return null;
+				}
+			}
+
+			return null;
+		});
+
+		Optional<Pair<CMS.PageType, Integer>> result = newPageDialog.showAndWait();
+		if (result.isPresent()) {
+			Pair<CMS.PageType, Integer> pair = result.get();
+			String html = cms.createNewPage(pair.getKey(), pair.getValue());
+			present(html);
+		}
+	}
+
+	@FXML
 	private void insertTextAfterOnAction(ActionEvent event) {
 
 	}
@@ -142,21 +174,7 @@ public class CMSViewController implements Initializable {
 
 	@FXML
 	private void insertImageAfterOnAction(ActionEvent event) {
-		try {
-			BufferedImage image = ImageIO.read(new File("C:\\Users\\Kasper\\Desktop\\test.jpg"));
-			DocumentMarker marker = new DocumentMarker(editor.selectedElementProperty().get(), null, false);
-			page.insertImage(marker, image);
 
-			XMLElement layout = template.enrichPage(page);
-			editor.setContent(layout.toString());
-			String preview = layout.getChildrenByTag("body").get(0).toString();
-			//Remove the image encoding from the html preview
-			//Made with the help of https://www.freeformatter.com/java-regex-tester.html
-			preview = preview.replaceAll("(<img src=\"data:base64,)[\\w+/\n\r=]+[^\"]", "<img src=\"data:base64,...");
-			htmlPreview.setText(preview);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@FXML
@@ -184,9 +202,24 @@ public class CMSViewController implements Initializable {
 
 	}
 
-	// needs to build the pages to show them in the TreeView?
+	/**
+	 * Present the specified html in this editor.
+	 *
+	 * @param html the html to present
+	 */
+	private void present(String html) {
+		editor.setContent(html);
+
+		//Remove the image encoding from the html preview
+		//Made with the help of https://www.freeformatter.com/java-regex-tester.html
+		String strippedHTML = html.replaceAll("(<img src=\"data:base64,)[\\w+/\n\r=]+[^\"]", "<img src=\"data:base64,...");
+		htmlPreview.setText(strippedHTML);
+	}
+
+	/**
+	 * Fill in the tree view on the left with the available pages in the CMS for easy access.
+	 */
 	private void populateTreeView() {
 
 	}
-
 }

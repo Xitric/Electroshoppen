@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class Template {
 
-	private final String type;
+	private final CMS.PageType type;
 	private final XMLElement template;
 	private int id;
 
@@ -25,7 +25,7 @@ public class Template {
 	 */
 	public Template(int id, String type, String html) {
 		this.id = id;
-		this.type = type;
+		this.type = CMS.PageType.valueOf(type);
 		template = new XMLParser().parse(html);
 	}
 
@@ -64,7 +64,7 @@ public class Template {
 	 *
 	 * @return the type of the page that this template is intended for
 	 */
-	public String getType() {
+	public CMS.PageType getType() {
 		return type;
 	}
 
@@ -95,6 +95,21 @@ public class Template {
 			}
 			return idSet;
 		}
+	}
+
+	/**
+	 * Get the default html for the template element with the specified id.
+	 *
+	 * @param id the id of the template element
+	 * @return the default html for the template element with the specified id
+	 * @throws IllegalArgumentException if the id is not in this template
+	 */
+	public String getDefaultHMTLForElement(String id) {
+		XMLElement element = template.getChildByID(id);
+		if (element == null)
+			throw new IllegalArgumentException("No template element with the id " + id);
+
+		return element.toString();
 	}
 
 	/**

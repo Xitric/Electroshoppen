@@ -19,7 +19,6 @@ public interface PIM {
 	 * created.
 	 *
 	 * @return true if the synchronize was successful, false otherwise
-	 * @throws IOException if the operation failed
 	 */
 	boolean synchronize();
 
