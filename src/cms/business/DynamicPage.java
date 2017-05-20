@@ -77,14 +77,6 @@ public interface DynamicPage {
 	void removeElement(DocumentMarker marker);
 
 	/**
-	 * Get the text from this page at the location specified by the {@link DocumentMarker}.
-	 *
-	 * @param marker the location to get the text from
-	 * @return the text at the specified information
-	 */
-	String getTextSelection(DocumentMarker marker);
-
-	/**
 	 * Get the link from this page at the location specified by the {@link DocumentMarker}.
 	 *
 	 * @param marker the location to get the link from

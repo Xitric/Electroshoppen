@@ -15,7 +15,15 @@ import java.util.Map;
  */
 public class DynamicPageImpl implements DynamicPage {
 
-	private int id;
+	/**
+	 * The id of this dynamic page.
+	 */
+	private int pageID;
+
+	/**
+	 * The next available id for a content element.
+	 */
+	private int nextID;
 
 	/**
 	 * The roots of the XHTML that makes up the content of this page along with the ids of those elements to associate
@@ -30,28 +38,39 @@ public class DynamicPageImpl implements DynamicPage {
 	 * @param content the content of the page
 	 */
 	public DynamicPageImpl(int id, Map<String, String> content) {
+		pageID = id;
 		this.content = new HashMap<>();
-		XMLParser parser = new XMLParser();
 
+		//Parse the content into an xml structure. At the same time, we keep track of the highest used element id, as we
+		//need to be able to generate new, unique ids
+		int maxID = -1;
+		XMLParser parser = new XMLParser();
 		for (Map.Entry<String, String> entry : content.entrySet()) {
 			this.content.put(entry.getKey(), parser.parse(entry.getValue()));
+
+			//Look through all element id's and find the greatest
+			int max = getMaxIdIn(this.content.get(entry.getKey()));
+			if (max > maxID) maxID = max;
 		}
+
+		//The next available id will either be 0 or one above the current, max id
+		nextID = maxID + 1;
 	}
 
 	@Override
 	public boolean hasValidID() {
-		return id >= 0;
+		return pageID >= 0;
 	}
 
 	@Override
 	public int getID() {
-		return id;
+		return pageID;
 	}
 
 	@Override
 	public void setID(int id) {
-		if (this.id < 0) {
-			this.id = id;
+		if (this.pageID < 0) {
+			this.pageID = id;
 		}
 	}
 
@@ -60,10 +79,14 @@ public class DynamicPageImpl implements DynamicPage {
 		XMLElement result = content.get(id);
 
 		if (result == null) {
-			//If no content could be gathered, return a paragraph element wrapped in a div
+			//If no content could be gathered, create a new content element for the requested id. We create a paragraph
+			//element wrapped in a div. Both are assigned new, unique ids
 			result = XMLElement.createRoot("div");
+			result.setID(String.valueOf(nextID++));
 			XMLElement p = result.createChild("p", "Missing content");
-			p.setID("missingElement" + id);
+			p.setID(String.valueOf(nextID++));
+
+			content.put(id, result);
 		}
 
 		return result;
@@ -71,7 +94,7 @@ public class DynamicPageImpl implements DynamicPage {
 
 	/**
 	 * Get the element in the content that has the specified id. This method is useful, since the page content is stored
-	 * in fractions inside a map.
+	 * in fractions inside a map, and we want to operate on this content as a whole.
 	 *
 	 * @param id the id of the element to get
 	 * @return the element with the specified id, or null if no such element exists
@@ -89,7 +112,55 @@ public class DynamicPageImpl implements DynamicPage {
 	}
 
 	/**
-	 * Helper method for inserting an xml element.
+	 * Go through all numeric ids in the specified element and record the maximum id. This will disregard all
+	 * non-numeric ids, which should be fine, as they cannot interfere with the automatic id generation.
+	 *
+	 * @param element the element to scan through
+	 * @return the maximum recorded numeric id in the specified element. A value of -1 indicates that no numeric ids
+	 * were found
+	 */
+	private int getMaxIdIn(XMLElement element) {
+		int max = -1;
+		String elementIDString = element.getID();
+
+		//If the element has a numeric id, and it is greater than max, record it
+		if (elementIDString != null) {
+			try {
+				int elementID = Integer.parseInt(elementIDString);
+				if (elementID > max) max = elementID;
+			} catch (NumberFormatException e) {
+				//Non-numeric id, so we ignore it
+			}
+		}
+
+		//Scan through children using recursion
+		for (XMLElement child : element.getChildren()) {
+			int childMax = getMaxIdIn(child);
+			if (childMax > max) max = childMax;
+		}
+
+		//Return whatever the value of max is
+		return max;
+	}
+
+	/**
+	 * Add new, unique ids to all elements in the in the tree described by the XMLElement. Existing ids are overwritten,
+	 * to ensure that the user does not supply an already used id.
+	 *
+	 * @param element the element to scan through
+	 */
+	private void setUniqueIDs(XMLElement element) {
+		element.setID(String.valueOf(nextID++));
+
+		//Go through children using recursion
+		for (XMLElement child : element.getChildren()) {
+			setUniqueIDs(child);
+		}
+	}
+
+	/**
+	 * Helper method for inserting an xml element. This will automatically enrich the element and all of its children
+	 * with unique ids.
 	 *
 	 * @param marker  the location to insert the element into
 	 * @param element the element to insert
@@ -100,7 +171,8 @@ public class DynamicPageImpl implements DynamicPage {
 		if (reference == null) return; //Not a valid selection
 
 		//Insert the new element before or after the selection. It should be safe to access the parent, as all content
-		//is wrapped in divs, that are not sent to the gui
+		//is wrapped in divs, that are not sent to the gui. Also, we enrich the element with unique ids
+		setUniqueIDs(element);
 		if (marker.pointsToBefore()) {
 			reference.getParent().addChildBefore(element, reference);
 		} else {
@@ -118,7 +190,6 @@ public class DynamicPageImpl implements DynamicPage {
 
 	@Override
 	public void insertText(DocumentMarker marker, String text) {
-		//TODO: ID generation
 		//Create an XMLElement describing the text
 		XMLElement p = XMLElement.createRoot("p", text);
 
@@ -127,10 +198,8 @@ public class DynamicPageImpl implements DynamicPage {
 
 	@Override
 	public void insertImage(DocumentMarker marker, BufferedImage image) {
-		//TODO: ID generation
 		//Create an XMLElement describing the image
 		XMLElement img = XMLElement.createRoot("img");
-		img.setID("img1");
 
 		//Attempt to transform the buffered image to a format supported in the web view
 		try {
@@ -154,12 +223,6 @@ public class DynamicPageImpl implements DynamicPage {
 
 		//Remove selection from parent
 		reference.getParent().removeChild(reference);
-	}
-
-	//TODO: Is this irrelevant?
-	@Override
-	public String getTextSelection(DocumentMarker marker) {
-		return null;
 	}
 
 	@Override

@@ -40,12 +40,10 @@ public class SelectableWebView extends StackPane {
 			"   var element = event.srcElement;" +
 			"   element = element.nodeType? element : element.parentNode;" +
 			"   if(!element.classList.contains('nonselectable')) {" +
-			//			"       if (!element.parentNode.classList.contains('nonselectable')) {" +
-			"           var inserters = document.getElementsByClassName(\"inserter\");" +
-			"           for (i = inserters.length - 1; i >= 0; i--) {" +
-			"               inserters[i].parentNode.removeChild(inserters[i]);" +
-			"           }" +
-			//			"       }" +
+			"       var inserters = document.getElementsByClassName(\"inserter\");" +
+			"       for (i = inserters.length - 1; i >= 0; i--) {" +
+			"           inserters[i].parentNode.removeChild(inserters[i]);" +
+			"       }" +
 			"       controller.selectionChanged(element, window.getSelection());" +
 			"   }" +
 			"}" +
