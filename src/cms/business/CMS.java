@@ -12,6 +12,15 @@ import java.util.Collection;
 public interface CMS {
 
 	/**
+	 * get the html of the page with the specified id.
+	 *
+	 * @param id the id of the page
+	 * @return the html of page with the specified id
+	 * @throws IOException if the operation failed
+	 */
+	String getPage(int id) throws IOException;
+
+	/**
 	 * Get a collection of templates that support the specified type of page.
 	 *
 	 * @param pageType the type of page
@@ -73,6 +82,29 @@ public interface CMS {
 	String insertImage(DocumentMarker marker, BufferedImage image);
 
 	/**
+	 * Create a link to the page with the specified id. The link will be inserted at the location specified by the
+	 * {@link DocumentMarker} in the currently active page.
+	 *
+	 * @param marker the location to insert the link into
+	 * @param pageID the id of the page to link to
+	 * @return the html representation of the active page after the operation
+	 * @throws IllegalStateException if there is no active page
+	 */
+	String createLink(DocumentMarker marker, int pageID);
+
+	/**
+	 * Create a reference of the specified type to the specified product. The reference will be inserted at the location
+	 * specified by the {@link DocumentMarker} in the currently active page.
+	 *
+	 * @param marker    the location to insert the reference into
+	 * @param productID the id of the product to reference
+	 * @param type      the type of reference to create
+	 * @return the html representation of the active page after the operation
+	 * @throws IllegalStateException if there is no active page
+	 */
+	String createReference(DocumentMarker marker, int productID, ReferenceType type);
+
+	/**
 	 * Remove the element at the location specified by the {@link DocumentMarker} in the currently active page.
 	 *
 	 * @param marker the location to remove the element from
@@ -82,6 +114,13 @@ public interface CMS {
 	String removeElement(DocumentMarker marker);
 
 	/**
+	 * Save the currently active page. If no page is active, this method will do nothing.
+	 *
+	 * @throws IOException if the operation failed
+	 */
+	void savePage() throws IOException;
+
+	/**
 	 * A type of page handled by this CMS.
 	 */
 	enum PageType {
@@ -89,5 +128,16 @@ public interface CMS {
 		ARTICLE,
 		GUIDE,
 		LANDING_PAGE
+	}
+
+	/**
+	 * A type of product reference that can be handled by this CMS.
+	 */
+	enum ReferenceType {
+		NAME,
+		PRICE,
+		IMAGE,
+		DESCRIPTION,
+		TAGS
 	}
 }

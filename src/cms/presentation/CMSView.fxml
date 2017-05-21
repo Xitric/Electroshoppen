@@ -24,7 +24,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cms.presentation.CMSViewController">
    <left>
-      <TitledPane animated="false" maxHeight="1.7976931348623157E308" text="Page Browser" BorderPane.alignment="CENTER">
+      <TitledPane maxHeight="1.7976931348623157E308" text="Page Browser" BorderPane.alignment="CENTER">
          <content>
             <TreeView fx:id="existingPageTreeView" prefHeight="200.0" prefWidth="200.0" />
          </content>
@@ -35,7 +35,8 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#newPageOnAction" text="New Page..." />
+              <MenuItem mnemonicParsing="false" onAction="#newPageOnAction" text="New.." />
+                  <MenuItem mnemonicParsing="false" onAction="#openPageOnAction" text="Open..." />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
@@ -54,50 +55,87 @@
                   <VBox alignment="BOTTOM_LEFT" spacing="8.0">
                      <children>
                         <StackPane fx:id="editorPane" VBox.vgrow="ALWAYS" />
-                        <GridPane hgap="4.0" vgap="4.0">
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" />
-                            <ColumnConstraints hgrow="SOMETIMES" />
-                              <ColumnConstraints hgrow="SOMETIMES" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints vgrow="SOMETIMES" />
-                            <RowConstraints vgrow="SOMETIMES" />
-                          </rowConstraints>
-                           <VBox.margin>
-                              <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
-                           </VBox.margin>
-                           <children>
-                              <Button mnemonicParsing="false" text="Temp" GridPane.rowIndex="1" />
-                              <HBox alignment="CENTER_LEFT">
+                        <TitledPane text="Tools">
+                           <content>
+                              <GridPane hgap="8.0" vgap="8.0">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" />
+                                  <ColumnConstraints hgrow="SOMETIMES" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints vgrow="SOMETIMES" />
+                                  <RowConstraints vgrow="SOMETIMES" />
+                                  <RowConstraints vgrow="SOMETIMES" />
+                                </rowConstraints>
                                  <children>
-                                    <RadioButton fx:id="insertTextToggle" mnemonicParsing="false">
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="insertOptionGroup" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <Label text="Text:">
-                                       <HBox.margin>
-                                          <Insets right="4.0" />
-                                       </HBox.margin>
-                                    </Label>
-                                    <TextField fx:id="insertTextField" promptText="Text to insert" />
+                                    <HBox alignment="CENTER_LEFT" styleClass="insertGroup">
+                                       <children>
+                                          <RadioButton fx:id="insertTextToggle" mnemonicParsing="false" text="Text:">
+                                             <padding>
+                                                <Insets right="4.0" />
+                                             </padding>
+                                             <toggleGroup>
+                                                <ToggleGroup fx:id="insertOptionGroup" />
+                                             </toggleGroup>
+                                          </RadioButton>
+                                          <TextField fx:id="insertTextField" onAction="#textFieldOnAction" promptText="Text to insert" HBox.hgrow="ALWAYS" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" styleClass="insertGroup" GridPane.columnIndex="1">
+                                       <children>
+                                          <RadioButton fx:id="insertImageToggle" mnemonicParsing="false" text="Image:" toggleGroup="$insertOptionGroup">
+                                             <padding>
+                                                <Insets right="4.0" />
+                                             </padding>
+                                          </RadioButton>
+                                          <TextField fx:id="insertImageUrlField" onAction="#imageFieldOnAction" promptText="Insert image from url" HBox.hgrow="ALWAYS" />
+                                          <Button mnemonicParsing="false" onAction="#browseOnAction" text="Browse" />
+                                       </children>
+                                    </HBox>
+                                    <VBox spacing="4.0" styleClass="insertGroup" GridPane.rowIndex="1">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT">
+                                             <children>
+                                                <Label text="Product link:">
+                                                   <HBox.margin>
+                                                      <Insets right="4.0" />
+                                                   </HBox.margin>
+                                                </Label>
+                                                <TextField fx:id="productIdField" editable="false" promptText="Product id" HBox.hgrow="ALWAYS" />
+                                                <Button mnemonicParsing="false" onAction="#browseProductOnAction" text="Browse" />
+                                             </children>
+                                          </HBox>
+                                          <RadioButton fx:id="nameLinkToggle" mnemonicParsing="false" text="Name" toggleGroup="$insertOptionGroup" />
+                                          <RadioButton fx:id="priceLinkToggle" mnemonicParsing="false" text="Price" toggleGroup="$insertOptionGroup" />
+                                          <RadioButton fx:id="imageLinkToggle" mnemonicParsing="false" text="Image" toggleGroup="$insertOptionGroup" />
+                                          <RadioButton fx:id="descriptionLinkToggle" mnemonicParsing="false" text="Description" toggleGroup="$insertOptionGroup" />
+                                          <RadioButton fx:id="tagsLinkToggle" mnemonicParsing="false" text="Tags" toggleGroup="$insertOptionGroup" />
+                                       </children>
+                                    </VBox>
+                                    <HBox alignment="BOTTOM_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                       <children>
+                                          <Button mnemonicParsing="false" onAction="#saveButtonOnAction" styleClass="raised" text="Save" />
+                                       </children>
+                                    </HBox>
+                                    <VBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT" styleClass="insertGroup">
+                                             <children>
+                                                <Label text="Page link:">
+                                                   <HBox.margin>
+                                                      <Insets right="4.0" />
+                                                   </HBox.margin>
+                                                </Label>
+                                                <TextField fx:id="pageIdField" editable="false" promptText="Page id" HBox.hgrow="ALWAYS" />
+                                                <Button mnemonicParsing="false" onAction="#browsePageOnAction" text="Browse" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
                                  </children>
-                              </HBox>
-                              <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1">
-                                 <children>
-                                    <RadioButton fx:id="insertImageToggle" mnemonicParsing="false" toggleGroup="$insertOptionGroup" />
-                                    <Label text="Image:">
-                                       <HBox.margin>
-                                          <Insets right="4.0" />
-                                       </HBox.margin>
-                                    </Label>
-                                    <TextField fx:id="insertImageUrlField" promptText="Insert image from url" />
-                                    <Button mnemonicParsing="false" onAction="#browseOnAction" text="Browse" />
-                                 </children>
-                              </HBox>
-                           </children>
-                        </GridPane>
+                              </GridPane>
+                           </content>
+                        </TitledPane>
                      </children>
                   </VBox>
                </content>

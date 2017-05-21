@@ -70,32 +70,17 @@ public interface DynamicPage {
 	void insertImage(DocumentMarker marker, BufferedImage image);
 
 	/**
+	 * Replace the text at the location specified by the {@link DocumentMarker} with the specified link.
+	 *
+	 * @param marker the location of the text to replace
+	 * @param link   the id of the page to link to
+	 */
+	void setTextLink(DocumentMarker marker, int link);
+
+	/**
 	 * Remove the element at the location specified by the {@link DocumentMarker}.
 	 *
 	 * @param marker the location to remove the element from
 	 */
 	void removeElement(DocumentMarker marker);
-
-	/**
-	 * Get the link from this page at the location specified by the {@link DocumentMarker}.
-	 *
-	 * @param marker the location to get the link from
-	 * @return the link at the specified information
-	 */
-	Link getLinkSelection(DocumentMarker marker);
-
-	/**
-	 * Replace the text at the location specified by the {@link DocumentMarker} with the specified link.
-	 *
-	 * @param marker the location of the text to replace
-	 * @param link   the link to insert
-	 */
-	void setTextLink(DocumentMarker marker, Link link);
-
-	/**
-	 * Remove the link at the location specified by the {@link DocumentMarker}.
-	 *
-	 * @param marker the location to remove the link from
-	 */
-	void removeLink(DocumentMarker marker);
 }

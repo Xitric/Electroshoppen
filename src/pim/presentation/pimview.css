@@ -300,3 +300,36 @@
 .list-view {
     -fx-font-size: 12;
 }
+
+/* ----- Radio button ----- */
+.radio-button {
+    -fx-font-size: 14;
+}
+
+.radio-button .radio {
+    -fx-border-width: 2px;
+    -fx-border-color: #656565;
+    -fx-background-color: transparent;
+    -fx-border-radius: 50%;
+    -fx-padding: 2px;
+}
+
+.radio-button .dot {
+    -fx-mark-highlight-color: transparent;
+    -fx-mark-color: #656565;
+}
+
+.radio-button:hover .radio {
+    -fx-border-color: #1a77c9;
+}
+
+.radio-button:hover .dot {
+    -fx-mark-color: #1a77c9;
+}
+
+/* ----- CMS ----- */
+.insertGroup {
+    -fx-padding: 8;
+    -fx-background-color: whitesmoke;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 2, 0, 1, 1);
+}

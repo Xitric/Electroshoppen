@@ -26,6 +26,11 @@ public class CMSImpl implements CMS {
 	}
 
 	@Override
+	public String getPage(int id) throws IOException {
+		return null;
+	}
+
+	@Override
 	public Collection<Template> getTemplatesForPageType(PageType pageType) throws IOException {
 		return persistence.getTemplates(pageType.toString());
 	}
@@ -56,7 +61,22 @@ public class CMSImpl implements CMS {
 	}
 
 	@Override
+	public String createLink(DocumentMarker marker, int pageID) {
+		return pageManager.createLink(marker, pageID).toString();
+	}
+
+	@Override
+	public String createReference(DocumentMarker marker, int productID, ReferenceType type) {
+		return pageManager.createReference(marker, productID, type).toString();
+	}
+
+	@Override
 	public String removeElement(DocumentMarker marker) {
 		return pageManager.removeElement(marker).toString();
+	}
+
+	@Override
+	public void savePage() throws IOException {
+		pageManager.savePage();
 	}
 }

@@ -47,8 +47,12 @@ class PageManager {
 			//Construct a new dynamic page with no id (created upon saving in database), and the default content of the
 			//template
 			Map<String, String> defaultContent = new HashMap<>();
-			for (String id: template.getElementIDs()) {
-				defaultContent.put(id, template.getDefaultHMTLForElement(id));
+			for (String id : template.getElementIDs()) {
+				//We must wrap the default content in a new div with a new id
+				XMLElement content = XMLElement.createRoot("div");
+				content.setID(id + 'c');
+				content.addChildren(template.getDefaultContentForElement(id));
+				defaultContent.put(id, content.toString());
 			}
 
 			activePage = new DynamicPageImpl(-1, defaultContent);
@@ -144,6 +148,38 @@ class PageManager {
 	}
 
 	/**
+	 * Create a link to the page with the specified id. The link will be inserted at the location specified by the
+	 * {@link DocumentMarker} in the currently active page.
+	 *
+	 * @param marker the location to insert the link into
+	 * @param pageID the id of the page to link to
+	 * @return the representation of the active page after the operation
+	 * @throws IllegalStateException if there is no active page
+	 */
+	public XMLElement createLink(DocumentMarker marker, int pageID) {
+		if (activePage == null)
+			throw new IllegalStateException("No active page to remove from!");
+
+		activePage.setTextLink(marker, pageID);
+
+		return activeTemplate.enrichPage(activePage);
+	}
+
+	/**
+	 * Create a reference of the specified type to the specified product. The reference will be inserted at the location
+	 * specified by the {@link DocumentMarker} in the currently active page.
+	 *
+	 * @param marker    the location to insert the reference into
+	 * @param productID the id of the product to reference
+	 * @param type      the type of reference to create
+	 * @return the representation of the active page after the operation
+	 * @throws IllegalStateException if there is no active page
+	 */
+	public XMLElement createReference(DocumentMarker marker, int productID, CMS.ReferenceType type) {
+		return null;
+	}
+
+	/**
 	 * Remove the element at the location specified by the {@link DocumentMarker} in the currently active page.
 	 *
 	 * @param marker the location to remove the element from
@@ -157,5 +193,16 @@ class PageManager {
 		activePage.removeElement(marker);
 
 		return activeTemplate.enrichPage(activePage);
+	}
+
+	/**
+	 * Save the currently active page. If no page is active, this method will do nothing.
+	 *
+	 * @throws IOException if the operation failed
+	 */
+	public void savePage() throws IOException {
+		if (activePage != null && activeTemplate != null) {
+			persistence.savePage(activePage, activeTemplate);
+		}
 	}
 }

@@ -213,13 +213,18 @@ public class DynamicPageImpl implements DynamicPage {
 			//Source: http://stackoverflow.com/questions/22984430/javafx2-webview-and-in-memory-images#answer-37215917
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
 			ImageIO.write(image, "PNG", output);
-			String imgData = "data:base64," + Base64.getMimeEncoder().encodeToString(output.toByteArray());
+			String imgData = "data:image/png;base64," + Base64.getMimeEncoder().encodeToString(output.toByteArray());
 			img.setAttribute("src", imgData);
 
 			insertElement(marker, img);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void setTextLink(DocumentMarker marker, int link) {
+
 	}
 
 	@Override
@@ -230,21 +235,6 @@ public class DynamicPageImpl implements DynamicPage {
 
 		//Remove selection from parent
 		reference.getParent().removeChild(reference);
-	}
-
-	@Override
-	public Link getLinkSelection(DocumentMarker marker) {
-		return null;
-	}
-
-	@Override
-	public void setTextLink(DocumentMarker marker, Link link) {
-
-	}
-
-	@Override
-	public void removeLink(DocumentMarker marker) {
-
 	}
 
 	/**

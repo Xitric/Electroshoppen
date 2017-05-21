@@ -3,17 +3,14 @@ package cms.persistence;
 import cms.business.DynamicPage;
 import cms.business.DynamicPageImpl;
 import cms.business.Template;
-import cms.business.XMLElement;
 import shared.DBUtil;
-import shared.Image;
 
-import javax.imageio.ImageIO;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.util.*;
-
-import static org.postgresql.jdbc.EscapedFunctions.INSERT;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementation of the CMSPersistenceFacade interface for use with JDBC.
@@ -147,7 +144,7 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 	public DynamicPage getPage(int id) throws IOException {
 		Connection connection = getConnection();
 		try (PreparedStatement getPage = connection.prepareStatement("SELECT * FROM page WHERE pageid = ?;");
-			 PreparedStatement getPageContent = connection.prepareStatement("SELECT * FROM content WHERE pageid = ?")) {
+		     PreparedStatement getPageContent = connection.prepareStatement("SELECT * FROM content WHERE pageid = ?")) {
 
 			getPage.setInt(1, id);
 			ResultSet pageData = getPage.executeQuery();
@@ -181,47 +178,77 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 		}
 	}
 
-	public void saveImage(Image image) throws IOException {
+	@Override
+	public void savePage(DynamicPage page, Template template) throws IOException {
 		Connection connection = getConnection();
 
-		try (PreparedStatement storeImageData = connection.prepareStatement("INSERT INTO image VALUES (?, ?) ON CONFLICT (imageid) DO UPDATE SET imagedata = EXCLUDED.imagedata;");
-			 PreparedStatement storeImageDataNew = connection.prepareStatement("INSERT INTO image VALUES (DEFAULT, ?) RETURNING imageid;")) {
+		try (PreparedStatement storePageData = connection.prepareStatement("INSERT INTO page VALUES (?) ON CONFLICT (pageid) DO NOTHING;");
+		     PreparedStatement storePageDataNew = connection.prepareStatement("INSERT INTO page VALUES (DEFAULT) RETURNING pageid;");
+		     PreparedStatement storePageTemplate = connection.prepareStatement("INSERT INTO pagelayout VALUES (?, ?) ON CONFLICT (pageid) DO UPDATE SET templateid = EXCLUDED.templateid");
+		     PreparedStatement storePageContent = connection.prepareStatement("INSERT INTO content VALUES (?, ?, ?) ON CONFLICT (elementid, pageid) DO UPDATE SET html = EXCLUDED.html;")) {
 
-			//Store image data
-			//If the image has an invalid id, generate a new one
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ImageIO.write(image.getImage(), "png", baos);
+			//Turn of auto commit to ensure the page is saved fully
+			connection.setAutoCommit(false);
 
-			if (image.hasValidID()) {
-				storeImageData.setInt(1, image.getID());
-				storeImageData.setObject(2, baos.toByteArray());
-				storeImageData.executeUpdate();
+			//Store page id. If the page has an invalid id, generate a new one
+			if (page.hasValidID()) {
+				storePageData.setInt(1, page.getID());
+				storePageData.executeUpdate();
 			} else {
-				storeImageDataNew.setObject(1, baos.toByteArray());
-				if (storeImageDataNew.execute()) {
+				if (storePageDataNew.execute()) {
 					//Get generated id
-					ResultSet result = storeImageDataNew.getResultSet();
+					ResultSet result = storePageDataNew.getResultSet();
 					result.next();
 					int id = result.getInt(1);
-					image.setID(id); //Subsequent calls to image.getID() are now safe for use
+					page.setID(id); //Subsequent calls to page.getID() are now safe for use
 				} else {
 					//Nothing returned, so something must have gone wrong
 					connection.rollback();
-					throw new IOException("Unable to save image! No ID returned from database");
+					throw new IOException("Unable to save page! No ID returned from database");
 				}
 			}
-		} catch (
-				SQLException e)
 
-		{
-			throw new IOException("Unable to save image!", e);
+			//Store page template
+			storePageTemplate.setInt(1, page.getID());
+			storePageTemplate.setInt(2, template.getID());
+			storePageTemplate.executeUpdate();
+
+			//Store page content
+			storePageContent.setInt(2, page.getID());
+			for (String contentID : template.getElementIDs()) {
+				storePageContent.setString(1, contentID);
+				storePageContent.setString(3, page.getContentForID(contentID).toString());
+				storePageContent.executeUpdate();
+			}
+
+			//Commit changes
+			connection.commit();
+
+		} catch (SQLException e) {
+			throw new IOException("Unable to save page!", e);
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+
+				//We should close the connection to ensure that it causes no more harm
+				DBUtil.close(connection);
+			}
 		}
-
 	}
 
 	@Override
-	public void savePage(DynamicPage page, Template template) throws IOException {
-		//TODO
+	public void deletePage(int id) throws IOException {
+		Connection connection = getConnection();
+
+		try (PreparedStatement deletePageData = connection.prepareStatement("DELETE FROM page WHERE pageid = ?")) {
+			//Delete page entry. The constraints in the database should ensure that the deletion is cascaded
+			deletePageData.setInt(1, id);
+			deletePageData.executeUpdate();
+		} catch (SQLException e) {
+			throw new IOException("Unable to delete page with id " + id + "!", e);
+		}
 	}
 
 	@Override

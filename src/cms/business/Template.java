@@ -1,5 +1,6 @@
 package cms.business;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +15,7 @@ public class Template {
 
 	private final CMS.PageType type;
 	private final XMLElement template;
-	private int id;
+	private final int id;
 
 	/**
 	 * Constructs a new template from the specified html layout.
@@ -30,33 +31,12 @@ public class Template {
 	}
 
 	/**
-	 * Test whether the id of this template is valid.
-	 *
-	 * @return true if the id is valid, false otherwise
-	 */
-	public boolean hasValidID() {
-		return id >= 0;
-	}
-
-	/**
 	 * Get the id of this template.
 	 *
 	 * @return the id of this template
 	 */
 	public int getID() {
 		return id;
-	}
-
-	/**
-	 * Set the id of this template. This operation will be ignored if the id is already set. The purpose of this method
-	 * is to allow the persistence layer to assign an id to a template created in the domain layer.
-	 *
-	 * @param id the id of the template
-	 */
-	public void setID(int id) {
-		if (this.id < 0) {
-			this.id = id;
-		}
 	}
 
 	/**
@@ -98,18 +78,18 @@ public class Template {
 	}
 
 	/**
-	 * Get the default html for the template element with the specified id.
+	 * Get the default content for the template element with the specified id.
 	 *
 	 * @param id the id of the template element
-	 * @return the default html for the template element with the specified id
+	 * @return the default content for the template element with the specified id
 	 * @throws IllegalArgumentException if the id is not in this template
 	 */
-	public String getDefaultHMTLForElement(String id) {
+	public Collection<XMLElement> getDefaultContentForElement(String id) {
 		XMLElement element = template.getChildByID(id);
 		if (element == null)
 			throw new IllegalArgumentException("No template element with the id " + id);
 
-		return element.toString();
+		return element.getChildren();
 	}
 
 	/**

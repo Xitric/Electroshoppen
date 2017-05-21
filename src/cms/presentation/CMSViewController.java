@@ -43,6 +43,27 @@ public class CMSViewController implements Initializable {
 	public TextField insertImageUrlField;
 
 	@FXML
+	public TextField productIdField;
+
+	@FXML
+	public RadioButton nameLinkToggle;
+
+	@FXML
+	public RadioButton priceLinkToggle;
+
+	@FXML
+	public RadioButton imageLinkToggle;
+
+	@FXML
+	public RadioButton descriptionLinkToggle;
+
+	@FXML
+	public RadioButton tagsLinkToggle;
+
+	@FXML
+	public TextField pageIdField;
+
+	@FXML
 	private TextArea htmlPreview;
 
 	@FXML
@@ -215,6 +236,37 @@ public class CMSViewController implements Initializable {
 	}
 
 	@FXML
+	private void openPageOnAction(ActionEvent event) {
+		//TODO: More user friendly approach
+		TextInputDialog dialog = new TextInputDialog();
+		dialog.setTitle("Open Page");
+		dialog.setHeaderText("Choose a page to open");
+		dialog.setContentText("Enter page id:");
+
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()){
+			try {
+				present(cms.editPage(Integer.parseInt(result.get())));
+			} catch (NumberFormatException e) {
+				//TODO
+			} catch (IOException e) {
+				//TODO
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@FXML
+	private void textFieldOnAction(ActionEvent event) {
+		insertTextToggle.setSelected(true);
+	}
+
+	@FXML
+	private void imageFieldOnAction(ActionEvent event) {
+		insertImageToggle.setSelected(true);
+	}
+
+	@FXML
 	private void browseOnAction(ActionEvent event) {
 		//TODO: Duplication, we should combine the gui packages and reuse code
 		FileChooser fileChooser = new FileChooser();
@@ -224,6 +276,28 @@ public class CMSViewController implements Initializable {
 		File selectedFile = fileChooser.showOpenDialog(insertImageUrlField.getScene().getWindow());
 		if (selectedFile != null) {
 			insertImageUrlField.setText(selectedFile.getPath());
+		}
+	}
+
+	@FXML
+	private void browseProductOnAction(ActionEvent event) {
+		//TODO: Select from product list
+		productIdField.setText("30");
+	}
+
+	@FXML
+	private void browsePageOnAction(ActionEvent event) {
+		//TODO: Select from page list
+		pageIdField.setText("1");
+	}
+
+	@FXML
+	private void saveButtonOnAction(ActionEvent event) {
+		try {
+			cms.savePage();
+		} catch (IOException e) {
+			//TODO
+			e.printStackTrace();
 		}
 	}
 
@@ -237,7 +311,7 @@ public class CMSViewController implements Initializable {
 
 		//Remove the image encoding from the html preview
 		//Made with the help of https://www.freeformatter.com/java-regex-tester.html
-		String strippedHTML = html.replaceAll("(<img src=\"data:base64,)[\\w+/\n\r=]+[^\"]", "<img src=\"data:base64,...");
+		String strippedHTML = html.replaceAll("(<img src=\"data:image/png;base64,)[\\w+/\n\r=]+[^\"]", "<img src=\"data:image/png;base64,...");
 		htmlPreview.setText(strippedHTML);
 	}
 
