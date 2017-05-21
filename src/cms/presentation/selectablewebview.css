@@ -1,37 +1,71 @@
+* {
+    position: relative;
+}
+
 .selectedElement {
-    outline:1px #125688 dashed !important;
+    outline: 1px #125688 dashed !important;
 }
 
-*{
-    position:relative;
-}
-
-.inserter {
-    height:0px;
+.inserterh,
+.inserterv {
+    height: 0;
     font-size: 5vh;
     z-index: 1000;
 }
 
-.inserterbef {
-    position:absolute;
-    height:1.5em;
-    width:1.5em;
-    display:block;
-    left:50%;
-    margin-left:-0.75em;
-    margin-top:-1.5em;
-    border-radius:50%;
-    background-color:#2980b9;
-    color:white;
+.inserterv {
+    position: absolute;
+    top: 50%;
 }
+
+.inserterbef,
+.inserteraft,
+.inserterin {
+    position: absolute;
+    height: 1.5em;
+    width: 1.5em;
+    display: block;
+    border-radius: 50%;
+    background-color: #2980b9;
+    color: white;
+    -webkit-animation: fadeOut 0.2s ease-in-out 0.5s forwards;
+}
+
+.selectedElement:hover .inserterh .inserterbef,
+.selectedElement:hover .inserterh .inserteraft,
+.selectedElement:hover .inserterv .inserterin {
+    -webkit-animation: fadeIn 0.2s ease-in-out forwards;
+}
+
+.inserterbef {
+    left: 50%;
+    margin-left: -0.75em;
+    margin-top: -1.5em;
+}
+
 .inserteraft {
-    position:absolute;
-    height:1.5em;
-    width:1.5em;
-    left:50%;
-    margin-left:-0.75em;
-    display:block;
-    border-radius:50%;
-    background-color:#2980b9;
-    color:white;
+    left: 50%;
+    margin-left: -0.75em;
+}
+
+.inserterin {
+    margin-top: -0.75em;
+}
+
+@-webkit-keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@-webkit-keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }

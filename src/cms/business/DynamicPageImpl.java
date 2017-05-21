@@ -52,7 +52,7 @@ public class DynamicPageImpl implements DynamicPage {
 			int max = getMaxIdIn(this.content.get(entry.getKey()));
 			if (max > maxID) maxID = max;
 		}
-		System.out.println(maxID);
+
 		//The next available id will either be 0 or one above the current, max id
 		nextID = maxID + 1;
 	}
@@ -101,9 +101,11 @@ public class DynamicPageImpl implements DynamicPage {
 	 */
 	private XMLElement getContentElementByID(String id) {
 		for (XMLElement root : content.values()) {
-			XMLElement result = root.getChildByID(id);
-
 			//Return as soon as we found a match
+			if (root.getID().equals(id)) return root;
+
+			//Test children
+			XMLElement result = root.getChildByID(id);
 			if (result != null) return result;
 		}
 
@@ -170,13 +172,18 @@ public class DynamicPageImpl implements DynamicPage {
 		XMLElement reference = getContentElementByID(marker.getSelectedElementID());
 		if (reference == null) return; //Not a valid selection
 
-		//Insert the new element before or after the selection. It should be safe to access the parent, as all content
-		//is wrapped in divs, that are not sent to the gui. Also, we enrich the element with unique ids
+		//Insert the new element before, in, or after the selection. It should be safe to access the parent, as all
+		//content is wrapped in divs, that are not sent to the gui. Also, we enrich the element with unique ids
 		setUniqueIDs(element);
-		if (marker.pointsToBefore()) {
+		if (marker.getDirection() == DocumentMarker.Direction.BEFORE) {
 			reference.getParent().addChildBefore(element, reference);
-		} else {
+		} else if (marker.getDirection() == DocumentMarker.Direction.AFTER) {
 			reference.getParent().addChildAfter(element, reference);
+		} else if (marker.getDirection() == DocumentMarker.Direction.IN) {
+			//We can only insert into an element if it contains no text
+			if (!reference.hasTextContent()) {
+				reference.addChild(element);
+			}
 		}
 	}
 

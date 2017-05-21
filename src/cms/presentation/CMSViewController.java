@@ -1,6 +1,7 @@
 package cms.presentation;
 
 import cms.business.CMS;
+import cms.business.DocumentMarker;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,9 +10,14 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import org.w3c.dom.html.HTMLElement;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -20,6 +26,21 @@ import java.util.ResourceBundle;
  * @author Kasper
  */
 public class CMSViewController implements Initializable {
+
+	@FXML
+	public RadioButton insertTextToggle;
+
+	@FXML
+	public RadioButton insertImageToggle;
+
+	@FXML
+	public ToggleGroup insertOptionGroup;
+
+	@FXML
+	public TextField insertTextField;
+
+	@FXML
+	public TextField insertImageUrlField;
 
 	@FXML
 	private TextArea htmlPreview;
@@ -44,11 +65,18 @@ public class CMSViewController implements Initializable {
 	 */
 	public void setCMS(CMS cms) {
 		this.cms = cms;
+
+		//TODO: Temp
+		try {
+			present(cms.editPage(1));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		editor = new SelectableWebView();
+		editor = new SelectableWebView(this::editorInsert);
 
 		//Add double click listener to editor
 		editor.setOnMouseClicked(mouseEvent -> {
@@ -65,6 +93,30 @@ public class CMSViewController implements Initializable {
 	 */
 	public void onEnter() {
 
+	}
+
+	/**
+	 * Called when the user presses one of the insert buttons in the editor.
+	 *
+	 * @param marker the document marker that describes the user's selection
+	 */
+	private void editorInsert(DocumentMarker marker) {
+		Toggle option = insertOptionGroup.getSelectedToggle();
+
+		if (option == insertTextToggle) {
+			String text = insertTextField.getText();
+			if (! text.isEmpty()) {
+				present(cms.insertText(marker, text));
+			}
+		} else if (option == insertImageToggle) {
+			//TODO: Move image loading somewhere else
+			try {
+				BufferedImage img = ImageIO.read(new File(insertImageUrlField.getText()));
+				present(cms.insertImage(marker, img));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -163,43 +215,16 @@ public class CMSViewController implements Initializable {
 	}
 
 	@FXML
-	private void insertTextAfterOnAction(ActionEvent event) {
-
-	}
-
-	@FXML
-	private void insertTextBeforeOnAction(ActionEvent event) {
-
-	}
-
-	@FXML
-	private void insertImageAfterOnAction(ActionEvent event) {
-
-	}
-
-	@FXML
-	private void insertImageBeforeOnAction(ActionEvent event) {
-
-	}
-
-	@FXML
-	private void insertHTMLAfterOnAction(ActionEvent event) {
-
-	}
-
-	@FXML
-	private void insertHTMLBeforeOnAction(ActionEvent event) {
-
-	}
-
-	@FXML
-	private void removeSelectionOnAction(ActionEvent event) {
-
-	}
-
-	@FXML
 	private void browseOnAction(ActionEvent event) {
-
+		//TODO: Duplication, we should combine the gui packages and reuse code
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Resource File");
+		fileChooser.getExtensionFilters().addAll(
+				new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.bmp", "*.gif", "*.png", "*.jpeg", "*.wbmp"));
+		File selectedFile = fileChooser.showOpenDialog(insertImageUrlField.getScene().getWindow());
+		if (selectedFile != null) {
+			insertImageUrlField.setText(selectedFile.getPath());
+		}
 	}
 
 	/**
@@ -208,7 +233,7 @@ public class CMSViewController implements Initializable {
 	 * @param html the html to present
 	 */
 	private void present(String html) {
-		editor.setContent(html);
+		editor.setContent(html, true);
 
 		//Remove the image encoding from the html preview
 		//Made with the help of https://www.freeformatter.com/java-regex-tester.html
@@ -220,6 +245,6 @@ public class CMSViewController implements Initializable {
 	 * Fill in the tree view on the left with the available pages in the CMS for easy access.
 	 */
 	private void populateTreeView() {
-
+		//TODO
 	}
 }

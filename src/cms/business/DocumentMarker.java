@@ -15,32 +15,29 @@ public class DocumentMarker {
 	 * The id of the selected element.
 	 */
 	private final String id;
-
 	/**
 	 * The highlighted text in the selected element, or null if no text is selected.
 	 */
 	private final String range;
-
 	/**
 	 * The index of the start of the text highlight or -1 if no text is highlighted.
 	 */
 	private final int startIndex;
-
 	/**
-	 * True if this marker points to before itself, false if it points to after itself. Used for relative positioning.
+	 * The direction is which this marker points. Used for relative positioning.
 	 */
-	private final boolean before;
+	private final Direction direction;
 
 	/**
 	 * Constructs a new document marker. If the specified range is not contained in the element, it will be disregarded.
 	 *
-	 * @param element the selected element
-	 * @param range   the range of text selected in the element, if any
-	 * @param before  true if this marker points to before itself, false if it points to after itself
+	 * @param element   the selected element
+	 * @param range     the range of text selected in the element, if any
+	 * @param direction the direction is which this marker points
 	 */
-	public DocumentMarker(Element element, String range, boolean before) {
+	public DocumentMarker(Element element, String range, Direction direction) {
 		this.id = element.getAttribute(DynamicPage.ID_ATTRIB);
-		this.before = before;
+		this.direction = direction;
 
 		if (range != null && !range.isEmpty() && element.getTextContent().contains(range)) {
 			this.range = range;
@@ -102,12 +99,36 @@ public class DocumentMarker {
 	}
 
 	/**
-	 * Check whether this marker points to before itself. If false, this marker points to after itself. This value can
-	 * be used for relative positioning of elements.
+	 * Check whether this marker points to before itself, into itself or to after itself. This value can be used for
+	 * relative positioning of elements.
 	 *
-	 * @return true if this marker points to before itself, false if it points to after itself
+	 * @return the direction is which this marker points
 	 */
-	public boolean pointsToBefore() {
-		return before;
+	public Direction getDirection() {
+		return direction;
+	}
+
+	@Override
+	public String toString() {
+		String s = "Selection of element with id " + id + " and ";
+
+		if (range == null) {
+			s += "no selection";
+		} else {
+			s += "selecting '" + range + "' beginning at index " + startIndex;
+		}
+
+		s += " and pointing in the direction: " + direction;
+
+		return s;
+	}
+
+	/**
+	 * A position relative to the selected element.
+	 */
+	public enum Direction {
+		BEFORE,
+		IN,
+		AFTER
 	}
 }

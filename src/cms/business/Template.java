@@ -127,7 +127,7 @@ public class Template {
 			XMLElement child = templateCopy.getChildByID(id);
 			child.clear();
 			//We clone the content from the dynamic page to prevent changing the parent of the initial content
-			child.addChildren(page.getContentForID(id).clone().getChildren());
+			child.addChild(page.getContentForID(id).clone());
 		}
 
 		return templateCopy;
