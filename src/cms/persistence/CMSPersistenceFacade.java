@@ -70,12 +70,11 @@ public interface CMSPersistenceFacade {
 	void deletePage(int id) throws IOException;
 
 	/**
-	 * Used to retrive all page ID's And name of the pages in the CMS database
+	 * Used to retrieve all page IDs and Names of the pages in the CMS database
 	 * @return
 	 * @throws IOException
 	 */
 	Map<Integer, String> getPageInfo()throws IOException;
-
 
 	/**
 	 * Used to retrieve all page IDs in the CMS database
