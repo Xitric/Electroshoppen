@@ -252,7 +252,6 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 	}
 
 	public Map<Integer, String> getPageInfo() throws IOException{
-		System.out.println("Testt");
 		Connection connection = getConnection();
 		HashMap<Integer, String> pageInformationMap = new HashMap<>();
 		try(PreparedStatement pageInformation = connection.prepareStatement("SELECT * FROM page")){
@@ -261,7 +260,7 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 				pageInformationMap.put(rs.getInt("pageid"), rs.getString("pagename"));
 			}
 		}catch(SQLException e){
-			throw new IOException("Unable to retrive page information");
+			throw new IOException("Unable to retrieve page information");
 		}
 		return pageInformationMap;
 

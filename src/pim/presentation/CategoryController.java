@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import pim.business.Attribute;
 import pim.business.Category;
 import pim.business.PIM;
+import shared.Utility;
 
 import java.io.IOException;
 import java.net.URL;
@@ -96,11 +97,10 @@ public class CategoryController implements Initializable {
 				categoryList.add(pim.getCategory(name));
 				Collections.sort(categoryList);
 			} catch (IOException e) {
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Changes are not accepted!");
-				alert.setHeaderText("Error when creating a category");
-				alert.setContentText("Something went wrong when creating a category");
-				alert.showAndWait();
+				Utility.newErrorAlert("Changes are not accepted!",
+						"Error when creating a category",
+						"Something went wrong when creating a category")
+						.showAndWait();
 			}
 		});
 	}
@@ -112,11 +112,10 @@ public class CategoryController implements Initializable {
 				pim.removeCategory(selected.getName());
 				categoryList.remove(selected);
 			} catch (IOException e) {
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Changes are not accepted!");
-				alert.setHeaderText("Error when removing category");
-				alert.setContentText("Could not remove selected category");
-				alert.showAndWait();
+				Utility.newErrorAlert("Changes are not accepted!",
+						"Error when removing category",
+						"Could not remove selected category")
+						.showAndWait();
 		}
 	}
 
@@ -148,11 +147,10 @@ public class CategoryController implements Initializable {
 		try {
 			pim.saveCategory(selection);
 		} catch (IOException e) {
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Changes are not accepted!");
-			alert.setHeaderText("Error when saving");
-			alert.setContentText("Something went wrong when saving");
-			alert.showAndWait();
+			Utility.newErrorAlert("Changes are not accepted!",
+					"Error when saving",
+					"Something went wrong when saving")
+					.showAndWait();
 		}
 	}
 }
