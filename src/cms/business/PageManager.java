@@ -278,6 +278,15 @@ class PageManager {
 	}
 
 	/**
+	 * Returns all page information from the database
+	 * @return Map that contains Integer and String, which is PageId and PageName
+	 * @throws IOException
+	 */
+	public Map<Integer, String> getPageInfo() throws IOException {
+		return persistence.getPageInfo();
+	}
+
+	/**
 	 * Returns all page ids from the database
 	 *
 	 * @return

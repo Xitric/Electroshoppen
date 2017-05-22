@@ -10,6 +10,7 @@ import cms.presentation.CMSViewController;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Tab;
 import javafx.scene.layout.BorderPane;
 import pim.business.PIM;
 import webshop.presentation.WebshopController;
@@ -27,28 +28,32 @@ public class PIMController implements Initializable {
 
 	@FXML
 	private BorderPane categoryTabPage;
-
 	@FXML
 	private BorderPane attributeTabPage;
-
 	@FXML
 	private BorderPane productTabPage;
-
 	@FXML
 	private BorderPane cmsTabPage;
-
+	@FXML
+	private BorderPane webshopTabPage;
+	@FXML
+	private Tab categoryTab;
+	@FXML
+	private Tab attributeTab;
+	@FXML
+	private Tab productTab;
+	@FXML
+	private Tab cmsTab;
+	@FXML
+	private Tab webshopTab;
 	@FXML
 	private CategoryController categoryTabPageController;
-
 	@FXML
 	private AttributeController attributeTabPageController;
-
 	@FXML
 	private ProductController productTabPageController;
-
 	@FXML
 	private CMSViewController cmsTabPageController;
-
 	@FXML
 	private WebshopController webshopTabPageController;
 
@@ -56,6 +61,7 @@ public class PIMController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 	}
+
 
 	/**
 	 * Set the business mediator for this controller to use.
@@ -79,16 +85,30 @@ public class PIMController implements Initializable {
 
 	@FXML
 	private void onAttributeEnter(Event event) {
-		attributeTabPageController.onEnter();
+		if (attributeTab.isSelected()) {
+			attributeTabPageController.onEnter();
+		}
 	}
 
 	@FXML
 	private void onProductEnter(Event event) {
-		productTabPageController.onEnter();
+		if (productTab.isSelected()) {
+			productTabPageController.onEnter();
+		}
 	}
 
 	@FXML
 	private void onCMSEnter(Event event) {
-		cmsTabPageController.onEnter();
+		if (cmsTab.isSelected()) {
+			cmsTabPageController.onEnter();
+		}
+	}
+
+	@FXML
+	private void onWebshopEnter(Event event) {
+		if (webshopTab.isSelected()) {
+			webshopTabPageController.onEnter();
+		}
 	}
 }
+

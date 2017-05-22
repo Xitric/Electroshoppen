@@ -12,31 +12,31 @@
     <children>
         <TabPane tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <tabs>
-                <Tab text="Category">
+                <Tab fx:id="categoyTab" text="Category">
                     <content>
                         <fx:include fx:id="categoryTabPage" source="CategoryView.fxml" />
                     </content>
                 </Tab>
-                <Tab onSelectionChanged="#onAttributeEnter" text="Attribute">
+                <Tab fx:id="attributeTab" onSelectionChanged="#onAttributeEnter" text="Attribute">
                     <content>
                         <fx:include fx:id="attributeTabPage" source="AttributeView.fxml" />
                     </content>
                 </Tab>
-                <Tab onSelectionChanged="#onProductEnter" text="Product">
+                <Tab fx:id="productTab" onSelectionChanged="#onProductEnter" text="Product">
                     <content>
                         <fx:include fx:id="productTabPage" source="ProductView.fxml" />
                     </content>
                 </Tab>
-            <Tab onSelectionChanged="#onCMSEnter" text="CMS">
-              <content>
-                  <fx:include fx:id="cmsTabPage" source="../../cms/presentation/CMSView.fxml" />
-              </content>
-            </Tab>
-            <Tab text="Webshop">
-               <content>
-                  <fx:include fx:id="cmsTabPage1" source="../../webshop/presentation/WebshopView.fxml" />
-               </content>
-            </Tab>
+                <Tab fx:id="cmsTab" onSelectionChanged="#onCMSEnter" text="CMS">
+                    <content>
+                        <fx:include fx:id="cmsTabPage" source="../../cms/presentation/CMSView.fxml" />
+                    </content>
+                </Tab>
+                <Tab fx:id="webshopTab" onSelectionChanged="#onWebshopEnter" text="Webshop">
+                    <content>
+                        <fx:include fx:id="webshopTabPage" source="../../webshop/presentation/WebshopView.fxml" />
+                    </content>
+                </Tab>
             </tabs>
         </TabPane>
     </children>
