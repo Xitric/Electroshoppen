@@ -23,7 +23,10 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
- * @author Kasper, Niels
+ * Controller for the CMS view.
+ *
+ * @author Kasper
+ * @author Niels
  */
 public class CMSViewController implements Initializable {
 
@@ -92,6 +95,7 @@ public class CMSViewController implements Initializable {
 	 */
 	public void setCMS(CMS cms) {
 		this.cms = cms;
+		onEnter();
 
 		//TODO: Temp
 		try {
@@ -119,10 +123,12 @@ public class CMSViewController implements Initializable {
 	 * Executes every time the tab is opened to populate the TreeView showing existing pages.
 	 */
 	public void onEnter() {
-		try {
-			populateTreeView();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (cms != null) {
+			try {
+				populateTreeView();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

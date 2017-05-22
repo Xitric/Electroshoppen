@@ -11,6 +11,7 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import pim.business.PIM;
 import webshop.presentation.WebshopController;
@@ -26,6 +27,8 @@ import java.util.ResourceBundle;
  */
 public class PIMController implements Initializable {
 
+	@FXML
+	private TabPane tabPane;
 	@FXML
 	private BorderPane categoryTabPage;
 	@FXML
@@ -59,9 +62,8 @@ public class PIMController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		tabPane.getSelectionModel().select(3);
 	}
-
 
 	/**
 	 * Set the business mediator for this controller to use.
@@ -81,6 +83,14 @@ public class PIMController implements Initializable {
 	 */
 	public void setCMS(CMS cms) {
 		cmsTabPageController.setCMS(cms);
+		webshopTabPageController.setCMS(cms);
+	}
+
+	@FXML
+	private void onCategoryEnter(Event event) {
+		if (categoryTab.isSelected()) {
+			categoryTabPageController.onEnter();
+		}
 	}
 
 	@FXML

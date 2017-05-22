@@ -112,17 +112,20 @@ public class ProductController implements Initializable {
 	 */
 	public void setPIM(PIM pim) {
 		this.pim = pim;
+		onEnter();
 	}
 
 	/**
 	 * Call this when the view for this controller is entered in the GUI.
 	 */
 	public void onEnter() {
-		//TODO:
-		try {
-			populateTreeView(pim.getProducts(), true);
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (pim != null) {
+			//TODO:
+			try {
+				populateTreeView(pim.getProducts(), true);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

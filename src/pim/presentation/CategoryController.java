@@ -6,7 +6,9 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextInputDialog;
 import pim.business.Attribute;
 import pim.business.Category;
 import pim.business.PIM;
@@ -14,7 +16,10 @@ import shared.Utility;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 /**
  * @author Kasper
@@ -57,11 +62,20 @@ public class CategoryController implements Initializable {
 	 */
 	public void setPIM(PIM pim) {
 		this.pim = pim;
-		setItemsInLw();
+		onEnter();
+	}
+
+	/**
+	 * Call this when the view for this controller is entered in the GUI.
+	 */
+	public void onEnter() {
+		if (pim != null) {
+			setItemsInLw();
+		}
 	}
 
 	private void setItemsInLw() {
-		List<Category> categories = null;
+		List<Category> categories;
 		try {
 			categories = pim.getCategories();
 			Collections.sort(categories);
@@ -109,14 +123,14 @@ public class CategoryController implements Initializable {
 	@FXML
 	private void removeCategory(ActionEvent event) {
 		Category selected = listViewCategory.getSelectionModel().getSelectedItem();
-			try {
-				pim.removeCategory(selected.getName());
-				categoryList.remove(selected);
-			} catch (IOException e) {
-				Utility.newErrorAlert("Changes are not accepted!",
-						"Error when removing category",
-						"Could not remove selected category")
-						.showAndWait();
+		try {
+			pim.removeCategory(selected.getName());
+			categoryList.remove(selected);
+		} catch (IOException e) {
+			Utility.newErrorAlert("Changes are not accepted!",
+					"Error when removing category",
+					"Could not remove selected category")
+					.showAndWait();
 		}
 	}
 

@@ -32,6 +32,12 @@ public class CMSImpl implements CMS {
 	}
 
 	@Override
+	public String getLandingPage() throws IOException {
+		//TODO: Store in database, perhaps?
+		return getPage(5);
+	}
+
+	@Override
 	public Collection<Template> getTemplatesForPageType(PageType pageType) throws IOException {
 		return persistence.getTemplates(pageType.toString());
 	}

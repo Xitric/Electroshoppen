@@ -164,7 +164,7 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 			if (pageid == -1) return null;
 
 			//Read name (we already called next() on the result set)
-			String name = pageData.getString(1);
+			String name = pageData.getString(2);
 
 			//Otherwise get the page content
 			Map<String, String> content = new HashMap<>();

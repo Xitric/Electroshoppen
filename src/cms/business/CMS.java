@@ -13,13 +13,21 @@ import java.util.Map;
 public interface CMS {
 
 	/**
-	 * get the html of the page with the specified id.
+	 * Get the html of the page with the specified id.
 	 *
 	 * @param id the id of the page
 	 * @return the html of page with the specified id, or null if the page does not exist
 	 * @throws IOException if the operation failed
 	 */
 	String getPage(int id) throws IOException;
+
+	/**
+	 * Get the html of the landing page.
+	 *
+	 * @return the html of the landing page, or null if the page does no exist
+	 * @throws IOException if the operation failed
+	 */
+	String getLandingPage() throws IOException;
 
 	/**
 	 * Get a collection of templates that support the specified type of page.
