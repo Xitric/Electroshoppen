@@ -260,7 +260,7 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 				pageInformationMap.put(rs.getInt("pageid"), rs.getString("pagename"));
 			}
 		}catch(SQLException e){
-			throw new IOException("Unable to retrive page information");
+			throw new IOException("Unable to retrieve page information");
 		}
 		return pageInformationMap;
 
