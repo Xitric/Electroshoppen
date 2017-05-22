@@ -28,6 +28,11 @@ public class DynamicPageImpl implements DynamicPage {
 	private int nextID;
 
 	/**
+	 * The name of this dynamic page.
+	 */
+	private String name;
+
+	/**
 	 * The roots of the XHTML that makes up the content of this page along with the ids of those elements to associate
 	 * the content with in the template.
 	 */
@@ -39,8 +44,9 @@ public class DynamicPageImpl implements DynamicPage {
 	 * @param id      the id of this dynamic page, or -1 if it has no id yet
 	 * @param content the content of the page
 	 */
-	public DynamicPageImpl(int id, Map<String, String> content) {
+	public DynamicPageImpl(int id, String name, Map<String, String> content) {
 		pageID = id;
+		this.name = name;
 		this.content = new HashMap<>();
 
 		//Parse the content into an xml structure. At the same time, we keep track of the highest used element id, as we
@@ -74,6 +80,16 @@ public class DynamicPageImpl implements DynamicPage {
 		if (this.pageID < 0) {
 			this.pageID = id;
 		}
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = (name == null ? "noname" : name);
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 	@Override

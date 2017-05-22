@@ -49,6 +49,15 @@ public class Template {
 	}
 
 	/**
+	 * Get the html markup that makes up this template.
+	 *
+	 * @return the html markup of this template
+	 */
+	public String getMarkup() {
+		return template.toString();
+	}
+
+	/**
 	 * Get the ids of the container elements in this template.
 	 *
 	 * @return the ids of the container elements in this template
@@ -111,5 +120,10 @@ public class Template {
 		}
 
 		return templateCopy;
+	}
+
+	@Override
+	public String toString() {
+		return "Template: " + id;
 	}
 }

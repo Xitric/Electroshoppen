@@ -1,11 +1,12 @@
 package webshop.presentation;
 
-import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import webshop.business.Webshop;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TitledPane;
+
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;

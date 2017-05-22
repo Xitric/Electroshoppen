@@ -3,14 +3,14 @@ package cms.persistence;
 import cms.business.DynamicPage;
 import cms.business.DynamicPageImpl;
 import cms.business.Template;
-import javafx.util.Pair;
 import shared.DBUtil;
 
-import javax.xml.transform.Result;
 import java.io.IOException;
 import java.sql.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementation of the CMSPersistenceFacade interface for use with JDBC.
@@ -156,12 +156,15 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 			//page with the specified id. Simply checking for content on the specified id is not enough, as a page can
 			//exist with no content.
 			int pageid = -1;
-			while (pageData.next()) {
+			if (pageData.next()) {
 				pageid = pageData.getInt(1);
 			}
 
 			//If no page was read, return null
 			if (pageid == -1) return null;
+
+			//Read name (we already called next() on the result set)
+			String name = pageData.getString(1);
 
 			//Otherwise get the page content
 			Map<String, String> content = new HashMap<>();
@@ -171,7 +174,7 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 				content.put(elementID, html);
 			}
 
-			return new DynamicPageImpl(pageid, content);
+			return new DynamicPageImpl(pageid, name, content);
 
 		} catch (SQLException e) {
 			throw new IOException("Unable to read template with id " + id + "!", e);
@@ -182,8 +185,8 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 	public void savePage(DynamicPage page, Template template) throws IOException {
 		Connection connection = getConnection();
 
-		try (PreparedStatement storePageData = connection.prepareStatement("INSERT INTO page VALUES (?) ON CONFLICT (pageid) DO NOTHING;");
-		     PreparedStatement storePageDataNew = connection.prepareStatement("INSERT INTO page VALUES (DEFAULT) RETURNING pageid;");
+		try (PreparedStatement storePageData = connection.prepareStatement("INSERT INTO page VALUES (?, ?) ON CONFLICT (pageid) DO UPDATE SET pagename = EXCLUDED.pagename;");
+		     PreparedStatement storePageDataNew = connection.prepareStatement("INSERT INTO page VALUES (DEFAULT, ?) RETURNING pageid;");
 		     PreparedStatement storePageTemplate = connection.prepareStatement("INSERT INTO pagelayout VALUES (?, ?) ON CONFLICT (pageid) DO UPDATE SET templateid = EXCLUDED.templateid");
 		     PreparedStatement storePageContent = connection.prepareStatement("INSERT INTO content VALUES (?, ?, ?) ON CONFLICT (elementid, pageid) DO UPDATE SET html = EXCLUDED.html;")) {
 
@@ -193,8 +196,10 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 			//Store page id. If the page has an invalid id, generate a new one
 			if (page.hasValidID()) {
 				storePageData.setInt(1, page.getID());
+				storePageData.setString(2, page.getName());
 				storePageData.executeUpdate();
 			} else {
+				storePageDataNew.setString(1, page.getName());
 				if (storePageDataNew.execute()) {
 					//Get generated id
 					ResultSet result = storePageDataNew.getResultSet();
@@ -251,59 +256,22 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 		}
 	}
 
-	public Map<Integer, String> getPageInfo() throws IOException{
+	public Map<Integer, String> getPageInfo() throws IOException {
 		Connection connection = getConnection();
 		HashMap<Integer, String> pageInformationMap = new HashMap<>();
-		try(PreparedStatement pageInformation = connection.prepareStatement("SELECT * FROM page")){
+
+		try (PreparedStatement pageInformation = connection.prepareStatement("SELECT * FROM page;")) {
+
 			ResultSet rs = pageInformation.executeQuery();
-			while(rs.next()){
+			while (rs.next()) {
 				pageInformationMap.put(rs.getInt("pageid"), rs.getString("pagename"));
 			}
-		}catch(SQLException e){
+
+			return pageInformationMap;
+
+		} catch (SQLException e) {
 			throw new IOException("Unable to retrieve page information");
 		}
-		return pageInformationMap;
-
-	}
-
-	@Override
-	public Set<Integer> getPageIDs() throws IOException {
-		Connection connection = getConnection();
-		Set<Integer> pageIDs = new HashSet<>();
-
-		try(PreparedStatement PageIDs = connection.prepareStatement("SELECT pageid FROM page")) {
-
-			ResultSet rs = PageIDs.executeQuery();
-
-			while (rs.next()) {
-				int id = rs.getInt(1);
-				pageIDs.add(id);
-			}
-
-		} catch(SQLException e) {
-			throw new IOException("Unable to retrieve page IDs from database", e);
-		}
-		return pageIDs;
-	}
-
-	@Override
-	public Set<String> getPageNames() throws IOException {
-		Connection connection = getConnection();
-		Set<String> pageNamesSet = new HashSet<>();
-
-		try(PreparedStatement pageNames = connection.prepareStatement("SELECT pagename FROM page")) {
-
-			ResultSet rs = pageNames.executeQuery();
-			String name = null;
-
-			while (rs.next()) {
-				name = rs.getString(1);
-			}
-
-		} catch(SQLException e) {
-			throw new IOException("Unable to retrieve page names from database", e);
-		}
-		return pageNamesSet;
 	}
 
 	@Override

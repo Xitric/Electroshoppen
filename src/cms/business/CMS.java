@@ -4,14 +4,13 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Interface describing the functionality that must be provided by all CMS implementations.
  *
  * @author Kasper
  */
-public interface 	CMS {
+public interface CMS {
 
 	/**
 	 * get the html of the page with the specified id.
@@ -32,16 +31,17 @@ public interface 	CMS {
 	Collection<Template> getTemplatesForPageType(PageType pageType) throws IOException;
 
 	/**
-	 * Create a new page with the specified page type and template. This page will be set as active in the CMS,
+	 * Create a new page with the specified name, page type, and template. This page will be set as active in the CMS,
 	 * discarding current, unsaved data.
 	 *
+	 * @param name       the name of the page to create
 	 * @param pageType   the type of page
 	 * @param templateID the id of the template to use
 	 * @return the html representation of the page, or null if the page does not exist
 	 * @throws IllegalArgumentException if the specified template does not support the specified page type, or if the
 	 *                                  template is unknown
 	 */
-	String createNewPage(PageType pageType, int templateID);
+	String createNewPage(String name, PageType pageType, int templateID);
 
 	/**
 	 * Start editing the page with the specified id. This will activate the specified page in the CMS.
@@ -143,28 +143,12 @@ public interface 	CMS {
 	void savePage() throws IOException;
 
 	/**
-	 * Getting IDs and Names of all pages from the CMS Database
-	 * @return Returns a Map where ID is the key and Name of a
-	 * page is the Value
-	 * @throws IOException Rather than throwing SQLException
+	 * Getting IDs and Names of all pages from the CMS Database.
+	 *
+	 * @return Returns a Map where ID is the key and Name of a page is the Value
+	 * @throws IOException if the operation failed
 	 */
 	Map<Integer, String> getPageInfo() throws IOException;
-
-	/**
-	 * Get all page IDs from the database
-	 * @return Returns a Set of ints (Wrapper Integer) representing
-	 * the IDs of all pages
-	 * @throws IOException Rather than throwing SQLException
-	 */
-	Set<Integer> getPageIDs() throws IOException;
-
-	/**
-	 * Get all page Names from the database
-	 * @return Returns a Set of Strings representing the names
-	 * of all pages
-	 * @throws IOException Rather than throwing SQLException
-	 */
-	Set<String> getPageNames() throws IOException;
 
 	/**
 	 * A type of page handled by this CMS.

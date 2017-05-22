@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * The manager for loading, saving and editing dynamic pages.
@@ -59,16 +58,17 @@ class PageManager {
 	//String output = input.replaceAll("foob(..)foo", "foof$1foo");
 
 	/**
-	 * Create a new page with the specified page type and template. This page will be set as active, discarding current,
-	 * unsaved data.
+	 * Create a new page with the specified name, page type, and template. This page will be set as active, discarding
+	 * current, unsaved data.
 	 *
+	 * @param name       the name of the page to create
 	 * @param pageType   the type of page
 	 * @param templateID the id of the template to use
 	 * @return the representation of the newly loaded page, or null if no such page exists
 	 * @throws IllegalArgumentException if the specified template does not support the specified page type, or if the
 	 *                                  template is unknown
 	 */
-	public XMLElement createNewPage(CMS.PageType pageType, int templateID) {
+	public XMLElement createNewPage(String name, CMS.PageType pageType, int templateID) {
 		try {
 			//Read template and ensure compatibility
 			Template template = persistence.getTemplate(templateID);
@@ -86,7 +86,7 @@ class PageManager {
 				defaultContent.put(id, content.toString());
 			}
 
-			activePage = new DynamicPageImpl(-1, defaultContent);
+			activePage = new DynamicPageImpl(-1, name, defaultContent);
 			activeTemplate = template;
 			return template.enrichPage(activePage);
 		} catch (IOException e) {
@@ -275,34 +275,5 @@ class PageManager {
 		if (activePage != null && activeTemplate != null) {
 			persistence.savePage(activePage, activeTemplate);
 		}
-	}
-
-	/**
-	 * Returns all page information from the database
-	 * @return Map that contains Integer and String, which is PageId and PageName
-	 * @throws IOException
-	 */
-	public Map<Integer, String> getPageInfo() throws IOException {
-		return persistence.getPageInfo();
-	}
-
-	/**
-	 * Returns all page ids from the database
-	 *
-	 * @return
-	 * @throws IOException
-	 */
-	public Set<Integer> getPageIDs() throws IOException {
-		return persistence.getPageIDs();
-	}
-
-	/**
-	 * Returns all page names from the database
-	 *
-	 * @return
-	 * @throws IOException
-	 */
-	public Set<String> getPageNames() throws IOException {
-		return persistence.getPageNames();
 	}
 }

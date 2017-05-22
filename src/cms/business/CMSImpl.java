@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Implementation of the CMS interface.
@@ -38,8 +37,8 @@ public class CMSImpl implements CMS {
 	}
 
 	@Override
-	public String createNewPage(PageType pageType, int templateID) {
-		return pageManager.createNewPage(pageType, templateID).toString();
+	public String createNewPage(String name, PageType pageType, int templateID) {
+		return pageManager.createNewPage(name, pageType, templateID).toString();
 	}
 
 	@Override
@@ -95,15 +94,5 @@ public class CMSImpl implements CMS {
 	@Override
 	public Map<Integer, String> getPageInfo() throws IOException {
 		return persistence.getPageInfo();
-	}
-
-	@Override
-	public Set<Integer> getPageIDs() throws IOException {
-		return pageManager.getPageIDs();
-	}
-
-	@Override
-	public Set<String> getPageNames() throws IOException {
-		return pageManager.getPageNames();
 	}
 }

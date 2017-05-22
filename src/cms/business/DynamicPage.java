@@ -43,6 +43,20 @@ public interface DynamicPage {
 	void setID(int id);
 
 	/**
+	 * Set the name of this page.
+	 *
+	 * @param name the new name
+	 */
+	void setName(String name);
+
+	/**
+	 * Get the name of this page.
+	 *
+	 * @return the name of this page
+	 */
+	String getName();
+
+	/**
 	 * Get the content for the template element with the specified id. The content will be wrapped in a {@code <div>}
 	 * element.
 	 *

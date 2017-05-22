@@ -9,10 +9,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
-import javafx.util.Pair;
 import org.w3c.dom.html.HTMLElement;
 
 import javax.imageio.ImageIO;
@@ -20,7 +18,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 /**
  * @author Kasper, Niels
@@ -209,65 +209,14 @@ public class CMSViewController implements Initializable {
 
 	@FXML
 	private void newPageOnAction(ActionEvent event) {
-		Dialog<Pair<CMS.PageType, Integer>> newPageDialog = new Dialog<>();
-		newPageDialog.setTitle("Create a new page");
-		newPageDialog.setHeaderText("Specify page options");
+		//Show dialog to user
+		NewPageDialog dialog = new NewPageDialog(cms);
+		Optional<NewPageDialog.NewPageInfo> result = dialog.showAndWait();
 
-		//Style the dialog
-		DialogPane dialogPane = newPageDialog.getDialogPane();
-		dialogPane.getStylesheets().add(
-				getClass().getResource("../../pim/presentation/pimview.css").toExternalForm());
-
-		//TODO: Create new fxml and controller for this
-		HBox content = new HBox(16);
-		ComboBox<CMS.PageType> pageTypes = new ComboBox<>(FXCollections.observableArrayList(CMS.PageType.values()));
-		TextField templateIDField = new TextField();
-		templateIDField.setPromptText("Template id");
-		content.getChildren().addAll(pageTypes, templateIDField);
-		newPageDialog.getDialogPane().setContent(content);
-
-		ButtonType confirmButtonType = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
-		newPageDialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, ButtonType.CANCEL);
-
-		//Specify how a result is gathered from the dialog
-		newPageDialog.setResultConverter(button -> {
-			if (button == confirmButtonType) {
-				try {
-					return new Pair<>(pageTypes.getValue(), Integer.parseInt(templateIDField.getText()));
-				} catch (NumberFormatException e) {
-					return null;
-				}
-			}
-
-			return null;
-		});
-
-		Optional<Pair<CMS.PageType, Integer>> result = newPageDialog.showAndWait();
+		//If the user made proper selections, create a new page and show it
 		if (result.isPresent()) {
-			Pair<CMS.PageType, Integer> pair = result.get();
-			String html = cms.createNewPage(pair.getKey(), pair.getValue());
-			present(html);
-		}
-	}
-
-	@FXML
-	private void openPageOnAction(ActionEvent event) {
-		//TODO: More user friendly approach
-		TextInputDialog dialog = new TextInputDialog();
-		dialog.setTitle("Open Page");
-		dialog.setHeaderText("Choose a page to open");
-		dialog.setContentText("Enter page id:");
-
-		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()) {
-			try {
-				present(cms.editPage(Integer.parseInt(result.get())));
-			} catch (NumberFormatException e) {
-				//TODO
-			} catch (IOException e) {
-				//TODO
-				e.printStackTrace();
-			}
+			NewPageDialog.NewPageInfo info = result.get();
+			present(cms.createNewPage(info.getName(), info.getPageType(), info.getTemplateID()));
 		}
 	}
 
@@ -346,9 +295,7 @@ public class CMSViewController implements Initializable {
 			return null;
 		});
 		Optional<Integer> result = dialog.showAndWait();
-		if(result.isPresent()){
-			pageIdField.setText(Integer.toString(result.get()));
-		}
+		result.ifPresent(integer -> pageIdField.setText(Integer.toString(integer)));
 	}
 
 	@FXML
@@ -402,7 +349,7 @@ public class CMSViewController implements Initializable {
 		}
 
 		public String toString() {
-			return pageName;
+			return "[" + pageId + "] " + pageName;
 		}
 	}
 }
