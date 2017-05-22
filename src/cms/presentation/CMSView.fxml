@@ -136,7 +136,7 @@
                                                    </padding>
                                                 </RadioButton>
                                                 <TextField fx:id="pageIdField" editable="false" promptText="Page id" HBox.hgrow="ALWAYS" />
-                                                <Button mnemonicParsing="false" onAction="#browsePageOnAction" text="Browse" />
+                                                <Button mnemonicParsing="false" onAction="#browsePageDialog" text="Browse" />
                                              </children>
                                           </HBox>
                                        </children>

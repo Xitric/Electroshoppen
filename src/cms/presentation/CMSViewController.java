@@ -23,7 +23,7 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * @author Kasper
+ * @author Kasper, Niels
  */
 public class CMSViewController implements Initializable {
 
@@ -136,7 +136,7 @@ public class CMSViewController implements Initializable {
 
 		if (option == insertTextToggle) {
 			String text = insertTextField.getText();
-			if (! text.isEmpty()) {
+			if (!text.isEmpty()) {
 				present(cms.insertText(marker, text));
 			}
 		} else if (option == insertImageToggle) {
@@ -165,6 +165,7 @@ public class CMSViewController implements Initializable {
 			present(cms.editElementText(selection.getId(), showTextEditDialog(currentText)));
 		}
 	}
+
 
 	/**
 	 * Show a dialog for editing a piece of text and get the user result. If the user cancelled, the returned text is
@@ -257,7 +258,7 @@ public class CMSViewController implements Initializable {
 		dialog.setContentText("Enter page id:");
 
 		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()){
+		if (result.isPresent()) {
 			try {
 				present(cms.editPage(Integer.parseInt(result.get())));
 			} catch (NumberFormatException e) {
@@ -270,8 +271,8 @@ public class CMSViewController implements Initializable {
 	}
 
 	@FXML
-	private void openPage(){
-		if(pageListView.getSelectionModel().getSelectedItem() == null){
+	private void openPage() {
+		if (pageListView.getSelectionModel().getSelectedItem() == null) {
 			return;
 		}
 		Page selectedPage = pageListView.getSelectionModel().getSelectedItem();
@@ -316,9 +317,37 @@ public class CMSViewController implements Initializable {
 	}
 
 	@FXML
-	private void browsePageOnAction(ActionEvent event) {
-		//TODO: Select from page list
-		pageIdField.setText("1");
+	private void browsePageDialog() throws IOException {
+		Dialog<Integer> dialog = new Dialog<>();
+		dialog.setTitle("Insert link");
+		dialog.setHeaderText("Insert the selected link");
+
+		DialogPane dialogPane = dialog.getDialogPane();
+		dialogPane.getStylesheets().add(getClass().getResource("../../pim/presentation/pimview.css").toExternalForm());
+
+		ListView<Page> pageView = new ListView<>();
+		Map<Integer, String> pagesInfo = cms.getPageInfo();
+		ObservableList<Page> pages = FXCollections.observableArrayList();
+		for (Map.Entry<Integer, String> entry : pagesInfo.entrySet()) {
+			pages.add(new Page(entry.getKey(), entry.getValue()));
+		}
+		pageView.setItems(pages);
+		dialog.getDialogPane().setContent(pageView);
+
+		ButtonType confirmButtonType = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, ButtonType.CANCEL);
+
+		//Specify how a result is gathered from the dialog
+		dialog.setResultConverter(button -> {
+			if (button == confirmButtonType) {
+				return pageView.getSelectionModel().getSelectedItem().getPageId();
+			}
+			return null;
+		});
+		Optional<Integer> result = dialog.showAndWait();
+		if(result.isPresent()){
+			pageIdField.setText(Integer.toString(result.get()));
+		}
 	}
 
 	@FXML
@@ -358,20 +387,20 @@ public class CMSViewController implements Initializable {
 	}
 
 
-	private class Page{
+	private class Page {
 		private int pageId;
 		private String pageName;
 
-		public Page(int pageId, String pageName){
+		public Page(int pageId, String pageName) {
 			this.pageId = pageId;
 			this.pageName = pageName;
 		}
 
-		public int getPageId(){
+		public int getPageId() {
 			return pageId;
 		}
 
-		public String toString(){
+		public String toString() {
 			return pageName;
 		}
 	}

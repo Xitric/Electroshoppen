@@ -252,7 +252,6 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 	}
 
 	public Map<Integer, String> getPageInfo() throws IOException{
-		System.out.println("Testt");
 		Connection connection = getConnection();
 		HashMap<Integer, String> pageInformationMap = new HashMap<>();
 		try(PreparedStatement pageInformation = connection.prepareStatement("SELECT * FROM page")){
