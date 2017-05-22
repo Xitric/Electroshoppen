@@ -26,15 +26,18 @@ public class SelectableWebView extends StackPane {
 	 * The script that is responsible for handling element selection and forwarding the events to this controller.
 	 */
 	private static final String selectScript = "<script>" +
+			"var lastElement;" +
 			"function bodyClick(event) {" +
 			"   var element = event.srcElement;" +
 			"   element = element.nodeType? element : element.parentNode;" +
+			"   if(element == lastElement) { return; }" +
 			"   if(!element.classList.contains('nonselectable')) {" +
 			"       var inserters = document.querySelectorAll('.inserterh,.inserterv');" +
 			"       for (i = inserters.length - 1; i >= 0; i--) {" +
-			"           inserters[i].parentNode.removeChild(inserters[i]);" +
+			"          inserters[i].parentNode.removeChild(inserters[i]);" +
 			"       }" +
 			"       setSelected(element.id);" +
+			"       lastElement = element;" +
 			"   } else {" +
 			"       if (element.classList.contains('inserteraft')) {" +
 			"           controller.insertOnAction(1)" +
@@ -44,7 +47,7 @@ public class SelectableWebView extends StackPane {
 			"           controller.insertOnAction(0)" +
 			"       }" +
 			"   }" +
-			"}" +
+			"} " +
 			"function setSelected(elementID) {" +
 			"   var selections = document.getElementsByClassName('selectedElement');" +
 			"   for (i = selections.length - 1; i >= 0; i--) {" +
@@ -54,9 +57,10 @@ public class SelectableWebView extends StackPane {
 			"   if (element) {" +
 			"       element.classList.add('selectedElement');" +
 			"       if(!element.classList.contains('nonselectable')) {" +
-			"           element.innerHTML = '&lt;div class=\"inserterv nonselectable\"&gt;&lt;button class=\"inserterin nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;' + element.innerHTML;" +
+			"           element.insertAdjacentHTML('afterbegin', '&lt;div class=\"inserterv nonselectable\"&gt;&lt;button class=\"inserterin nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;');" +
 			"           if (! element.parentNode.classList.contains('nonselectable')) {" +
-			"               element.innerHTML = '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserterbef nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;' + element.innerHTML + '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserteraft nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;';" +
+			"               element.insertAdjacentHTML('afterbegin', '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserterbef nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;');" +
+			"               element.insertAdjacentHTML('beforeend', '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserteraft nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;');" +
 			"           }" +
 			"       }" +
 			"   }" +
