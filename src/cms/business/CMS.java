@@ -51,6 +51,26 @@ public interface CMS {
 	String editPage(int id) throws IOException;
 
 	/**
+	 * Get the text of the specified element in the currently active page. If the element does not contain text, null
+	 * will be returned.
+	 *
+	 * @param id the id of the element
+	 * @return the text of the element, or null if it contains no text
+	 * @throws IllegalStateException if there is no active page
+	 */
+	String getElementText(String id);
+
+	/**
+	 * Set the text of the element with the specified id in the currently active page.
+	 *
+	 * @param id   the id of the element
+	 * @param text the new text to set
+	 * @return the html representation of the active page after the operation
+	 * @throws IllegalStateException if there is no active page
+	 */
+	String editElementText(String id, String text);
+
+	/**
 	 * Insert the specified html markup at the location specified by the {@link DocumentMarker} in the currently active
 	 * page.
 	 *

@@ -46,6 +46,16 @@ public class CMSImpl implements CMS {
 	}
 
 	@Override
+	public String getElementText(String id) {
+		return pageManager.getElementText(id);
+	}
+
+	@Override
+	public String editElementText(String id, String text) {
+		return pageManager.editElementText(id, text).toString();
+	}
+
+	@Override
 	public String insertHTML(DocumentMarker marker, String html) {
 		return pageManager.insertHTML(marker, html).toString();
 	}

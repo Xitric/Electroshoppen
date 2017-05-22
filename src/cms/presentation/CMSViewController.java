@@ -153,10 +153,10 @@ public class CMSViewController implements Initializable {
 		//Get current selection. This should be the one that the user double clicked
 		HTMLElement selection = editor.selectedElementProperty().getValue();
 
-		//We only want to select meaningful text elements, so we ensure that the only child (other than inserters) of
-		//the selected element is a text node. An element containing text should not have more than this, single child
-		//(and possibly the inserters)
-		//TODO: Move to business layer, presentation is too cluttered to work with!
+		String currentText = cms.getElementText(selection.getId());
+		if (currentText != null) {
+			present(cms.editElementText(selection.getId(), showTextEditDialog(currentText)));
+		}
 	}
 
 	/**
