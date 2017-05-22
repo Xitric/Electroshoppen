@@ -5,6 +5,7 @@
  */
 package pim.presentation;
 
+import cms.business.CMS;
 import cms.presentation.CMSViewController;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -51,11 +52,6 @@ public class PIMController implements Initializable {
 	@FXML
 	private WebshopController webshopTabPageController;
 
-	/**
-	 * The mediator for the business layer.
-	 */
-	private PIM pim;
-
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
@@ -67,10 +63,18 @@ public class PIMController implements Initializable {
 	 * @param pim the mediator for the pim
 	 */
 	public void setPIM(PIM pim) {
-		this.pim = pim;
 		categoryTabPageController.setPIM(pim);
 		attributeTabPageController.setPIM(pim);
 		productTabPageController.setPIM(pim);
+	}
+
+	/**
+	 * Set the business mediator for this controller to use.
+	 *
+	 * @param cms the mediator for the cms
+	 */
+	public void setCMS(CMS cms) {
+		cmsTabPageController.setCMS(cms);
 	}
 
 	@FXML
