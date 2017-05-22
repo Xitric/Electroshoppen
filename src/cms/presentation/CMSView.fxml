@@ -121,11 +121,11 @@
                                        <children>
                                           <HBox alignment="CENTER_LEFT" styleClass="insertGroup">
                                              <children>
-                                                <Label text="Page link:">
-                                                   <HBox.margin>
+                                                <RadioButton fx:id="insertPageLinkToggle" mnemonicParsing="false" text="Page link:">
+                                                   <padding>
                                                       <Insets right="4.0" />
-                                                   </HBox.margin>
-                                                </Label>
+                                                   </padding>
+                                                </RadioButton>
                                                 <TextField fx:id="pageIdField" editable="false" promptText="Page id" HBox.hgrow="ALWAYS" />
                                                 <Button mnemonicParsing="false" onAction="#browsePageOnAction" text="Browse" />
                                              </children>

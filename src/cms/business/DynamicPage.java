@@ -74,6 +74,7 @@ public interface DynamicPage {
 	 *
 	 * @param marker the location of the text to replace
 	 * @param link   the id of the page to link to
+	 * @throws IllegalArgumentException if the new link overlaps an existing link
 	 */
 	void setTextLink(DocumentMarker marker, int link);
 

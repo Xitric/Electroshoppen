@@ -61,6 +61,9 @@ public class CMSViewController implements Initializable {
 	public RadioButton tagsLinkToggle;
 
 	@FXML
+	public RadioButton insertPageLinkToggle;
+
+	@FXML
 	public TextField pageIdField;
 
 	@FXML
@@ -137,6 +140,9 @@ public class CMSViewController implements Initializable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		} else if (option == insertPageLinkToggle) {
+			int id = Integer.parseInt(pageIdField.getText()); //Should be safe as we control the contents of this field
+			//TODO: Part selection does not work anymore
 		}
 	}
 

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Implementation of the {@link DynamicPage} interface.
@@ -14,6 +16,12 @@ import java.util.Map;
  * @author Kasper
  */
 public class DynamicPageImpl implements DynamicPage {
+
+	/** The start of a link element. */
+	private static final String LINK_START = "[@ref=%]";
+
+	/** The end of a link element. */
+	private static final String LINK_END = "[@]";
 
 	/**
 	 * The id of this dynamic page.
@@ -224,7 +232,53 @@ public class DynamicPageImpl implements DynamicPage {
 
 	@Override
 	public void setTextLink(DocumentMarker marker, int link) {
+		XMLElement reference = getContentElementByID(marker.getSelectedElementID());
+		if (reference == null || !marker.hasRangeSelection()) return; //Not a valid selection
 
+		String current = reference.getTextContent();
+		if (hasLinkInRange(current, marker.getStartSelection(), marker.getEndSelection()))
+			throw new IllegalArgumentException("Links cannot overlap!");
+
+		//We have ensured that the user has specified sufficient and legal information, so we insert a new link at the
+		//marker
+		String result = current.substring(0, marker.getStartSelection());
+		result += LINK_START.replace("%", String.valueOf(link));
+		result += marker.getRangeSelection();
+		result += LINK_END;
+		result += current.substring(marker.getEndSelection());
+
+		//Insert into reference element
+		reference.setTextContent(result);
+	}
+
+	/**
+	 * Tests if there is a link description in the specified string in the specified range.
+	 *
+	 * @param text  the string to test
+	 * @param start the beginning of the range, inclusive
+	 * @param end   the end of the range, exclusive
+	 * @return true if a link was detected, false otherwise
+	 */
+	private boolean hasLinkInRange(String text, int start, int end) {
+		Matcher startMatcher = Pattern.compile("(\\[@ref=)[\\w]+(])").matcher(text);
+		Matcher endMatcher = Pattern.compile("([@])").matcher(text);
+
+		//Loop through all links in the text
+		int startLink = 0;
+		int endLink = 0;
+		while (startMatcher.find(endLink)) {
+			startLink = startMatcher.start();
+
+			if (endMatcher.find()) {
+				endLink = endMatcher.start(startLink);
+
+				//An existing link has been located, so we test for collision
+				if (start < end && end > start) return true; //Collision detected
+			}
+		}
+
+		//No collision detected
+		return false;
 	}
 
 	@Override
