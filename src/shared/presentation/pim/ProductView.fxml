@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pim.presentation.ProductController">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shared.presentation.pim.ProductController">
    <left>
       <TitledPane maxHeight="1.7976931348623157E308" text="Products" BorderPane.alignment="CENTER">
          <content>

@@ -1,6 +1,6 @@
 package pim.business;
 
-import pim.persistence.PersistenceFacade;
+import pim.persistence.PIMPersistenceFacade;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.Set;
  */
 class CategoryManager {
 
-	private final PersistenceFacade persistence;
+	private final PIMPersistenceFacade persistence;
 	private HashMap<String, Category> categories;
 
 	/**
@@ -22,7 +22,7 @@ class CategoryManager {
 	 *
 	 * @param persistence the persistence facade
 	 */
-	public CategoryManager(PersistenceFacade persistence) {
+	public CategoryManager(PIMPersistenceFacade persistence) {
 		categories = new HashMap<>();
 		this.persistence = persistence;
 	}

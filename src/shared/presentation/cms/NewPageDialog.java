@@ -1,4 +1,4 @@
-package cms.presentation;
+package shared.presentation.cms;
 
 import cms.business.CMS;
 import cms.business.Template;
@@ -54,7 +54,7 @@ public class NewPageDialog extends Dialog<NewPageDialog.NewPageInfo> implements 
 
 		//Style the dialog
 		getDialogPane().getStylesheets().add(
-				getClass().getResource("../../pim/presentation/pimview.css").toExternalForm());
+				getClass().getResource("../electroshop.css").toExternalForm());
 
 		//Load the content from the fxml file
 		try {

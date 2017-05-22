@@ -1,4 +1,4 @@
-package pim.presentation;
+package shared.presentation.pim;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;

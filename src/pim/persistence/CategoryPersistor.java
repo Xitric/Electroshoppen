@@ -16,14 +16,14 @@ import java.util.stream.Collectors;
  */
 class CategoryPersistor {
 
-	private DatabaseFacade dbf;
+	private PIMDatabaseFacade dbf;
 
 	/**
 	 * Constructs a new class for performing operations on categories in the database.
 	 *
 	 * @param dbf the database facade
 	 */
-	public CategoryPersistor(DatabaseFacade dbf) {
+	public CategoryPersistor(PIMDatabaseFacade dbf) {
 		this.dbf = dbf;
 	}
 

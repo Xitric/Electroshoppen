@@ -19,14 +19,14 @@ import java.util.Set;
  */
 class TagPersistor {
 
-	private DatabaseFacade dbf;
+	private PIMDatabaseFacade dbf;
 
 	/**
 	 * Constructs a new class for performing operations on tags in the database.
 	 *
 	 * @param dbf the database facade
 	 */
-	public TagPersistor(DatabaseFacade dbf) {
+	public TagPersistor(PIMDatabaseFacade dbf) {
 		this.dbf = dbf;
 	}
 

@@ -1,4 +1,4 @@
-package cms.presentation;
+package shared.presentation.cms;
 
 import cms.business.CMS;
 import cms.business.DocumentMarker;
@@ -202,7 +202,7 @@ public class CMSViewController implements Initializable {
 		//Style the dialog
 		DialogPane dialogPane = dialog.getDialogPane();
 		dialogPane.getStylesheets().add(
-				getClass().getResource("../../pim/presentation/pimview.css").toExternalForm());
+				getClass().getResource("../electroshop.css").toExternalForm());
 
 		//Add text area to dialog
 		TextArea textEdit = new TextArea(text);
@@ -291,7 +291,7 @@ public class CMSViewController implements Initializable {
 		dialog.setHeaderText("Insert the selected link");
 
 		DialogPane dialogPane = dialog.getDialogPane();
-		dialogPane.getStylesheets().add(getClass().getResource("../../pim/presentation/pimview.css").toExternalForm());
+		dialogPane.getStylesheets().add(getClass().getResource("../electroshop.css").toExternalForm());
 
 		ListView<Page> pageView = new ListView<>();
 		Map<Integer, String> pagesInfo = cms.getPageInfo();

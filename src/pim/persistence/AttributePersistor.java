@@ -17,14 +17,14 @@ import java.util.*;
  */
 class AttributePersistor {
 
-	private DatabaseFacade dbf;
+	private PIMDatabaseFacade dbf;
 
 	/**
 	 * Constructs a new class for performing operations on attributes in the database.
 	 *
 	 * @param dbf the database facade
 	 */
-	public AttributePersistor(DatabaseFacade dbf) {
+	public AttributePersistor(PIMDatabaseFacade dbf) {
 		this.dbf = dbf;
 	}
 
@@ -90,11 +90,11 @@ class AttributePersistor {
 				if (attribute.hasValidID()) {
 					storeAttributeData.setInt(1, attribute.getID());
 					storeAttributeData.setString(2, attribute.getName());
-					storeAttributeData.setObject(3, DatabaseFacade.objectToBytes(attribute.getDefaultValue()));
+					storeAttributeData.setObject(3, PIMDatabaseFacade.objectToBytes(attribute.getDefaultValue()));
 					storeAttributeData.executeUpdate();
 				} else {
 					storeAttributeDataNew.setString(1, attribute.getName());
-					storeAttributeDataNew.setObject(2, DatabaseFacade.objectToBytes(attribute.getDefaultValue()));
+					storeAttributeDataNew.setObject(2, PIMDatabaseFacade.objectToBytes(attribute.getDefaultValue()));
 					if (storeAttributeDataNew.execute()) {
 						//Get generated id
 						ResultSet result = storeAttributeDataNew.getResultSet();
@@ -114,7 +114,7 @@ class AttributePersistor {
 				storeLegalValues.setInt(1, attribute.getID());
 				if (attribute.getLegalValues() != null) {
 					for (Object value : attribute.getLegalValues()) {
-						storeLegalValues.setObject(2, DatabaseFacade.objectToBytes(value));
+						storeLegalValues.setObject(2, PIMDatabaseFacade.objectToBytes(value));
 						storeLegalValues.executeUpdate();
 					}
 				}
@@ -164,7 +164,7 @@ class AttributePersistor {
 		//For every legal value, add it to the set of legal values for the correct attribute
 		while (legalValueData.next()) {
 			int id = legalValueData.getInt(1);
-			Object val = DatabaseFacade.bytesToObject(legalValueData.getBytes(2));
+			Object val = PIMDatabaseFacade.bytesToObject(legalValueData.getBytes(2));
 
 			Set<Object> set = legalValues.getOrDefault(id, new HashSet<>());
 			set.add(val);
@@ -175,7 +175,7 @@ class AttributePersistor {
 		while (attributeData.next()) {
 			int id = attributeData.getInt(1);
 			String name = attributeData.getString(2).trim();
-			Object defaultValue = DatabaseFacade.bytesToObject(attributeData.getBytes(3));
+			Object defaultValue = PIMDatabaseFacade.bytesToObject(attributeData.getBytes(3));
 
 			//Create new/reuse attribute.
 			attributes.add(dbf.getCache().createAttribute(id, name, defaultValue, legalValues.get(id)));

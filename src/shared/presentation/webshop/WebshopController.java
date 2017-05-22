@@ -1,4 +1,4 @@
-package webshop.presentation;
+package shared.presentation.webshop;
 
 import cms.business.CMS;
 import javafx.concurrent.Worker;

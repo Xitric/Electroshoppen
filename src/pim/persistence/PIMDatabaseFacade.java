@@ -12,12 +12,12 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * Implementation of the PersistenceFacade interface for use with JDBC.
+ * Implementation of the PIMPersistenceFacade interface for use with JDBC.
  *
  * @author Kasper
  * @author Niels
  */
-class DatabaseFacade implements PersistenceFacade {
+class PIMDatabaseFacade implements PIMPersistenceFacade {
 
 	/* Variables for database connection */
 	private final static String url = "jdbc:postgresql://46.101.142.251:5432/electroshop";
@@ -40,7 +40,7 @@ class DatabaseFacade implements PersistenceFacade {
 	/**
 	 * Constructs a new persistence facade for use with JDBC.
 	 */
-	public DatabaseFacade() {
+	public PIMDatabaseFacade() {
 		productPersistor = new ProductPersistor(this);
 		categoryPersistor = new CategoryPersistor(this);
 		attributePersistor = new AttributePersistor(this);

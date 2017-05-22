@@ -1,8 +1,8 @@
 package pim.business;
 
 import erp.business.SupplierIntegrator;
-import pim.persistence.PersistenceFacade;
-import pim.persistence.PersistenceFactory;
+import pim.persistence.PIMPersistenceFacade;
+import pim.persistence.PIMPersistenceFactory;
 import shared.Image;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ class PIMImpl implements PIM {
 	/**
 	 * Facade for the persistence layer.
 	 */
-	private final PersistenceFacade persistence;
+	private final PIMPersistenceFacade persistence;
 
 	/* Entity managers */
 	private final ProductManager productManager;
@@ -31,7 +31,7 @@ class PIMImpl implements PIM {
 	 * Constructs a new PIM implementation.
 	 */
 	public PIMImpl() {
-		persistence = PersistenceFactory.createDatabaseMediator();
+		persistence = PIMPersistenceFactory.createDatabaseMediator();
 		productManager = new ProductManager(persistence);
 		attributeManager = new AttributeManager(persistence);
 		categoryManager = new CategoryManager(persistence);

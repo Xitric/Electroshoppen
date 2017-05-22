@@ -22,14 +22,14 @@ import java.util.Date;
  */
 class ProductPersistor {
 
-	private DatabaseFacade dbf;
+	private PIMDatabaseFacade dbf;
 
 	/**
 	 * Constructs a new class for performing operations on products in the database.
 	 *
 	 * @param dbf the database facade
 	 */
-	public ProductPersistor(DatabaseFacade dbf) {
+	public ProductPersistor(PIMDatabaseFacade dbf) {
 		this.dbf = dbf;
 	}
 
@@ -242,7 +242,7 @@ class ProductPersistor {
 				addAttributeValue.setInt(2, product.getID());
 				for (Attribute.AttributeValue value : product.getAttributeValues()) {
 					addAttributeValue.setInt(1, value.getParent().getID());
-					addAttributeValue.setObject(3, DatabaseFacade.objectToBytes(value.getValue()));
+					addAttributeValue.setObject(3, PIMDatabaseFacade.objectToBytes(value.getValue()));
 					addAttributeValue.executeUpdate();
 				}
 
@@ -412,7 +412,7 @@ class ProductPersistor {
 		while (productValueData.next()) {
 			int attributeID = productValueData.getInt(1);
 			int productID = productValueData.getInt(2);
-			Object value = DatabaseFacade.bytesToObject(productValueData.getBytes(3));
+			Object value = PIMDatabaseFacade.bytesToObject(productValueData.getBytes(3));
 
 			//noinspection EmptyCatchBlock
 			try {

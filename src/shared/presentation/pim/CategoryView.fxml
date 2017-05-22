@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pim.presentation.CategoryController">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shared.presentation.pim.CategoryController">
    <left>
       <TitledPane maxHeight="1.7976931348623157E308" text="Categories" BorderPane.alignment="CENTER">
          <content>

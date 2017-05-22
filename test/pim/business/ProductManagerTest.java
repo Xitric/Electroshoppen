@@ -2,8 +2,8 @@ package pim.business;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pim.persistence.PersistenceFacade;
-import pim.persistence.PersistenceFactory;
+import pim.persistence.PIMPersistenceFacade;
+import pim.persistence.PIMPersistenceFactory;
 import shared.Image;
 
 import javax.imageio.ImageIO;
@@ -28,7 +28,7 @@ class ProductManagerTest {
 	@Test
 	void getProduct() {
 		//Set up
-		PersistenceFacade persistence = PersistenceFactory.createDatabaseMediator();
+		PIMPersistenceFacade persistence = PIMPersistenceFactory.createDatabaseMediator();
 		ProductManager pManager = new ProductManager(persistence);
 		AttributeManager aManager = new AttributeManager(persistence);
 		CategoryManager cManager = new CategoryManager(persistence);

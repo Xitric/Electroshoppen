@@ -22,7 +22,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cms.presentation.CMSViewController">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shared.presentation.cms.CMSViewController">
    <left>
       <TitledPane maxHeight="1.7976931348623157E308" prefHeight="103.0" prefWidth="202.0" text="Page Browser" BorderPane.alignment="CENTER">
          <content>

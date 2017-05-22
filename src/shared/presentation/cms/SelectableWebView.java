@@ -1,4 +1,4 @@
-package cms.presentation;
+package shared.presentation.cms;
 
 import cms.business.DocumentMarker;
 import cms.business.XMLElement;

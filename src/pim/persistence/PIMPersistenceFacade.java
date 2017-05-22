@@ -8,12 +8,12 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * Interface describing a class that can be used for accessing the persistence layer.
+ * Interface describing a class that can be used for accessing the persistence layer of the PIM.
  *
  * @author Kasper
  * @author Niels
  */
-public interface PersistenceFacade {
+public interface PIMPersistenceFacade {
 
 	/**
 	 * Get the product with the specified id.

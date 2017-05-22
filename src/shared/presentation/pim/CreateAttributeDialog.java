@@ -1,4 +1,4 @@
-package pim.presentation;
+package shared.presentation.pim;
 
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;

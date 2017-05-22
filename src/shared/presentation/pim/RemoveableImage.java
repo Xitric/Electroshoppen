@@ -1,4 +1,4 @@
-package pim.presentation;
+package shared.presentation.pim;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -34,7 +34,7 @@ class RemoveableImage extends StackPane {
 		this.image = image;
 
 		getStyleClass().add("RemoveableImage");
-		getStylesheets().add("pim/presentation/removeableImage.css");
+		getStylesheets().add("shared/presentation/pim/removeableImage.css");
 
 		//Set up canvas with image
 		Canvas canvas = new Canvas(WIDTH, HEIGHT);

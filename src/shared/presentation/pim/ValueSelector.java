@@ -1,4 +1,4 @@
-package pim.presentation;
+package shared.presentation.pim;
 
 /**
  * Interface describing an element that can be used to select attribute values.

@@ -1,6 +1,6 @@
 package pim.business;
 
-import pim.persistence.PersistenceFacade;
+import pim.persistence.PIMPersistenceFacade;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,14 +15,14 @@ import java.util.Set;
 class AttributeManager {
 
 	private final HashMap<Integer, Attribute> attributes;
-	private final PersistenceFacade persistence;
+	private final PIMPersistenceFacade persistence;
 
 	/**
 	 * Constructs a new attribute manager.
 	 *
 	 * @param persistence the persistence facade
 	 */
-	public AttributeManager(PersistenceFacade persistence) {
+	public AttributeManager(PIMPersistenceFacade persistence) {
 		attributes = new HashMap<>();
 		this.persistence = persistence;
 	}

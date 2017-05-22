@@ -1,6 +1,6 @@
 package pim.business;
 
-import pim.persistence.PersistenceFacade;
+import pim.persistence.PIMPersistenceFacade;
 import shared.Image;
 
 import java.awt.image.BufferedImage;
@@ -16,7 +16,7 @@ import java.util.*;
 class ProductManager implements ProductChangeListener {
 
 	private final Map<Integer, Product> products;
-	private final PersistenceFacade persistence;
+	private final PIMPersistenceFacade persistence;
 	private HashMap<Integer, Image> images;
 
 	/**
@@ -24,7 +24,7 @@ class ProductManager implements ProductChangeListener {
 	 *
 	 * @param persistence the persistence facade
 	 */
-	public ProductManager(PersistenceFacade persistence) {
+	public ProductManager(PIMPersistenceFacade persistence) {
 		products = new HashMap<>();
 		images = new HashMap<>();
 		this.persistence = persistence;

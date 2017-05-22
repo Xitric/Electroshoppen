@@ -629,28 +629,4 @@ public class XMLElement implements Cloneable {
 		//Return null, although this line should never be executed
 		return null;
 	}
-
-	public static void main(String[] args) {
-		XMLElement root = XMLElement.createRoot("html");
-		XMLElement head = root.createChild("head");
-		XMLElement body = root.createChild("body");
-		body.createChild("div");
-		XMLElement div = body.createChild("div");
-		div.createChild("p", "Hello, world!");
-		XMLElement p1 = div.createChild("p", "Here is a text string!");
-		XMLElement p2 = div.createChild("p", "");
-		p1.addClass("first");
-		p1.addClass("second");
-		p1.addClass("third");
-		p1.removeClass("second");
-		p1.removeClass("first");
-		//		p1.removeClass("third");
-		p1.setAttribute("name", "a_paragraph");
-		p2.setAttribute("id", "booyah");
-		System.out.println(root);
-		System.out.println("-----------------------------------------------------------------");
-		System.out.println(root.getChildByID("booyah").getTextContent());
-
-		root.clone();
-	}
 }
