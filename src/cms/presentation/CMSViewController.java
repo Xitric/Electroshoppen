@@ -3,6 +3,7 @@ package cms.presentation;
 import cms.business.CMS;
 import cms.business.DocumentMarker;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,11 +20,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
- * @author Kasper
+ * @author Kasper, Niels
  */
 public class CMSViewController implements Initializable {
 
@@ -70,10 +70,13 @@ public class CMSViewController implements Initializable {
 	private TextArea htmlPreview;
 
 	@FXML
-	private TreeView</*TODO*/?> existingPageTreeView;
+	private TreeView<Page> pageTreeView;
 
 	@FXML
 	private StackPane editorPane;
+
+	@FXML
+	private ListView<Page> pageListView;
 
 	private SelectableWebView editor;
 
@@ -116,7 +119,11 @@ public class CMSViewController implements Initializable {
 	 * Executes every time the tab is opened to populate the TreeView showing existing pages.
 	 */
 	public void onEnter() {
-		System.out.println("entered cms");
+		try {
+			populateTreeView();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -129,7 +136,7 @@ public class CMSViewController implements Initializable {
 
 		if (option == insertTextToggle) {
 			String text = insertTextField.getText();
-			if (! text.isEmpty()) {
+			if (!text.isEmpty()) {
 				present(cms.insertText(marker, text));
 			}
 		} else if (option == insertImageToggle) {
@@ -142,7 +149,7 @@ public class CMSViewController implements Initializable {
 			}
 		} else if (option == insertPageLinkToggle) {
 			int id = Integer.parseInt(pageIdField.getText()); //Should be safe as we control the contents of this field
-			//TODO: Part selection does not work anymore
+			present(cms.createLink(marker, id));
 		}
 	}
 
@@ -153,11 +160,12 @@ public class CMSViewController implements Initializable {
 		//Get current selection. This should be the one that the user double clicked
 		HTMLElement selection = editor.selectedElementProperty().getValue();
 
-		//We only want to select meaningful text elements, so we ensure that the only child (other than inserters) of
-		//the selected element is a text node. An element containing text should not have more than this, single child
-		//(and possibly the inserters)
-		//TODO: Move to business layer, presentation is too cluttered to work with!
+		String currentText = cms.getElementText(selection.getId());
+		if (currentText != null) {
+			present(cms.editElementText(selection.getId(), showTextEditDialog(currentText)));
+		}
 	}
+
 
 	/**
 	 * Show a dialog for editing a piece of text and get the user result. If the user cancelled, the returned text is
@@ -250,7 +258,7 @@ public class CMSViewController implements Initializable {
 		dialog.setContentText("Enter page id:");
 
 		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()){
+		if (result.isPresent()) {
 			try {
 				present(cms.editPage(Integer.parseInt(result.get())));
 			} catch (NumberFormatException e) {
@@ -260,6 +268,23 @@ public class CMSViewController implements Initializable {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	@FXML
+	private void openPage() {
+		if (pageListView.getSelectionModel().getSelectedItem() == null) {
+			return;
+		}
+		Page selectedPage = pageListView.getSelectionModel().getSelectedItem();
+		try {
+			present(cms.editPage(selectedPage.pageId));
+		} catch (NumberFormatException e) {
+			//TODO
+		} catch (IOException e) {
+			//TODO
+			e.printStackTrace();
+		}
+
 	}
 
 	@FXML
@@ -292,9 +317,37 @@ public class CMSViewController implements Initializable {
 	}
 
 	@FXML
-	private void browsePageOnAction(ActionEvent event) {
-		//TODO: Select from page list
-		pageIdField.setText("1");
+	private void browsePageDialog() throws IOException {
+		Dialog<Integer> dialog = new Dialog<>();
+		dialog.setTitle("Insert link");
+		dialog.setHeaderText("Insert the selected link");
+
+		DialogPane dialogPane = dialog.getDialogPane();
+		dialogPane.getStylesheets().add(getClass().getResource("../../pim/presentation/pimview.css").toExternalForm());
+
+		ListView<Page> pageView = new ListView<>();
+		Map<Integer, String> pagesInfo = cms.getPageInfo();
+		ObservableList<Page> pages = FXCollections.observableArrayList();
+		for (Map.Entry<Integer, String> entry : pagesInfo.entrySet()) {
+			pages.add(new Page(entry.getKey(), entry.getValue()));
+		}
+		pageView.setItems(pages);
+		dialog.getDialogPane().setContent(pageView);
+
+		ButtonType confirmButtonType = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, ButtonType.CANCEL);
+
+		//Specify how a result is gathered from the dialog
+		dialog.setResultConverter(button -> {
+			if (button == confirmButtonType) {
+				return pageView.getSelectionModel().getSelectedItem().getPageId();
+			}
+			return null;
+		});
+		Optional<Integer> result = dialog.showAndWait();
+		if(result.isPresent()){
+			pageIdField.setText(Integer.toString(result.get()));
+		}
 	}
 
 	@FXML
@@ -324,7 +377,31 @@ public class CMSViewController implements Initializable {
 	/**
 	 * Fill in the tree view on the left with the available pages in the CMS for easy access.
 	 */
-	private void populateTreeView() {
-		//TODO
+	private void populateTreeView() throws IOException {
+		ObservableList<Page> pages = FXCollections.observableArrayList();
+		Map<Integer, String> pageInformation = cms.getPageInfo();
+		for (Map.Entry<Integer, String> entry : pageInformation.entrySet()) {
+			pages.add(new Page(entry.getKey(), entry.getValue()));
+		}
+		pageListView.setItems(pages);
+	}
+
+
+	private class Page {
+		private int pageId;
+		private String pageName;
+
+		public Page(int pageId, String pageName) {
+			this.pageId = pageId;
+			this.pageName = pageName;
+		}
+
+		public int getPageId() {
+			return pageId;
+		}
+
+		public String toString() {
+			return pageName;
+		}
 	}
 }

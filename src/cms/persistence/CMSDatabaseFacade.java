@@ -3,14 +3,14 @@ package cms.persistence;
 import cms.business.DynamicPage;
 import cms.business.DynamicPageImpl;
 import cms.business.Template;
+import javafx.util.Pair;
 import shared.DBUtil;
 
+import javax.xml.transform.Result;
 import java.io.IOException;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Implementation of the CMSPersistenceFacade interface for use with JDBC.
@@ -249,6 +249,61 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 		} catch (SQLException e) {
 			throw new IOException("Unable to delete page with id " + id + "!", e);
 		}
+	}
+
+	public Map<Integer, String> getPageInfo() throws IOException{
+		Connection connection = getConnection();
+		HashMap<Integer, String> pageInformationMap = new HashMap<>();
+		try(PreparedStatement pageInformation = connection.prepareStatement("SELECT * FROM page")){
+			ResultSet rs = pageInformation.executeQuery();
+			while(rs.next()){
+				pageInformationMap.put(rs.getInt("pageid"), rs.getString("pagename"));
+			}
+		}catch(SQLException e){
+			throw new IOException("Unable to retrieve page information");
+		}
+		return pageInformationMap;
+
+	}
+
+	@Override
+	public Set<Integer> getPageIDs() throws IOException {
+		Connection connection = getConnection();
+		Set<Integer> pageIDs = new HashSet<>();
+
+		try(PreparedStatement PageIDs = connection.prepareStatement("SELECT pageid FROM page")) {
+
+			ResultSet rs = PageIDs.executeQuery();
+
+			while (rs.next()) {
+				int id = rs.getInt(1);
+				pageIDs.add(id);
+			}
+
+		} catch(SQLException e) {
+			throw new IOException("Unable to retrieve page IDs from database", e);
+		}
+		return pageIDs;
+	}
+
+	@Override
+	public Set<String> getPageNames() throws IOException {
+		Connection connection = getConnection();
+		Set<String> pageNamesSet = new HashSet<>();
+
+		try(PreparedStatement pageNames = connection.prepareStatement("SELECT pagename FROM page")) {
+
+			ResultSet rs = pageNames.executeQuery();
+			String name = null;
+
+			while (rs.next()) {
+				name = rs.getString(1);
+			}
+
+		} catch(SQLException e) {
+			throw new IOException("Unable to retrieve page names from database", e);
+		}
+		return pageNamesSet;
 	}
 
 	@Override

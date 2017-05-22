@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -13,7 +14,6 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -22,11 +22,20 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cms.presentation.CMSViewController">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cms.presentation.CMSViewController">
    <left>
-      <TitledPane maxHeight="1.7976931348623157E308" text="Page Browser" BorderPane.alignment="CENTER">
+      <TitledPane maxHeight="1.7976931348623157E308" prefHeight="103.0" prefWidth="202.0" text="Page Browser" BorderPane.alignment="CENTER">
          <content>
-            <TreeView fx:id="existingPageTreeView" prefHeight="200.0" prefWidth="200.0" />
+            <VBox spacing="8.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#openPage" text="Open" />
+                  <ListView fx:id="pageListView" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </ListView>
+               </children>
+            </VBox>
          </content>
       </TitledPane>
    </left>
@@ -121,13 +130,13 @@
                                        <children>
                                           <HBox alignment="CENTER_LEFT" styleClass="insertGroup">
                                              <children>
-                                                <RadioButton fx:id="insertPageLinkToggle" mnemonicParsing="false" text="Page link:">
+                                                <RadioButton fx:id="insertPageLinkToggle" mnemonicParsing="false" text="Page link:" toggleGroup="$insertOptionGroup">
                                                    <padding>
                                                       <Insets right="4.0" />
                                                    </padding>
                                                 </RadioButton>
                                                 <TextField fx:id="pageIdField" editable="false" promptText="Page id" HBox.hgrow="ALWAYS" />
-                                                <Button mnemonicParsing="false" onAction="#browsePageOnAction" text="Browse" />
+                                                <Button mnemonicParsing="false" onAction="#browsePageDialog" text="Browse" />
                                              </children>
                                           </HBox>
                                        </children>

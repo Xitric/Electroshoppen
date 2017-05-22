@@ -17,6 +17,7 @@ function bodyClick(event) {
         }
     }
 }
+
 function setSelected(elementID) {
     var selections = document.getElementsByClassName('selectedElement');
     for (i = selections.length - 1; i >= 0; i--) {
@@ -34,6 +35,7 @@ function setSelected(elementID) {
     }
     controller.selectionChanged(element);
 }
+
 document.addEventListener('DOMContentLoaded', function () {
     document.body.addEventListener('click', bodyClick, true);
 });

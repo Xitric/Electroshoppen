@@ -84,4 +84,32 @@ public interface DynamicPage {
 	 * @param marker the location to remove the element from
 	 */
 	void removeElement(DocumentMarker marker);
+
+	/**
+	 * Test if the element with the specified id is a text element.
+	 *
+	 * @param id the id of the element
+	 * @return true if the element if a text element, false otherwise
+	 */
+	boolean isTextElement(String id);
+
+	/**
+	 * Get the text from the specified element.
+	 *
+	 * @param id the id of the element
+	 * @return the text in the specified element
+	 * @throws IllegalArgumentException if the element is not a text element
+	 * @see #isTextElement(String)
+	 */
+	String getTextFromElement(String id);
+
+	/**
+	 * Set the text of the element with the specified id.
+	 *
+	 * @param id   the id of the element
+	 * @param text the text to set
+	 * @throws IllegalArgumentException if the element is not a text element
+	 * @see #isTextElement(String)
+	 */
+	void setText(String id, String text);
 }

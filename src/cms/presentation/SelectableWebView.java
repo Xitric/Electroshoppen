@@ -26,25 +26,28 @@ public class SelectableWebView extends StackPane {
 	 * The script that is responsible for handling element selection and forwarding the events to this controller.
 	 */
 	private static final String selectScript = "<script>" +
+			"var lastElement;" +
 			"function bodyClick(event) {" +
 			"   var element = event.srcElement;" +
 			"   element = element.nodeType? element : element.parentNode;" +
+			"   if(element == lastElement) { return; }" +
 			"   if(!element.classList.contains('nonselectable')) {" +
 			"       var inserters = document.querySelectorAll('.inserterh,.inserterv');" +
 			"       for (i = inserters.length - 1; i >= 0; i--) {" +
-			"           inserters[i].parentNode.removeChild(inserters[i]);" +
+			"          inserters[i].parentNode.removeChild(inserters[i]);" +
 			"       }" +
 			"       setSelected(element.id);" +
+			"       lastElement = element;" +
 			"   } else {" +
 			"       if (element.classList.contains('inserteraft')) {" +
-			"           controller.insertOnAction(1)" +
+			"           controller.insertOnAction(1, window.getSelection());" +
 			"       } else if (element.classList.contains('inserterbef')) {" +
-			"           controller.insertOnAction(-1)" +
+			"           controller.insertOnAction(-1, window.getSelection());" +
 			"       } else if (element.classList.contains('inserterin')) {" +
-			"           controller.insertOnAction(0)" +
+			"           controller.insertOnAction(0, window.getSelection());" +
 			"       }" +
 			"   }" +
-			"}" +
+			"} " +
 			"function setSelected(elementID) {" +
 			"   var selections = document.getElementsByClassName('selectedElement');" +
 			"   for (i = selections.length - 1; i >= 0; i--) {" +
@@ -54,9 +57,10 @@ public class SelectableWebView extends StackPane {
 			"   if (element) {" +
 			"       element.classList.add('selectedElement');" +
 			"       if(!element.classList.contains('nonselectable')) {" +
-			"           element.innerHTML = '&lt;div class=\"inserterv nonselectable\"&gt;&lt;button class=\"inserterin nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;' + element.innerHTML;" +
+			"           element.insertAdjacentHTML('afterbegin', '&lt;div class=\"inserterv nonselectable\"&gt;&lt;button class=\"inserterin nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;');" +
 			"           if (! element.parentNode.classList.contains('nonselectable')) {" +
-			"               element.innerHTML = '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserterbef nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;' + element.innerHTML + '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserteraft nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;';" +
+			"               element.insertAdjacentHTML('afterbegin', '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserterbef nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;');" +
+			"               element.insertAdjacentHTML('beforeend', '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserteraft nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;');" +
 			"           }" +
 			"       }" +
 			"   }" +
@@ -181,11 +185,7 @@ public class SelectableWebView extends StackPane {
 	 * @param direction -1 for inserting before, 1 for inserting after and 0 for inserting into
 	 */
 	@SuppressWarnings("unused")
-	public void insertOnAction(int direction) {
-		//Get the text selection, if any
-		//TODO: Something is wrong here
-		//		String selection = (String)webView.getEngine().executeScript("window.getSelection()");
-
+	public void insertOnAction(int direction, String selection) {
 		//Get the direction object
 		DocumentMarker.Direction dir;
 		if (direction < 0) {
@@ -197,8 +197,7 @@ public class SelectableWebView extends StackPane {
 		}
 
 		//Create document marker to describe selection
-		//		DocumentMarker marker = new DocumentMarker(selectedElementProperty().getValue(), selection, dir);
-		DocumentMarker marker = new DocumentMarker(selectedElementProperty().getValue(), null, dir);
+		DocumentMarker marker = new DocumentMarker(selectedElementProperty().getValue(), selection, dir);
 
 		//Call listener
 		insertListener.accept(marker);

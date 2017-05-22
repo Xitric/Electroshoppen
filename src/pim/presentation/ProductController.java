@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import pim.business.*;
+import shared.Utility;
 
 import java.io.File;
 import java.io.IOException;
@@ -337,11 +338,10 @@ public class ProductController implements Initializable {
 							attributeValues.put(button, new Pair<>(newValue, attributeLabel));
 							attributeLabel.setText(newValue.toString());
 						} catch (IllegalArgumentException e) {
-							Alert alert = new Alert(Alert.AlertType.ERROR);
-							alert.setTitle("Changes are not accepted!");
-							alert.setHeaderText("Illegal Value!");
-							alert.setContentText("Please choose a legal value as input");
-							alert.showAndWait();
+							Utility.newErrorAlert("Changes are not accepted!",
+									"Illegal Value!",
+									"Please choose a legal value as input")
+									.showAndWait();
 						}
 					}
 				} else { //Restricted
@@ -357,11 +357,10 @@ public class ProductController implements Initializable {
 							attributeValues.put(button, new Pair<>(newValue, attributeLabel));
 							attributeLabel.setText(newValue.toString());
 						} catch (IllegalArgumentException e) {
-							Alert alert = new Alert(Alert.AlertType.ERROR);
-							alert.setTitle("Changes are not accepted!");
-							alert.setHeaderText("Illegal Value!");
-							alert.setContentText("Please choose a legal value as input");
-							alert.showAndWait();
+							Utility.newErrorAlert("Changes are not accepted!",
+									"Illegal Value!",
+									"Please choose a legal value as input")
+									.showAndWait();
 						}
 					}
 				}

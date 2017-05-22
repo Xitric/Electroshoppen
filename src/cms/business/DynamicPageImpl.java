@@ -291,6 +291,40 @@ public class DynamicPageImpl implements DynamicPage {
 		reference.getParent().removeChild(reference);
 	}
 
+	@Override
+	public boolean isTextElement(String id) {
+		XMLElement element = getContentElementByID(id);
+		if (element != null) {
+			//Return whether the element contains no child elements (thus it supports text)
+			return (element.getChildren().size() == 0);
+		}
+
+		//No such element, so it is surely not a text element
+		return false;
+	}
+
+	@Override
+	public String getTextFromElement(String id) {
+		if (! isTextElement(id)) {
+			throw new IllegalArgumentException("Element with id " + id + " is not a text element!");
+		}
+
+		//We know that we wont get a npe, as the above test would have thrown an exception
+		//noinspection ConstantConditions
+		return getContentElementByID(id).getTextContent();
+	}
+
+	@Override
+	public void setText(String id, String text) {
+		if (! isTextElement(id)) {
+			throw new IllegalArgumentException("Element with id " + id + " is not a text element!");
+		}
+
+		//We know that we wont get a npe, as the above test would have thrown an exception
+		//noinspection ConstantConditions
+		getContentElementByID(id).setTextContent(text);
+	}
+
 	/**
 	 * Get a string representation of this dynamic page. This will return the html markup of the page.
 	 *

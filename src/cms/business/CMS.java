@@ -3,13 +3,15 @@ package cms.business;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Interface describing the functionality that must be provided by all CMS implementations.
  *
  * @author Kasper
  */
-public interface CMS {
+public interface 	CMS {
 
 	/**
 	 * get the html of the page with the specified id.
@@ -49,6 +51,26 @@ public interface CMS {
 	 * @throws IOException if the operation failed
 	 */
 	String editPage(int id) throws IOException;
+
+	/**
+	 * Get the text of the specified element in the currently active page. If the element does not contain text, null
+	 * will be returned.
+	 *
+	 * @param id the id of the element
+	 * @return the text of the element, or null if it contains no text
+	 * @throws IllegalStateException if there is no active page
+	 */
+	String getElementText(String id);
+
+	/**
+	 * Set the text of the element with the specified id in the currently active page.
+	 *
+	 * @param id   the id of the element
+	 * @param text the new text to set
+	 * @return the html representation of the active page after the operation
+	 * @throws IllegalStateException if there is no active page
+	 */
+	String editElementText(String id, String text);
 
 	/**
 	 * Insert the specified html markup at the location specified by the {@link DocumentMarker} in the currently active
@@ -119,6 +141,30 @@ public interface CMS {
 	 * @throws IOException if the operation failed
 	 */
 	void savePage() throws IOException;
+
+	/**
+	 * Getting IDs and Names of all pages from the CMS Database
+	 * @return Returns a Map where ID is the key and Name of a
+	 * page is the Value
+	 * @throws IOException Rather than throwing SQLException
+	 */
+	Map<Integer, String> getPageInfo() throws IOException;
+
+	/**
+	 * Get all page IDs from the database
+	 * @return Returns a Set of ints (Wrapper Integer) representing
+	 * the IDs of all pages
+	 * @throws IOException Rather than throwing SQLException
+	 */
+	Set<Integer> getPageIDs() throws IOException;
+
+	/**
+	 * Get all page Names from the database
+	 * @return Returns a Set of Strings representing the names
+	 * of all pages
+	 * @throws IOException Rather than throwing SQLException
+	 */
+	Set<String> getPageNames() throws IOException;
 
 	/**
 	 * A type of page handled by this CMS.

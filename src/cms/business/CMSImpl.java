@@ -6,6 +6,8 @@ import cms.persistence.CMSPersistenceFactory;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementation of the CMS interface.
@@ -46,6 +48,16 @@ public class CMSImpl implements CMS {
 	}
 
 	@Override
+	public String getElementText(String id) {
+		return pageManager.getElementText(id);
+	}
+
+	@Override
+	public String editElementText(String id, String text) {
+		return pageManager.editElementText(id, text).toString();
+	}
+
+	@Override
 	public String insertHTML(DocumentMarker marker, String html) {
 		return pageManager.insertHTML(marker, html).toString();
 	}
@@ -78,5 +90,20 @@ public class CMSImpl implements CMS {
 	@Override
 	public void savePage() throws IOException {
 		pageManager.savePage();
+	}
+
+	@Override
+	public Map<Integer, String> getPageInfo() throws IOException {
+		return persistence.getPageInfo();
+	}
+
+	@Override
+	public Set<Integer> getPageIDs() throws IOException {
+		return pageManager.getPageIDs();
+	}
+
+	@Override
+	public Set<String> getPageNames() throws IOException {
+		return pageManager.getPageNames();
 	}
 }
