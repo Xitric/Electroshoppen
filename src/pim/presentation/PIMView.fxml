@@ -27,7 +27,7 @@
                         <fx:include fx:id="productTabPage" source="ProductView.fxml" />
                     </content>
                 </Tab>
-            <Tab text="CMS">
+            <Tab onSelectionChanged="#onCMSEnter" text="CMS">
               <content>
                   <fx:include fx:id="cmsTabPage" source="../../cms/presentation/CMSView.fxml" />
               </content>

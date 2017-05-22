@@ -10,19 +10,9 @@ import javafx.concurrent.Worker;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.html.HTMLElement;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.util.function.Consumer;
 
 /**
  * A wrapper for a {@link WebView} that lets the user select html elements on the web page.
@@ -40,14 +30,37 @@ public class SelectableWebView extends StackPane {
 			"   var element = event.srcElement;" +
 			"   element = element.nodeType? element : element.parentNode;" +
 			"   if(!element.classList.contains('nonselectable')) {" +
-			//			"       if (!element.parentNode.classList.contains('nonselectable')) {" +
-			"           var inserters = document.getElementsByClassName(\"inserter\");" +
-			"           for (i = inserters.length - 1; i >= 0; i--) {" +
-			"               inserters[i].parentNode.removeChild(inserters[i]);" +
-			"           }" +
-			//			"       }" +
-			"       controller.selectionChanged(element, window.getSelection());" +
+			"       var inserters = document.querySelectorAll('.inserterh,.inserterv');" +
+			"       for (i = inserters.length - 1; i >= 0; i--) {" +
+			"           inserters[i].parentNode.removeChild(inserters[i]);" +
+			"       }" +
+			"       setSelected(element.id);" +
+			"   } else {" +
+			"       if (element.classList.contains('inserteraft')) {" +
+			"           controller.insertOnAction(1)" +
+			"       } else if (element.classList.contains('inserterbef')) {" +
+			"           controller.insertOnAction(-1)" +
+			"       } else if (element.classList.contains('inserterin')) {" +
+			"           controller.insertOnAction(0)" +
+			"       }" +
 			"   }" +
+			"}" +
+			"function setSelected(elementID) {" +
+			"   var selections = document.getElementsByClassName('selectedElement');" +
+			"   for (i = selections.length - 1; i >= 0; i--) {" +
+			"       selections[i].classList.remove('selectedElement');" +
+			"   }" +
+			"   element = document.getElementById(elementID);" +
+			"   if (element) {" +
+			"       element.classList.add('selectedElement');" +
+			"       if(!element.classList.contains('nonselectable')) {" +
+			"           element.innerHTML = '&lt;div class=\"inserterv nonselectable\"&gt;&lt;button class=\"inserterin nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;' + element.innerHTML;" +
+			"           if (! element.parentNode.classList.contains('nonselectable')) {" +
+			"               element.innerHTML = '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserterbef nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;' + element.innerHTML + '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserteraft nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;';" +
+			"           }" +
+			"       }" +
+			"   }" +
+			"   controller.selectionChanged(element);" +
 			"}" +
 			"document.addEventListener('DOMContentLoaded', function() {" +
 			"   document.body.addEventListener('click', bodyClick, true);" +
@@ -61,43 +74,31 @@ public class SelectableWebView extends StackPane {
 	 */
 	private static final String selectedClass = "selectedElement";
 
-	private ObjectProperty<HTMLElement> currentSelection;
-	private WebView webView;
+	private final Consumer<DocumentMarker> insertListener;
+	private final ObjectProperty<HTMLElement> currentSelection;
+	private final WebView webView;
 
 	/**
 	 * Constructs a new web view for selecting html elements. By default this web view will be empty.
 	 */
-	public SelectableWebView() {
+	public SelectableWebView(Consumer<DocumentMarker> insertListener) {
+		this.insertListener = insertListener;
 		currentSelection = new SimpleObjectProperty<>();
 		webView = new WebView();
 		getChildren().add(webView);
-	}
-
-	public static void printDocument(Document doc, OutputStream out) {
-		try {
-			TransformerFactory tf = TransformerFactory.newInstance();
-			Transformer transformer = tf.newTransformer();
-			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-			transformer.setOutputProperty(OutputKeys.METHOD, "html");
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-
-			transformer.transform(new DOMSource(doc),
-					new StreamResult(new OutputStreamWriter(out, "UTF-8")));
-		} catch (UnsupportedEncodingException | TransformerException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
 	 * Set the html markup to display. The markup must contain a head and a body element. Both of these elements can
 	 * contain any child elements.
 	 *
-	 * @param html the html markup to display
+	 * @param html          the html markup to display
+	 * @param keepSelection true if the web view should preserve the current selection, false otherwise
 	 * @throws IllegalArgumentException if the html markup is badly formatted
 	 */
-	public void setContent(String html) {
+	public void setContent(String html, boolean keepSelection) {
+		HTMLElement oldSelection = selectedElementProperty().getValue();
+
 		//Detect head element of html
 		XMLElement root = new XMLParser().parse(html);
 		XMLElement head = root.getChildrenByTag("head").get(0);
@@ -116,6 +117,9 @@ public class SelectableWebView extends StackPane {
 		webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue.equals(Worker.State.SUCCEEDED)) {
 				bindDocumentToController();
+
+				//Preserve selection
+				if (keepSelection) select(oldSelection);
 			}
 		});
 	}
@@ -134,78 +138,31 @@ public class SelectableWebView extends StackPane {
 	 * @param selection the user's selection
 	 */
 	@SuppressWarnings("unused")
-	public void selectionChanged(Object selection, Object range) {
-		HTMLElement element = (HTMLElement) selection;
+	public void selectionChanged(Object selection) {
+		if (selection instanceof HTMLElement) {
+			HTMLElement element = (HTMLElement) selection;
 
-		//TODO: Before vs after
-		DocumentMarker marker = new DocumentMarker((HTMLElement) selection, range.toString(), true);
-		//			if (marker.hasRangeSelection()) {
-		//				System.out.println("You selected part of an element: " + marker.getRangeSelection());
-		//				System.out.println("The selection begins at index " + marker.getStartSelection() + " and ends at " + marker.getEndSelection());
-		//			} else {
-		//				System.out.println("You selected the entire element!");
-		//			}
-		//
-		//			System.out.println("Selected element: " + marker.getSelectedElementID());
-		//			System.out.println("--------------------------------------------------------------------------");
+			//Ignore if the user selected the same element
+			if (element != currentSelection.getValue()) {
 
-		selectInternal((HTMLElement) selection);
+				//Change selection
+				currentSelection.setValue(element);
+			}
+		}
 	}
 
 	/**
 	 * Force selection of the specified element. This element must be in the web view, or this method will do nothing.
+	 * If null is passed as a parameter, the current selection will be removed.
 	 *
-	 * @param element the element to select
+	 * @param element the element to select, or null to remove the current selection
 	 */
 	public void select(HTMLElement element) {
-		//Ensure that the specified element is actually in the DOM
-		NodeList possibilities = webView.getEngine().getDocument().getElementsByTagName(element.getTagName());
-		boolean success = false;
-		for (int i = 0; i < possibilities.getLength(); i++) {
-			if (possibilities.item(i) == element) {
-				success = true;
-				break;
-			}
-		}
-
-		//Return if the element was not in the DOM
-		if (!success) return;
-
-		//The element was in the DOM, so we can safely select it
-		selectInternal(element);
-	}
-
-	/**
-	 * Internal method for changing the selection. If the specified element is the current selection, this method will
-	 * do nothing.
-	 *
-	 * @param element the new element to select
-	 */
-	private void selectInternal(HTMLElement element) {
-		//Ignore if the user selected the same element
-		if (element != currentSelection.getValue()) {
-
-			//Remove selection class from previous selection
-			if (currentSelection.getValue() != null) {
-				String currentClassName = currentSelection.getValue().getClassName();
-				int breakIndex = currentClassName.indexOf(selectedClass);
-				String oldClassName = currentClassName.substring(0, breakIndex) + currentClassName.substring(breakIndex + selectedClass.length());
-				currentSelection.getValue().setClassName(oldClassName);
-			}
-
-			//Change selection
-			currentSelection.setValue(element);
-
-			//Add selection class to new selection
-			element.setClassName(element.getClassName() + " " + selectedClass);
-		}
-
-		//Insertion buttons. This code has been extracted from the script area, because there seems to be a problem with
-		//the innerHTML property and the JavaFX web view
-		if (((HTMLElement) element.getParentNode()).getClassName() == null || !((HTMLElement) element.getParentNode()).getClassName().contains("nonselectable")) {
-			String innerHTML = (String) webView.getEngine().executeScript("document.getElementById('" + element.getId() + "').innerHTML");
-			webView.getEngine().executeScript("var element = document.getElementById('" + element.getId() + "'); element.innerHTML = '<div class=\"inserter nonselectable\"><button class=\"inserterbef nonselectable\">+</button></div>' + '" + innerHTML + "';" +
-					"element.innerHTML += '<div class=\"inserter nonselectable\"><button class=\"inserteraft nonselectable\">+</button></div>';");
+		//Delegate call to javascript
+		if (element == null) {
+			webView.getEngine().executeScript("setSelected(null);");
+		} else {
+			webView.getEngine().executeScript("setSelected(" + element.getId() + ");");
 		}
 	}
 
@@ -216,5 +173,38 @@ public class SelectableWebView extends StackPane {
 	 */
 	public ReadOnlyObjectProperty<HTMLElement> selectedElementProperty() {
 		return currentSelection;
+	}
+
+	/**
+	 * Called when the user presses one of the insert buttons in the web view.
+	 *
+	 * @param direction -1 for inserting before, 1 for inserting after and 0 for inserting into
+	 */
+	@SuppressWarnings("unused")
+	public void insertOnAction(int direction) {
+		//Get the text selection, if any
+		//TODO: Something is wrong here
+		//		String selection = (String)webView.getEngine().executeScript("window.getSelection()");
+
+		//Get the direction object
+		DocumentMarker.Direction dir;
+		if (direction < 0) {
+			dir = DocumentMarker.Direction.BEFORE;
+		} else if (direction > 0) {
+			dir = DocumentMarker.Direction.AFTER;
+		} else {
+			dir = DocumentMarker.Direction.IN;
+		}
+
+		//Create document marker to describe selection
+		//		DocumentMarker marker = new DocumentMarker(selectedElementProperty().getValue(), selection, dir);
+		DocumentMarker marker = new DocumentMarker(selectedElementProperty().getValue(), null, dir);
+
+		//Call listener
+		insertListener.accept(marker);
+	}
+
+	public void log(String text) {
+		System.out.println(text);
 	}
 }

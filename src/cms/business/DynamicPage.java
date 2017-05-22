@@ -38,7 +38,7 @@ public interface DynamicPage {
 
 	/**
 	 * Get the content for the template element with the specified id. The content will be wrapped in a {@code <div>}
-	 * element, and should thus be unwrapped by calling {@link XMLElement#getChildren()}.
+	 * element.
 	 *
 	 * @param id the id of the template element
 	 * @return the content for the template element with the specified id
@@ -75,14 +75,6 @@ public interface DynamicPage {
 	 * @param marker the location to remove the element from
 	 */
 	void removeElement(DocumentMarker marker);
-
-	/**
-	 * Get the text from this page at the location specified by the {@link DocumentMarker}.
-	 *
-	 * @param marker the location to get the text from
-	 * @return the text at the specified information
-	 */
-	String getTextSelection(DocumentMarker marker);
 
 	/**
 	 * Get the link from this page at the location specified by the {@link DocumentMarker}.
