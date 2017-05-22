@@ -16,7 +16,7 @@ public interface CMS {
 	 * get the html of the page with the specified id.
 	 *
 	 * @param id the id of the page
-	 * @return the html of page with the specified id
+	 * @return the html of page with the specified id, or null if the page does not exist
 	 * @throws IOException if the operation failed
 	 */
 	String getPage(int id) throws IOException;

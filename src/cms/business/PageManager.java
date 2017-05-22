@@ -28,6 +28,36 @@ class PageManager {
 		this.persistence = persistence;
 	}
 
+	//TODO: Product list from CMSImpl
+
+	/**
+	 * Construct the page with the specified id and make it ready for web use.
+	 *
+	 * @param pageID the id of the page to get
+	 * @return the html representation of the page, or null if no such page was found
+	 * @throws IOException if there was an error loading the page
+	 */
+	public String constructPage(int pageID) throws IOException {
+		//Read the page template
+		Template template = persistence.getTemplateForPage(pageID);
+		if (template != null) {
+
+			//If this succeeded, read the page content
+			DynamicPage page = persistence.getPage(pageID);
+			if (page != null) {
+				//Compile page links
+				String html = template.enrichPage(page).toString();
+				html = html.replaceAll("(\\[@ref=(\\w+)])", "<a href=\"$2\">");
+				html = html.replaceAll("(\\[@])", "</a>");
+
+				return html;
+			}
+		}
+
+		return null;
+	}
+	//String output = input.replaceAll("foob(..)foo", "foof$1foo");
+
 	/**
 	 * Create a new page with the specified page type and template. This page will be set as active, discarding current,
 	 * unsaved data.
@@ -249,6 +279,7 @@ class PageManager {
 
 	/**
 	 * Returns all page ids from the database
+	 *
 	 * @return
 	 * @throws IOException
 	 */
@@ -258,6 +289,7 @@ class PageManager {
 
 	/**
 	 * Returns all page names from the database
+	 *
 	 * @return
 	 * @throws IOException
 	 */

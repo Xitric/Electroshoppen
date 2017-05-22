@@ -14,6 +14,12 @@ public interface DynamicPage {
 	 */
 	String ID_ATTRIB = "id";
 
+	/** The start of a link element. */
+	String LINK_START = "[@ref=%]";
+
+	/** The end of a link element. */
+	String LINK_END = "[@]";
+
 	/**
 	 * Test whether the id of this page is valid.
 	 *

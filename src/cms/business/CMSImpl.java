@@ -28,7 +28,7 @@ public class CMSImpl implements CMS {
 
 	@Override
 	public String getPage(int id) throws IOException {
-		return null;
+		return pageManager.constructPage(id);
 	}
 
 	@Override

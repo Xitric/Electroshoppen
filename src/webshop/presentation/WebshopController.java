@@ -3,10 +3,8 @@ package webshop.presentation;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
-import webshop.business.Webshop;
+
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;

@@ -17,12 +17,6 @@ import java.util.regex.Pattern;
  */
 public class DynamicPageImpl implements DynamicPage {
 
-	/** The start of a link element. */
-	private static final String LINK_START = "[@ref=%]";
-
-	/** The end of a link element. */
-	private static final String LINK_END = "[@]";
-
 	/**
 	 * The id of this dynamic page.
 	 */
@@ -264,21 +258,18 @@ public class DynamicPageImpl implements DynamicPage {
 		Matcher startMatcher = Pattern.compile("(\\[@ref=)[\\w]+(])").matcher(text);
 		Matcher endMatcher = Pattern.compile("(\\[@])").matcher(text);
 
-		try {
-			//Loop through all links in the text
-			while (startMatcher.find()) {
-				int startLink = startLink = startMatcher.start();
+		//Loop through all links in the text
+		while (startMatcher.find()) {
+			int startLink = startLink = startMatcher.start();
 
-				if (endMatcher.find()) {
-					int endLink = endLink = endMatcher.start();
+			if (endMatcher.find()) {
+				int endLink = endLink = endMatcher.start();
 
-					//An existing link has been located, so we test for collision
-					if (start < endLink + LINK_END.length() && end > startLink) return true; //Collision detected
-				}
+				//An existing link has been located, so we test for collision
+				if (start < endLink + LINK_END.length() && end > startLink) return true; //Collision detected
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+
 		//No collision detected
 		return false;
 
