@@ -1,5 +1,7 @@
 package cms.persistence;
 
+import cms.business.CMSPersistenceFacade;
+
 /**
  * A factory for creating objects to interact with the persistence layer.
  *

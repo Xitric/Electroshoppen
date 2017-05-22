@@ -1,7 +1,4 @@
-package cms.persistence;
-
-import cms.business.DynamicPage;
-import cms.business.Template;
+package cms.business;
 
 import java.io.IOException;
 import java.util.Map;

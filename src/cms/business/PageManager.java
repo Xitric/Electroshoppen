@@ -1,7 +1,5 @@
 package cms.business;
 
-import cms.persistence.CMSPersistenceFacade;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;

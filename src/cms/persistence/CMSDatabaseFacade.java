@@ -1,5 +1,6 @@
 package cms.persistence;
 
+import cms.business.CMSPersistenceFacade;
 import cms.business.DynamicPage;
 import cms.business.DynamicPageImpl;
 import cms.business.Template;

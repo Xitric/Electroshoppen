@@ -2,7 +2,6 @@ package pim.business;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pim.persistence.PIMPersistenceFacade;
 import pim.persistence.PIMPersistenceFactory;
 import shared.Image;
 

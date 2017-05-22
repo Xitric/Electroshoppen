@@ -1,7 +1,5 @@
 package pim.business;
 
-import pim.persistence.PIMPersistenceFacade;
-
 import java.util.HashMap;
 
 /**

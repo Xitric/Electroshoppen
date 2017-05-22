@@ -1,7 +1,6 @@
 package pim.business;
 
 import erp.business.SupplierIntegrator;
-import pim.persistence.PIMPersistenceFacade;
 import pim.persistence.PIMPersistenceFactory;
 import shared.Image;
 

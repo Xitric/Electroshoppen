@@ -1,6 +1,5 @@
 package pim.business;
 
-import pim.persistence.PIMPersistenceFacade;
 import shared.Image;
 
 import java.awt.image.BufferedImage;

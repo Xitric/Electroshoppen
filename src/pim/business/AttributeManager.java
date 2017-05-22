@@ -1,7 +1,5 @@
 package pim.business;
 
-import pim.persistence.PIMPersistenceFacade;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;

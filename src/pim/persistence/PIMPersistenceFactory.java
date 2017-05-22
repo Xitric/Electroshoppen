@@ -1,5 +1,7 @@
 package pim.persistence;
 
+import pim.business.PIMPersistenceFacade;
+
 /**
  * A factory for creating objects to interact with the persistence layer of the PIM.
  *

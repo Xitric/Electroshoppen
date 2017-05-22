@@ -1,6 +1,5 @@
 package cms.business;
 
-import cms.persistence.CMSPersistenceFacade;
 import cms.persistence.CMSPersistenceFactory;
 
 import java.awt.image.BufferedImage;

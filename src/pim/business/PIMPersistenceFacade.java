@@ -1,6 +1,6 @@
-package pim.persistence;
+package pim.business;
 
-import pim.business.*;
+import pim.persistence.DataCache;
 import shared.Image;
 
 import java.io.IOException;
