@@ -6,6 +6,7 @@ import cms.business.XMLParser;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Worker;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
@@ -45,6 +46,8 @@ public class SelectableWebView extends StackPane {
 			"           controller.insertOnAction(-1, window.getSelection());" +
 			"       } else if (element.classList.contains('inserterin')) {" +
 			"           controller.insertOnAction(0, window.getSelection());" +
+			"       } else if (element.classList.contains('deleter')) {" +
+			"           controller.deleteOnAction();" +
 			"       }" +
 			"   }" +
 			"} " +
@@ -58,6 +61,7 @@ public class SelectableWebView extends StackPane {
 			"       element.classList.add('selectedElement');" +
 			"       if(!element.classList.contains('nonselectable')) {" +
 			"           element.insertAdjacentHTML('afterbegin', '&lt;div class=\"inserterv nonselectable\"&gt;&lt;button class=\"inserterin nonselectable\"&gt;&lt;/button&gt;&lt;/div&gt;');" +
+			"           element.insertAdjacentHTML('afterbegin', '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"deleter nonselectable\"&gt;&lt;/button&gt;&lt;/div&gt;');" +
 			"           if (! element.parentNode.classList.contains('nonselectable')) {" +
 			"               element.insertAdjacentHTML('afterbegin', '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserterbef nonselectable\"&gt;&lt;/button&gt;&lt;/div&gt;');" +
 			"               element.insertAdjacentHTML('beforeend', '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserteraft nonselectable\"&gt;&lt;/button&gt;&lt;/div&gt;');" +
@@ -79,14 +83,17 @@ public class SelectableWebView extends StackPane {
 	private static final String selectedClass = "selectedElement";
 
 	private final Consumer<DocumentMarker> insertListener;
+	private final Consumer<DocumentMarker> deleteListener;
 	private final ObjectProperty<HTMLElement> currentSelection;
 	private final WebView webView;
+	private ChangeListener<Worker.State> currentListener;
 
 	/**
 	 * Constructs a new web view for selecting html elements. By default this web view will be empty.
 	 */
-	public SelectableWebView(Consumer<DocumentMarker> insertListener) {
+	public SelectableWebView(Consumer<DocumentMarker> insertListener, Consumer<DocumentMarker> deleteListener) {
 		this.insertListener = insertListener;
+		this.deleteListener = deleteListener;
 		currentSelection = new SimpleObjectProperty<>();
 		webView = new WebView();
 		getChildren().add(webView);
@@ -116,16 +123,23 @@ public class SelectableWebView extends StackPane {
 		XMLElement style = new XMLParser().parse(stylesheet);
 		head.addChild(style);
 
-		//Show result in web view
-		webView.getEngine().loadContent(root.toString());
-		webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+		//Reset the state listener (this i required to prevent duplicating method calls in the listener)
+		if (currentListener != null) {
+			webView.getEngine().getLoadWorker().stateProperty().removeListener(currentListener);
+		}
+
+		currentListener = (observable, oldValue, newValue) -> {
 			if (newValue.equals(Worker.State.SUCCEEDED)) {
 				bindDocumentToController();
 
 				//Preserve selection
 				if (keepSelection) select(oldSelection);
 			}
-		});
+		};
+		webView.getEngine().getLoadWorker().stateProperty().addListener(currentListener);
+
+		//Show result in web view
+		webView.getEngine().loadContent(root.toString());
 	}
 
 	/**
@@ -203,7 +217,15 @@ public class SelectableWebView extends StackPane {
 		insertListener.accept(marker);
 	}
 
-	public void log(String text) {
-		System.out.println(text);
+	/**
+	 * Called when the user presses the delete button in the web view.
+	 */
+	@SuppressWarnings("unused")
+	public void deleteOnAction() {
+		//Create document marker to describe selection (range selection and direction do not matter)
+		DocumentMarker marker = new DocumentMarker(selectedElementProperty().getValue(), null, DocumentMarker.Direction.IN);
+
+		//Call listener
+		deleteListener.accept(marker);
 	}
 }

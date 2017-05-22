@@ -99,7 +99,7 @@ public class CMSViewController implements Initializable {
 
 		//TODO: Temp
 		try {
-			present(cms.editPage(1));
+			present(cms.editPage(1), true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -107,7 +107,7 @@ public class CMSViewController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		editor = new SelectableWebView(this::editorInsert);
+		editor = new SelectableWebView(this::editorInsert, this::editorDelete);
 
 		//Add double click listener to editor
 		editor.setOnMouseClicked(mouseEvent -> {
@@ -143,20 +143,29 @@ public class CMSViewController implements Initializable {
 		if (option == insertTextToggle) {
 			String text = insertTextField.getText();
 			if (!text.isEmpty()) {
-				present(cms.insertText(marker, text));
+				present(cms.insertText(marker, text), false);
 			}
 		} else if (option == insertImageToggle) {
 			//TODO: Move image loading somewhere else
 			try {
 				BufferedImage img = ImageIO.read(new File(insertImageUrlField.getText()));
-				present(cms.insertImage(marker, img));
+				present(cms.insertImage(marker, img), false);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		} else if (option == insertPageLinkToggle) {
 			int id = Integer.parseInt(pageIdField.getText()); //Should be safe as we control the contents of this field
-			present(cms.createLink(marker, id));
+			present(cms.createLink(marker, id), false);
 		}
+	}
+
+	/**
+	 * Called when the user presses the delete button in the editor.
+	 *
+	 * @param marker the document marker that describes the user's selection
+	 */
+	private void editorDelete(DocumentMarker marker) {
+		present(cms.removeElement(marker), false);
 	}
 
 	/**
@@ -168,7 +177,10 @@ public class CMSViewController implements Initializable {
 		if (selection != null) {
 			String currentText = cms.getElementText(selection.getId());
 			if (currentText != null) {
-				present(cms.editElementText(selection.getId(), showTextEditDialog(currentText)));
+				String newText = showTextEditDialog(currentText);
+				if (!newText.equals(currentText)) {
+					present(cms.editElementText(selection.getId(), newText), false);
+				}
 			}
 		}
 	}
@@ -222,7 +234,7 @@ public class CMSViewController implements Initializable {
 		//If the user made proper selections, create a new page and show it
 		if (result.isPresent()) {
 			NewPageDialog.NewPageInfo info = result.get();
-			present(cms.createNewPage(info.getName(), info.getPageType(), info.getTemplateID()));
+			present(cms.createNewPage(info.getName(), info.getPageType(), info.getTemplateID()), true);
 		}
 	}
 
@@ -233,7 +245,7 @@ public class CMSViewController implements Initializable {
 		}
 		Page selectedPage = pageListView.getSelectionModel().getSelectedItem();
 		try {
-			present(cms.editPage(selectedPage.pageId));
+			present(cms.editPage(selectedPage.pageId), true);
 		} catch (NumberFormatException e) {
 			//TODO
 		} catch (IOException e) {
@@ -317,10 +329,11 @@ public class CMSViewController implements Initializable {
 	/**
 	 * Present the specified html in this editor.
 	 *
-	 * @param html the html to present
+	 * @param html    the html to present
+	 * @param newPage true if presenting a new web page, false otherwise
 	 */
-	private void present(String html) {
-		editor.setContent(html, true);
+	private void present(String html, boolean newPage) {
+		editor.setContent(html, !newPage);
 
 		//Remove the image encoding from the html preview
 		//Made with the help of https://www.freeformatter.com/java-regex-tester.html

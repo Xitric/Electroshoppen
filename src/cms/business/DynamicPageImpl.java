@@ -215,9 +215,19 @@ public class DynamicPageImpl implements DynamicPage {
 
 	@Override
 	public void insertText(DocumentMarker marker, String text) {
+		//If the user inserted legal html (remember, we do not allow a combination of text and elements)
+		if (text.charAt(0) == '<') {
+			try {
+				//Attempt to insert as html instead
+				insertHTML(marker, text);
+				return;
+			} catch (IllegalArgumentException e) {
+				//Something wen wrong, so we just continue by adding the raw text
+			}
+		}
+
 		//Create an XMLElement describing the text
 		XMLElement p = XMLElement.createRoot("p", text);
-
 		insertElement(marker, p);
 	}
 
@@ -330,9 +340,27 @@ public class DynamicPageImpl implements DynamicPage {
 			throw new IllegalArgumentException("Element with id " + id + " is not a text element!");
 		}
 
-		//We know that we wont get a npe, as the above test would have thrown an exception
-		//noinspection ConstantConditions
-		getContentElementByID(id).setTextContent(text);
+		XMLElement reference = getContentElementByID(id);
+		if (reference == null) return;
+
+		//If the user inserted legal html (remember, we do not allow a combination of text and elements)
+		if (text.charAt(0) == '<') {
+			try {
+				//Attempt to parse
+				XMLElement newElement = new XMLParser().parse(text);
+
+				//If that went well, insert the new elements and remove the existing text
+				setUniqueIDs(newElement);
+				reference.addChild(newElement);
+				reference.setTextContent(null);
+				return;
+			} catch (IllegalArgumentException e) {
+				//Something wen wrong, so we just continue by adding the raw text
+			}
+		}
+
+		//Set the raw text
+		reference.setTextContent(text);
 	}
 
 	/**

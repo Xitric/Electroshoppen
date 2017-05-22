@@ -20,7 +20,8 @@
 
 .inserterbef,
 .inserteraft,
-.inserterin {
+.inserterin,
+.deleter {
     position: absolute;
     height: 30px;
     width: 30px;
@@ -33,7 +34,8 @@
 
 .selectedElement:hover .inserterh .inserterbef,
 .selectedElement:hover .inserterh .inserteraft,
-.selectedElement:hover .inserterv .inserterin {
+.selectedElement:hover .inserterv .inserterin,
+.selectedElement:hover .inserterh .deleter {
     -webkit-animation: fadeIn 0.2s ease-in-out forwards;
 }
 
@@ -52,18 +54,35 @@
     margin-top: -15px;
 }
 
+.deleter {
+    right: 0;
+    margin-top: -10px;
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    background: #b90000 url("res/plus.png") center no-repeat;
+    background-size: cover;
+    transform: rotate(45deg);
+    border: 0;
+    /*TODO: no border on button?*/
+}
+
+.deleter:active {
+    background-color: #820000;
+}
+
 @-webkit-keyframes fadeOut {
     0% {
         opacity: 1;
     }
     100% {
-        opacity: 0.5;
+        opacity: 0;
     }
 }
 
 @-webkit-keyframes fadeIn {
     0% {
-        opacity: 0.5;
+        opacity: 0;
     }
     100% {
         opacity: 1;
