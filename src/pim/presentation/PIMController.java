@@ -5,13 +5,13 @@
  */
 package pim.presentation;
 
-import cms.business.CMS;
 import cms.presentation.CMSViewController;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
 import pim.business.PIM;
+import webshop.presentation.WebshopController;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -20,6 +20,7 @@ import java.util.ResourceBundle;
  * FXML Controller class
  *
  * @author Kasper
+ * @author Emil
  */
 public class PIMController implements Initializable {
 
@@ -47,29 +48,29 @@ public class PIMController implements Initializable {
 	@FXML
 	private CMSViewController cmsTabPageController;
 
+	@FXML
+	private WebshopController webshopTabPageController;
+
+	/**
+	 * The mediator for the business layer.
+	 */
+	private PIM pim;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
 	}
 
 	/**
-	 * Set the pim mediator for this controller to use.
+	 * Set the business mediator for this controller to use.
 	 *
 	 * @param pim the mediator for the pim
 	 */
 	public void setPIM(PIM pim) {
+		this.pim = pim;
 		categoryTabPageController.setPIM(pim);
 		attributeTabPageController.setPIM(pim);
 		productTabPageController.setPIM(pim);
-	}
-
-	/**
-	 * Set the cms mediator for this controller to use.
-	 *
-	 * @param cms the mediator for the cms
-	 */
-	public void setCMS(CMS cms) {
-		cmsTabPageController.setCMS(cms);
 	}
 
 	@FXML
@@ -80,10 +81,5 @@ public class PIMController implements Initializable {
 	@FXML
 	private void onProductEnter(Event event) {
 		productTabPageController.onEnter();
-	}
-
-	@FXML
-	private void onCMSEnter(Event event) {
-		cmsTabPageController.onEnter();
 	}
 }
