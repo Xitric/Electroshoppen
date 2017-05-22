@@ -129,7 +129,7 @@ public class CMSViewController implements Initializable {
 
 		if (option == insertTextToggle) {
 			String text = insertTextField.getText();
-			if (! text.isEmpty()) {
+			if (!text.isEmpty()) {
 				present(cms.insertText(marker, text));
 			}
 		} else if (option == insertImageToggle) {
@@ -152,10 +152,11 @@ public class CMSViewController implements Initializable {
 	private void editorDoubleClick() {
 		//Get current selection. This should be the one that the user double clicked
 		HTMLElement selection = editor.selectedElementProperty().getValue();
-
-		String currentText = cms.getElementText(selection.getId());
-		if (currentText != null) {
-			present(cms.editElementText(selection.getId(), showTextEditDialog(currentText)));
+		if (selection != null) {
+			String currentText = cms.getElementText(selection.getId());
+			if (currentText != null) {
+				present(cms.editElementText(selection.getId(), showTextEditDialog(currentText)));
+			}
 		}
 	}
 
@@ -250,7 +251,7 @@ public class CMSViewController implements Initializable {
 		dialog.setContentText("Enter page id:");
 
 		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()){
+		if (result.isPresent()) {
 			try {
 				present(cms.editPage(Integer.parseInt(result.get())));
 			} catch (NumberFormatException e) {

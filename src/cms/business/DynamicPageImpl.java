@@ -233,6 +233,7 @@ public class DynamicPageImpl implements DynamicPage {
 	@Override
 	public void setTextLink(DocumentMarker marker, int link) {
 		XMLElement reference = getContentElementByID(marker.getSelectedElementID());
+
 		if (reference == null || !marker.hasRangeSelection()) return; //Not a valid selection
 
 		String current = reference.getTextContent();
@@ -261,24 +262,26 @@ public class DynamicPageImpl implements DynamicPage {
 	 */
 	private boolean hasLinkInRange(String text, int start, int end) {
 		Matcher startMatcher = Pattern.compile("(\\[@ref=)[\\w]+(])").matcher(text);
-		Matcher endMatcher = Pattern.compile("([@])").matcher(text);
+		Matcher endMatcher = Pattern.compile("(\\[@])").matcher(text);
 
-		//Loop through all links in the text
-		int startLink = 0;
-		int endLink = 0;
-		while (startMatcher.find(endLink)) {
-			startLink = startMatcher.start();
+		try {
+			//Loop through all links in the text
+			while (startMatcher.find()) {
+				int startLink = startLink = startMatcher.start();
 
-			if (endMatcher.find()) {
-				endLink = endMatcher.start(startLink);
+				if (endMatcher.find()) {
+					int endLink = endLink = endMatcher.start();
 
-				//An existing link has been located, so we test for collision
-				if (start < end && end > start) return true; //Collision detected
+					//An existing link has been located, so we test for collision
+					if (start < endLink + LINK_END.length() && end > startLink) return true; //Collision detected
+				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
 		//No collision detected
 		return false;
+
 	}
 
 	@Override
@@ -305,7 +308,7 @@ public class DynamicPageImpl implements DynamicPage {
 
 	@Override
 	public String getTextFromElement(String id) {
-		if (! isTextElement(id)) {
+		if (!isTextElement(id)) {
 			throw new IllegalArgumentException("Element with id " + id + " is not a text element!");
 		}
 
@@ -316,7 +319,7 @@ public class DynamicPageImpl implements DynamicPage {
 
 	@Override
 	public void setText(String id, String text) {
-		if (! isTextElement(id)) {
+		if (!isTextElement(id)) {
 			throw new IllegalArgumentException("Element with id " + id + " is not a text element!");
 		}
 

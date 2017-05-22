@@ -57,10 +57,10 @@ public class SelectableWebView extends StackPane {
 			"   if (element) {" +
 			"       element.classList.add('selectedElement');" +
 			"       if(!element.classList.contains('nonselectable')) {" +
-			"           element.insertAdjacentHTML('afterbegin', '&lt;div class=\"inserterv nonselectable\"&gt;&lt;button class=\"inserterin nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;');" +
+			"           element.insertAdjacentHTML('afterbegin', '&lt;div class=\"inserterv nonselectable\"&gt;&lt;button class=\"inserterin nonselectable\"&gt;&lt;/button&gt;&lt;/div&gt;');" +
 			"           if (! element.parentNode.classList.contains('nonselectable')) {" +
-			"               element.insertAdjacentHTML('afterbegin', '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserterbef nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;');" +
-			"               element.insertAdjacentHTML('beforeend', '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserteraft nonselectable\"&gt;+&lt;/button&gt;&lt;/div&gt;');" +
+			"               element.insertAdjacentHTML('afterbegin', '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserterbef nonselectable\"&gt;&lt;/button&gt;&lt;/div&gt;');" +
+			"               element.insertAdjacentHTML('beforeend', '&lt;div class=\"inserterh nonselectable\"&gt;&lt;button class=\"inserteraft nonselectable\"&gt;&lt;/button&gt;&lt;/div&gt;');" +
 			"           }" +
 			"       }" +
 			"   }" +

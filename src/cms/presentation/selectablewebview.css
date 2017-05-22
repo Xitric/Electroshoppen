@@ -22,11 +22,11 @@
 .inserteraft,
 .inserterin {
     position: absolute;
-    height: 1.5em;
-    width: 1.5em;
+    height: 30px;
+    width: 30px;
     display: block;
     border-radius: 50%;
-    background-color: #2980b9;
+    background: #2980b9 url("res/plus.png") center no-repeat;
     color: white;
     -webkit-animation: fadeOut 0.2s ease-in-out 0.5s forwards;
 }
@@ -39,17 +39,17 @@
 
 .inserterbef {
     left: 50%;
-    margin-left: -0.75em;
-    margin-top: -1.5em;
+    margin-left: -15px;
+    margin-top: -30px;
 }
 
 .inserteraft {
     left: 50%;
-    margin-left: -0.75em;
+    margin-left: -15px;
 }
 
 .inserterin {
-    margin-top: -0.75em;
+    margin-top: -15px;
 }
 
 @-webkit-keyframes fadeOut {
