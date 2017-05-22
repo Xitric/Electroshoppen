@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The manager for loading, saving and editing dynamic pages.
@@ -204,5 +205,23 @@ class PageManager {
 		if (activePage != null && activeTemplate != null) {
 			persistence.savePage(activePage, activeTemplate);
 		}
+	}
+
+	/**
+	 * Returns all page ids from the database
+	 * @return
+	 * @throws IOException
+	 */
+	public Set<Integer> getPageIDs() throws IOException {
+		return persistence.getPageIDs();
+	}
+
+	/**
+	 * Returns all page names from the database
+	 * @return
+	 * @throws IOException
+	 */
+	public Set<String> getPageNames() throws IOException {
+		return persistence.getPageNames();
 	}
 }

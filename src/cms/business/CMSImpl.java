@@ -6,6 +6,7 @@ import cms.persistence.CMSPersistenceFactory;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Implementation of the CMS interface.
@@ -78,5 +79,15 @@ public class CMSImpl implements CMS {
 	@Override
 	public void savePage() throws IOException {
 		pageManager.savePage();
+	}
+
+	@Override
+	public Set<Integer> getPageIDs() throws IOException {
+		return pageManager.getPageIDs();
+	}
+
+	@Override
+	public Set<String> getPageNames() throws IOException {
+		return pageManager.getPageNames();
 	}
 }
