@@ -87,24 +87,28 @@ public class PIMController implements Initializable {
 
 	@FXML
 	private void onAttributeEnter(Event event) {
+		if (attributeTab.isSelected()) {
 			attributeTabPageController.onEnter();
 		}
 	}
 
 	@FXML
 	private void onProductEnter(Event event) {
+		if (productTab.isSelected()) {
 			productTabPageController.onEnter();
 		}
 	}
 
 	@FXML
 	private void onCMSEnter(Event event) {
+		if (cmsTab.isSelected()) {
 			cmsTabPageController.onEnter();
 		}
 	}
 
 	@FXML
 	private void onWebshopEnter(Event event) {
+		if (webshopTab.isSelected()) {
 			webshopTabPageController.onEnter();
 		}
 	}
