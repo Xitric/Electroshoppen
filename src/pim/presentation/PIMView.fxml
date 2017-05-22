@@ -32,6 +32,11 @@
                   <fx:include fx:id="cmsTabPage" source="../../cms/presentation/CMSView.fxml" />
               </content>
             </Tab>
+            <Tab text="Webshop">
+               <content>
+                  <fx:include fx:id="cmsTabPage1" source="../../webshop/presentation/WebshopView.fxml" />
+               </content>
+            </Tab>
             </tabs>
         </TabPane>
     </children>

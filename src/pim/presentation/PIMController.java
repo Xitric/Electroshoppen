@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
 import pim.business.PIM;
+import webshop.presentation.WebshopController;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -19,6 +20,7 @@ import java.util.ResourceBundle;
  * FXML Controller class
  *
  * @author Kasper
+ * @author Emil
  */
 public class PIMController implements Initializable {
 
@@ -45,6 +47,9 @@ public class PIMController implements Initializable {
 
 	@FXML
 	private CMSViewController cmsTabPageController;
+
+	@FXML
+	private WebshopController webshopTabPageController;
 
 	/**
 	 * The mediator for the business layer.
