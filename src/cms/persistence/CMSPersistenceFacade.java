@@ -4,6 +4,7 @@ import cms.business.DynamicPage;
 import cms.business.Template;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -65,6 +66,20 @@ public interface CMSPersistenceFacade {
 	 * @throws IOException if the operation fails
 	 */
 	void deletePage(int id) throws IOException;
+
+	/**
+	 * Used to retrieve all page IDs in the CMS database
+	 * @return
+	 * @throws IOException
+	 */
+	Set<Integer> getPageIDs() throws IOException;
+
+	/**
+	 * Used to retrieve all the page names in the CMS database
+	 * @return
+	 * @throws IOException
+	 */
+	Set<String> getPageNames() throws IOException;
 
 	/**
 	 * Dispose all resources used by this persistence facade. This includes closing all currently open connections.

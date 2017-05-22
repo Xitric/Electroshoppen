@@ -3,6 +3,7 @@ package cms.business;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Interface describing the functionality that must be provided by all CMS implementations.
@@ -139,6 +140,14 @@ public interface CMS {
 	 * @throws IOException if the operation failed
 	 */
 	void savePage() throws IOException;
+
+	/**
+	 * Getting all existing page ids from the database
+	 * @return
+	 */
+	Set<Integer> getPageIDs() throws IOException;
+
+	Set<String> getPageNames() throws IOException;
 
 	/**
 	 * A type of page handled by this CMS.
