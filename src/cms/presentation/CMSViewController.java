@@ -142,7 +142,7 @@ public class CMSViewController implements Initializable {
 			}
 		} else if (option == insertPageLinkToggle) {
 			int id = Integer.parseInt(pageIdField.getText()); //Should be safe as we control the contents of this field
-			//TODO: Part selection does not work anymore
+			present(cms.createLink(marker, id));
 		}
 	}
 

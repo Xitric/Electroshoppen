@@ -121,7 +121,7 @@
                                        <children>
                                           <HBox alignment="CENTER_LEFT" styleClass="insertGroup">
                                              <children>
-                                                <RadioButton fx:id="insertPageLinkToggle" mnemonicParsing="false" text="Page link:">
+                                                <RadioButton fx:id="insertPageLinkToggle" mnemonicParsing="false" text="Page link:" toggleGroup="$insertOptionGroup">
                                                    <padding>
                                                       <Insets right="4.0" />
                                                    </padding>

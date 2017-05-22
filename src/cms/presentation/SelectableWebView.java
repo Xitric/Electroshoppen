@@ -40,11 +40,11 @@ public class SelectableWebView extends StackPane {
 			"       lastElement = element;" +
 			"   } else {" +
 			"       if (element.classList.contains('inserteraft')) {" +
-			"           controller.insertOnAction(1)" +
+			"           controller.insertOnAction(1, window.getSelection());" +
 			"       } else if (element.classList.contains('inserterbef')) {" +
-			"           controller.insertOnAction(-1)" +
+			"           controller.insertOnAction(-1, window.getSelection());" +
 			"       } else if (element.classList.contains('inserterin')) {" +
-			"           controller.insertOnAction(0)" +
+			"           controller.insertOnAction(0, window.getSelection());" +
 			"       }" +
 			"   }" +
 			"} " +
@@ -185,11 +185,7 @@ public class SelectableWebView extends StackPane {
 	 * @param direction -1 for inserting before, 1 for inserting after and 0 for inserting into
 	 */
 	@SuppressWarnings("unused")
-	public void insertOnAction(int direction) {
-		//Get the text selection, if any
-		//TODO: Something is wrong here
-		//		String selection = (String)webView.getEngine().executeScript("window.getSelection()");
-
+	public void insertOnAction(int direction, String selection) {
 		//Get the direction object
 		DocumentMarker.Direction dir;
 		if (direction < 0) {
@@ -201,8 +197,7 @@ public class SelectableWebView extends StackPane {
 		}
 
 		//Create document marker to describe selection
-		//		DocumentMarker marker = new DocumentMarker(selectedElementProperty().getValue(), selection, dir);
-		DocumentMarker marker = new DocumentMarker(selectedElementProperty().getValue(), null, dir);
+		DocumentMarker marker = new DocumentMarker(selectedElementProperty().getValue(), selection, dir);
 
 		//Call listener
 		insertListener.accept(marker);
