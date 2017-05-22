@@ -3,6 +3,7 @@ package cms.persistence;
 import cms.business.DynamicPage;
 import cms.business.DynamicPageImpl;
 import cms.business.Template;
+import javafx.util.Pair;
 import shared.DBUtil;
 
 import javax.xml.transform.Result;
@@ -248,6 +249,22 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 		} catch (SQLException e) {
 			throw new IOException("Unable to delete page with id " + id + "!", e);
 		}
+	}
+
+	public Map<Integer, String> getPageInfo() throws IOException{
+		System.out.println("Testt");
+		Connection connection = getConnection();
+		HashMap<Integer, String> pageInformationMap = new HashMap<>();
+		try(PreparedStatement pageInformation = connection.prepareStatement("SELECT * FROM page")){
+			ResultSet rs = pageInformation.executeQuery();
+			while(rs.next()){
+				pageInformationMap.put(rs.getInt("pageid"), rs.getString("pagename"));
+			}
+		}catch(SQLException e){
+			throw new IOException("Unable to retrive page information");
+		}
+		return pageInformationMap;
+
 	}
 
 	@Override

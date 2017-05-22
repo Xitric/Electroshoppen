@@ -3,6 +3,7 @@ package cms.presentation;
 import cms.business.CMS;
 import cms.business.DocumentMarker;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,8 +20,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * @author Kasper
@@ -70,10 +70,13 @@ public class CMSViewController implements Initializable {
 	private TextArea htmlPreview;
 
 	@FXML
-	private TreeView</*TODO*/?> existingPageTreeView;
+	private TreeView<Page> pageTreeView;
 
 	@FXML
 	private StackPane editorPane;
+
+	@FXML
+	private ListView<Page> pageListView;
 
 	private SelectableWebView editor;
 
@@ -116,7 +119,11 @@ public class CMSViewController implements Initializable {
 	 * Executes every time the tab is opened to populate the TreeView showing existing pages.
 	 */
 	public void onEnter() {
-
+		try {
+			populateTreeView();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -263,6 +270,23 @@ public class CMSViewController implements Initializable {
 	}
 
 	@FXML
+	private void openPage(){
+		if(pageListView.getSelectionModel().getSelectedItem() == null){
+			return;
+		}
+		Page selectedPage = pageListView.getSelectionModel().getSelectedItem();
+		try {
+			present(cms.editPage(selectedPage.pageId));
+		} catch (NumberFormatException e) {
+			//TODO
+		} catch (IOException e) {
+			//TODO
+			e.printStackTrace();
+		}
+
+	}
+
+	@FXML
 	private void textFieldOnAction(ActionEvent event) {
 		insertTextToggle.setSelected(true);
 	}
@@ -324,7 +348,31 @@ public class CMSViewController implements Initializable {
 	/**
 	 * Fill in the tree view on the left with the available pages in the CMS for easy access.
 	 */
-	private void populateTreeView() {
-		//TODO
+	private void populateTreeView() throws IOException {
+		ObservableList<Page> pages = FXCollections.observableArrayList();
+		Map<Integer, String> pageInformation = cms.getPageInfo();
+		for (Map.Entry<Integer, String> entry : pageInformation.entrySet()) {
+			pages.add(new Page(entry.getKey(), entry.getValue()));
+		}
+		pageListView.setItems(pages);
+	}
+
+
+	private class Page{
+		private int pageId;
+		private String pageName;
+
+		public Page(int pageId, String pageName){
+			this.pageId = pageId;
+			this.pageName = pageName;
+		}
+
+		public int getPageId(){
+			return pageId;
+		}
+
+		public String toString(){
+			return pageName;
+		}
 	}
 }

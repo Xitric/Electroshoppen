@@ -3,6 +3,7 @@ package cms.business;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Set;
  *
  * @author Kasper
  */
-public interface CMS {
+public interface 	CMS {
 
 	/**
 	 * get the html of the page with the specified id.
@@ -145,6 +146,9 @@ public interface CMS {
 	 * Getting all existing page ids from the database
 	 * @return
 	 */
+
+	Map<Integer, String> getPageInfo() throws IOException;
+
 	Set<Integer> getPageIDs() throws IOException;
 
 	Set<String> getPageNames() throws IOException;
