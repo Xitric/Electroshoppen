@@ -86,4 +86,9 @@ public class PIMController implements Initializable {
 	private void onProductEnter(Event event) {
 		productTabPageController.onEnter();
 	}
+
+	@FXML
+	private void onCMSEnter(Event event) {
+		cmsTabPageController.onEnter();
+	}
 }
