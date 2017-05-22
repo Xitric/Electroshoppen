@@ -118,6 +118,7 @@ public class ProductController implements Initializable {
 	 */
 	public void onEnter() {
 		//TODO:
+		System.out.println("entered product");
 		try {
 			populateTreeView(pim.getProducts(), true);
 		} catch (IOException e) {

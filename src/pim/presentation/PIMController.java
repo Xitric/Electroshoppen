@@ -38,6 +38,9 @@ public class PIMController implements Initializable {
 	private BorderPane cmsTabPage;
 
 	@FXML
+	private BorderPane webshopTabPage;
+
+	@FXML
 	private CategoryController categoryTabPageController;
 
 	@FXML
@@ -90,5 +93,9 @@ public class PIMController implements Initializable {
 	@FXML
 	private void onCMSEnter(Event event) {
 		cmsTabPageController.onEnter();
+	}
+
+	@FXML
+	private void onWebshopEnter(Event event) {
 	}
 }

@@ -87,6 +87,7 @@ public class AttributeController implements Initializable {
 	 */
 	public void onEnter() {
 		//TODO
+		System.out.println("entered attribute");
 		try {
 			List<Attribute> attributes = pim.getAttributes();
 			Collections.sort(attributes);

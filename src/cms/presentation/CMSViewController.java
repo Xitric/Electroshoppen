@@ -116,7 +116,7 @@ public class CMSViewController implements Initializable {
 	 * Executes every time the tab is opened to populate the TreeView showing existing pages.
 	 */
 	public void onEnter() {
-
+		System.out.println("entered cms");
 	}
 
 	/**

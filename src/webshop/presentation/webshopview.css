@@ -4,3 +4,7 @@
 #webshopTitleLabel {
     -fx-font-size: 40;
 }
+
+#footerHbox {
+    -fx-background-color: #676767;
+}
