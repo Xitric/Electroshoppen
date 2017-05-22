@@ -16,7 +16,8 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * @author Kasper, Emil
+ * @author Kasper
+ * @author Emil
  */
 public class CategoryController implements Initializable {
 

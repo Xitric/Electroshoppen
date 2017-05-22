@@ -7,7 +7,6 @@ package pim.presentation;
 
 import cms.business.CMS;
 import cms.presentation.CMSViewController;
-import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,7 +16,6 @@ import pim.business.PIM;
 import webshop.presentation.WebshopController;
 
 import java.net.URL;
-import java.util.Observable;
 import java.util.ResourceBundle;
 
 /**

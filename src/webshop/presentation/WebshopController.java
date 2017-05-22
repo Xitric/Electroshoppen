@@ -45,7 +45,7 @@ public class WebshopController implements Initializable {
 		//homeBtn.setDisable(true);
 	}
 	public void onEnter() {
-		System.out.println("entered webshop...");
+
 	}
 
 
