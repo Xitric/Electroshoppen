@@ -1,11 +1,5 @@
 package cms.business;
 
-import shared.Image;
-
-import javax.imageio.ImageIO;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -233,22 +227,11 @@ public class DynamicPageImpl implements DynamicPage {
 	}
 
 	@Override
-	public void insertImage(DocumentMarker marker, Image image) {
+	public void insertImage(DocumentMarker marker, String imageData) {
 		//Create an XMLElement describing the image
 		XMLElement img = XMLElement.createRoot("img");
-
-		//Attempt to transform the buffered image to a format supported in the web view
-		try {
-			//Source: http://stackoverflow.com/questions/22984430/javafx2-webview-and-in-memory-images#answer-37215917
-			ByteArrayOutputStream output = new ByteArrayOutputStream();
-			ImageIO.write(image.getImage(), "PNG", output);
-			String imgData = "data:image/png;base64," + Base64.getMimeEncoder().encodeToString(output.toByteArray());
-			img.setAttribute("src", imgData);
-
-			insertElement(marker, img);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		img.setAttribute("src", imageData);
+		insertElement(marker, img);
 	}
 
 	@Override

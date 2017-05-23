@@ -4,8 +4,10 @@ import cms.persistence.CMSPersistenceFactory;
 import pim.business.PIM;
 import pim.business.Product;
 import shared.Image;
+
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +21,7 @@ public class CMSImpl implements CMS {
 	private final CMSPersistenceFacade persistence;
 	private final PageManager pageManager;
 	private final PIM pim;
+
 	/**
 	 * Constructs a new CMS implementation.
 	 */
@@ -30,8 +33,17 @@ public class CMSImpl implements CMS {
 
 	@Override
 	public String getPage(int id) throws IOException {
-		//TODO: Get ids from page manager, get products from pim and convert to map
-		return pageManager.constructPage(id, null); //TODO: Replace null
+		//Get ids of referenced products on page
+		List<Integer> productIDs = pageManager.getProducIDsFromPage(id);
+		Map<Integer, Product> products = new HashMap<>();
+
+		//Get products from the pim
+		for (int i : productIDs) {
+			products.put(i, pim.getProductInformation(i));
+		}
+
+		//Construct the page
+		return pageManager.constructPage(id, products);
 	}
 
 	@Override

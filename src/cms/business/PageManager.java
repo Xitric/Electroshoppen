@@ -1,13 +1,14 @@
 package cms.business;
 
 import pim.business.Product;
+import pim.business.Tag;
 import shared.Image;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -81,33 +82,43 @@ class PageManager {
 					Matcher refMatcher = Pattern.compile("(\\[@ref=)([\\w]+)( type=)([\\w]+)(])").matcher(html);
 					//Loop through all matches
 					while (refMatcher.find()) {
-						System.out.println("Loop");
 						int productID = Integer.parseInt(refMatcher.group(2));
 						CMS.ReferenceType refType = CMS.ReferenceType.valueOf(refMatcher.group(4));
-//						Product product = products.get(productID);
+						Product product = products.get(productID);
 						String replacement = "!REFERENCE ERROR!";
 
-						switch (refType) {
-							case NAME:
-								//							replacement = product.getName();
-								replacement = "HP OMEN";
-								break;
-							case PRICE:
-								//							replacement = String.valueOf(product.getPrice());
-								replacement = "852145";
-								break;
-							case IMAGE:
-								//TODO: Generate image tag
-								break;
-							case DESCRIPTION:
-								//							replacement = product.getDescription();
-								replacement = "A long description";
-								break;
-							case TAGS:
-								//TODO: Eh... concatenation?
-								break;
+						//Generate the string to insert into the reference
+						if (product != null) {
+							switch (refType) {
+								case NAME:
+									replacement = product.getName();
+									break;
+								case PRICE:
+									replacement = String.valueOf(product.getPrice());
+									break;
+								case IMAGE:
+									StringBuilder builderImg = new StringBuilder();
+									for (Image img: product.getImages()) {
+										String imageData = encodeToByte64(img.getImage());
+										builderImg.append("<img src=\"").append(imageData).append("\"/>");
+									}
+									replacement = builderImg.toString();
+									break;
+								case DESCRIPTION:
+									replacement = product.getDescription();
+									break;
+								case TAGS:
+									Set<Tag> tags = product.getTags();
+									StringBuilder builder = new StringBuilder();
+									for (Tag t : tags) {
+										builder.append(t.toString());
+									}
+									replacement = builder.toString();
+									break;
+							}
 						}
 
+						//Inform matcher of the new html string
 						html = refMatcher.replaceFirst(replacement);
 						refMatcher.reset(html);
 					}
@@ -120,7 +131,6 @@ class PageManager {
 
 		return null;
 	}
-	//String output = input.replaceAll("foob(..)foo", "foof$1foo");
 
 	/**
 	 * Create a new page with the specified name, page type, and template. This page will be set as active, discarding
@@ -278,7 +288,12 @@ class PageManager {
 		if (activePage == null)
 			throw new IllegalStateException("No active page to insert into!");
 
-		activePage.insertImage(marker, image);
+		//Attempt to transform the buffered image to a format supported in the web view
+		try {
+			activePage.insertImage(marker, encodeToByte64(image.getImage()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		return activeTemplate.enrichPage(activePage);
 	}
@@ -345,5 +360,19 @@ class PageManager {
 		if (activePage != null && activeTemplate != null) {
 			persistence.savePage(activePage, activeTemplate);
 		}
+	}
+
+	/**
+	 * Encode the specified image to a format supported by the web view.
+	 *
+	 * @param img the image to encode
+	 * @return the encoded image as a string
+	 */
+	private String encodeToByte64(BufferedImage img) throws IOException {
+		//Attempt to transform the buffered image to a format supported in the web view
+		//Source: http://stackoverflow.com/questions/22984430/javafx2-webview-and-in-memory-images#answer-37215917
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		ImageIO.write(img, "PNG", output);
+		return "data:image/png;base64," + Base64.getMimeEncoder().encodeToString(output.toByteArray());
 	}
 }
