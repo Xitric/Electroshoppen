@@ -1,6 +1,7 @@
 package cms.business;
 
-import java.awt.image.BufferedImage;
+import shared.Image;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -207,7 +208,7 @@ class PageManager {
 	 * @return the representation of the active page after the operation
 	 * @throws IllegalStateException if there is no active page
 	 */
-	public XMLElement insertImage(DocumentMarker marker, BufferedImage image) {
+	public XMLElement insertImage(DocumentMarker marker, Image image) {
 		if (activePage == null)
 			throw new IllegalStateException("No active page to insert into!");
 

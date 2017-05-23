@@ -14,9 +14,6 @@ import javafx.scene.layout.StackPane;
 import org.w3c.dom.html.HTMLElement;
 import shared.Image;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
@@ -80,9 +77,6 @@ public class CMSViewController implements Initializable {
 	private ListView<Page> pageListView;
 
 	private SelectableWebView editor;
-
-	/** The currently selected image. */
-	private Image selectedImage;
 
 	/** The mediator for the business layer. */
 	private CMS cms;
@@ -157,12 +151,10 @@ public class CMSViewController implements Initializable {
 				present(cms.insertText(marker, text), false);
 			}
 		} else if (option == insertImageToggle) {
-			//TODO: Move image loading somewhere else
 			try {
-				BufferedImage img = ImageIO.read(new File(insertImageUrlField.getText()));
-				present(cms.insertImage(marker, img), false);
-			} catch (IOException e) {
-				e.printStackTrace();
+				present(cms.insertImage(marker, new Image(insertImageUrlField.getText())), false);
+			} catch (IllegalArgumentException e) {
+				//invalid image
 			}
 		} else if (option == insertPageLinkToggle) {
 			int id = Integer.parseInt(pageIdField.getText()); //Should be safe as we control the contents of this field
@@ -278,11 +270,11 @@ public class CMSViewController implements Initializable {
 
 	@FXML
 	private void browseOnAction(ActionEvent event) {
-		selectedImage = dam.getImage();
-		if (selectedImage == null || selectedImage.getURL() == null) {
+		Image img = dam.getImage();
+		if (img == null || img.getURL() == null) {
 			insertImageUrlField.clear();
 		} else {
-			insertImageUrlField.setText(selectedImage.getURL());
+			insertImageUrlField.setText(img.getURL());
 			insertImageToggle.setSelected(true);
 		}
 	}

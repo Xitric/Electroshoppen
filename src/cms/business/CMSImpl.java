@@ -1,8 +1,8 @@
 package cms.business;
 
 import cms.persistence.CMSPersistenceFactory;
+import shared.Image;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -72,7 +72,7 @@ public class CMSImpl implements CMS {
 	}
 
 	@Override
-	public String insertImage(DocumentMarker marker, BufferedImage image) {
+	public String insertImage(DocumentMarker marker, Image image) {
 		return pageManager.insertImage(marker, image).toString();
 	}
 

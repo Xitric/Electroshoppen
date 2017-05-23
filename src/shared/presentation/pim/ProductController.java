@@ -1,5 +1,6 @@
 package shared.presentation.pim;
 
+import dam.business.DAM;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,12 +15,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import pim.business.*;
 import shared.Utility;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -78,10 +77,11 @@ public class ProductController implements Initializable {
 
 	private Map<Button, Pair<Attribute.AttributeValue, Label>> attributeValues;
 
-	/**
-	 * The mediator for the business layer.
-	 */
+	/** The mediator for the business layer. */
 	private PIM pim;
+
+	/** The mediator for the dam. */
+	private DAM dam;
 
 	/**
 	 * Initializes the controller class.
@@ -113,6 +113,15 @@ public class ProductController implements Initializable {
 	public void setPIM(PIM pim) {
 		this.pim = pim;
 		onEnter();
+	}
+
+	/**
+	 * Set the dam mediator for this controller to use.
+	 *
+	 * @param dam the mediator for the dam
+	 */
+	public void setDAM(DAM dam) {
+		this.dam = dam;
 	}
 
 	/**
@@ -184,13 +193,12 @@ public class ProductController implements Initializable {
 
 	@FXML
 	private void browseButtonOnAction(ActionEvent event) {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Open Resource File");
-		fileChooser.getExtensionFilters().addAll(
-				new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.bmp", "*.gif", "*.png", "*.jpeg", "*.wbmp"));
-		File selectedFile = fileChooser.showOpenDialog(browseTextField.getScene().getWindow());
-		if (selectedFile != null) {
-			browseTextField.setText(selectedFile.getPath());
+		shared.Image img = dam.getImage();
+
+		if (img == null || img.getURL() == null) {
+			browseTextField.clear();
+		} else {
+			browseTextField.setText(img.getURL());
 		}
 	}
 

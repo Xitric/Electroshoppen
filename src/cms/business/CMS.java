@@ -1,6 +1,7 @@
 package cms.business;
 
-import java.awt.image.BufferedImage;
+import shared.Image;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -109,7 +110,7 @@ public interface CMS {
 	 * @return the html representation of the active page after the operation
 	 * @throws IllegalStateException if there is no active page
 	 */
-	String insertImage(DocumentMarker marker, BufferedImage image);
+	String insertImage(DocumentMarker marker, Image image);
 
 	/**
 	 * Create a link to the page with the specified id. The link will be inserted at the location specified by the

@@ -1,7 +1,8 @@
 package cms.business;
 
+import shared.Image;
+
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
@@ -83,13 +84,13 @@ public class DynamicPageImpl implements DynamicPage {
 	}
 
 	@Override
-	public void setName(String name) {
-		this.name = (name == null ? "noname" : name);
+	public String getName() {
+		return name;
 	}
 
 	@Override
-	public String getName() {
-		return name;
+	public void setName(String name) {
+		this.name = (name == null ? "noname" : name);
 	}
 
 	@Override
@@ -232,7 +233,7 @@ public class DynamicPageImpl implements DynamicPage {
 	}
 
 	@Override
-	public void insertImage(DocumentMarker marker, BufferedImage image) {
+	public void insertImage(DocumentMarker marker, Image image) {
 		//Create an XMLElement describing the image
 		XMLElement img = XMLElement.createRoot("img");
 
@@ -240,7 +241,7 @@ public class DynamicPageImpl implements DynamicPage {
 		try {
 			//Source: http://stackoverflow.com/questions/22984430/javafx2-webview-and-in-memory-images#answer-37215917
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
-			ImageIO.write(image, "PNG", output);
+			ImageIO.write(image.getImage(), "PNG", output);
 			String imgData = "data:image/png;base64," + Base64.getMimeEncoder().encodeToString(output.toByteArray());
 			img.setAttribute("src", imgData);
 
