@@ -1,9 +1,10 @@
 package cms.business;
 
+import pim.business.Product;
 import shared.Image;
-
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -158,6 +159,12 @@ public interface CMS {
 	 * @throws IOException if the operation failed
 	 */
 	Map<Integer, String> getPageInfo() throws IOException;
+
+	/**
+	 * Getting all products from the PIM
+	 * @return a list of all products in the system
+	 */
+	List<Product> getAllProducts() throws IOException;
 
 	/**
 	 * A type of page handled by this CMS.

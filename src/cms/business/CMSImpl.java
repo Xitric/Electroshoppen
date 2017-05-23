@@ -1,10 +1,12 @@
 package cms.business;
 
 import cms.persistence.CMSPersistenceFactory;
+import pim.business.PIM;
+import pim.business.Product;
 import shared.Image;
-
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,13 +18,14 @@ public class CMSImpl implements CMS {
 
 	private final CMSPersistenceFacade persistence;
 	private final PageManager pageManager;
-
+	private final PIM pim;
 	/**
 	 * Constructs a new CMS implementation.
 	 */
-	public CMSImpl() {
+	public CMSImpl(PIM pim) {
 		persistence = CMSPersistenceFactory.createDatabaseMediator();
 		pageManager = new PageManager(persistence);
+		this.pim = pim;
 	}
 
 	@Override
@@ -100,4 +103,10 @@ public class CMSImpl implements CMS {
 	public Map<Integer, String> getPageInfo() throws IOException {
 		return persistence.getPageInfo();
 	}
+
+	@Override
+	public List<Product> getAllProducts() throws IOException {
+		return pim.getProducts();
+	}
+
 }
