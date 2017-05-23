@@ -62,7 +62,6 @@ public class CategoryController implements Initializable {
 	 */
 	public void setPIM(PIM pim) {
 		this.pim = pim;
-		onEnter();
 	}
 
 	/**

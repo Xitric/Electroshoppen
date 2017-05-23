@@ -90,7 +90,6 @@ public class CMSViewController implements Initializable {
 	 */
 	public void setCMS(CMS cms) {
 		this.cms = cms;
-		onEnter();
 
 		//TODO: Temp
 		try {

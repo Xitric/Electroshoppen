@@ -81,7 +81,6 @@ public class AttributeController implements Initializable {
 	 */
 	public void setPIM(PIM pim) {
 		this.pim = pim;
-		onEnter();
 	}
 
 	/**

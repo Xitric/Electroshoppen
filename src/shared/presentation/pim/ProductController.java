@@ -112,7 +112,6 @@ public class ProductController implements Initializable {
 	 */
 	public void setPIM(PIM pim) {
 		this.pim = pim;
-		onEnter();
 	}
 
 	/**
