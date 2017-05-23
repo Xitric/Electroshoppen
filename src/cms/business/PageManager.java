@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The manager for loading, saving and editing dynamic pages.
@@ -37,7 +39,20 @@ class PageManager {
 	 * @throws IOException if there was an error loading the page
 	 */
 	public List<Integer> getProducIDsFromPage(int pageID) throws IOException {
-		return new ArrayList<>();
+		ArrayList<Integer> listOfIDs = new ArrayList<>();
+		Template template = persistence.getTemplateForPage(pageID);
+		if (template != null) {
+			DynamicPage page = persistence.getPage(pageID);
+			if (page != null) {
+				String html = template.enrichPage(page).toString();
+				Pattern pattern = Pattern.compile("(\\[@ref=)([\\w]+)");
+				Matcher matcher = pattern.matcher(html);
+				while (matcher.find()) {
+					listOfIDs.add(Integer.parseInt(matcher.group(2)));
+				}
+			}
+		}
+		return listOfIDs;
 	}
 
 	/**
