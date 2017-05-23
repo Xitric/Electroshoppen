@@ -72,61 +72,96 @@ class PageManager {
 			//If this succeeded, read the page content
 			DynamicPage page = persistence.getPage(pageID);
 			if (page != null) {
-				//Compile page links
 				String html = template.enrichPage(page).toString();
-				html = html.replaceAll("(\\[@link=(\\w+)])", "<a href=\"$2\">");
-				html = html.replaceAll("(\\[@link])", "</a>");
-				try {
-					//Compile product references
-					//Matcher for pulling out the reference ids and types
-					Matcher refMatcher = Pattern.compile("(\\[@ref=)([\\w]+)( type=)([\\w]+)(])").matcher(html);
-					//Loop through all matches
-					while (refMatcher.find()) {
-						int productID = Integer.parseInt(refMatcher.group(2));
-						CMS.ReferenceType refType = CMS.ReferenceType.valueOf(refMatcher.group(4));
-						Product product = products.get(productID);
-						String replacement = "!REFERENCE ERROR!";
 
-						//Generate the string to insert into the reference
-						if (product != null) {
-							switch (refType) {
-								case NAME:
-									replacement = product.getName();
-									break;
-								case PRICE:
-									replacement = String.valueOf(product.getPrice());
-									break;
-								case IMAGE:
-									StringBuilder builderImg = new StringBuilder();
-									for (Image img: product.getImages()) {
-										String imageData = encodeToByte64(img.getImage());
-										builderImg.append("<img src=\"").append(imageData).append("\"/>");
-									}
-									replacement = builderImg.toString();
-									break;
-								case DESCRIPTION:
-									replacement = product.getDescription();
-									break;
-								case TAGS:
-									Set<Tag> tags = product.getTags();
-									StringBuilder builder = new StringBuilder();
-									for (Tag t : tags) {
-										builder.append(t.toString());
-									}
-									replacement = builder.toString();
-									break;
-							}
-						}
-
-						//Inform matcher of the new html string
-						html = refMatcher.replaceFirst(replacement);
-						refMatcher.reset(html);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+				if (template.getType() == CMS.PageType.PRODUCT_PAGE) {
+					return constructProductPage(html, products);
+				} else {
+					return constructRegularPage(html, products);
 				}
-				return html;
 			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Construct a regular page (not a product page) with the specified products.
+	 *
+	 * @param baseHTML the plain html of the page
+	 * @param products the products to enrich the page with
+	 * @return the html representation of the page, or null if no such page was found
+	 */
+	private String constructRegularPage(String baseHTML, Map<Integer, Product> products) {
+		//Compile page links
+		baseHTML = baseHTML.replaceAll("(\\[@link=(\\w+)])", "<a href=\"$2\">");
+		baseHTML = baseHTML.replaceAll("(\\[@link])", "</a>");
+		try {
+			//Compile product references
+			//Matcher for pulling out the reference ids and types
+			Matcher refMatcher = Pattern.compile("(\\[@ref=)([\\w]+)( type=)([\\w]+)(])").matcher(baseHTML);
+			//Loop through all matches
+			while (refMatcher.find()) {
+				int productID = Integer.parseInt(refMatcher.group(2));
+				CMS.ReferenceType refType = CMS.ReferenceType.valueOf(refMatcher.group(4));
+				Product product = products.get(productID);
+				String replacement = "!REFERENCE ERROR!";
+
+				//Generate the string to insert into the reference
+				if (product != null) {
+					switch (refType) {
+						case NAME:
+							replacement = product.getName();
+							break;
+						case PRICE:
+							replacement = String.valueOf(product.getPrice());
+							break;
+						case IMAGE:
+							StringBuilder builderImg = new StringBuilder();
+							for (Image img: product.getImages()) {
+								String imageData = encodeToByte64(img.getImage());
+								builderImg.append("<img src=\"").append(imageData).append("\"/>");
+							}
+							replacement = builderImg.toString();
+							break;
+						case DESCRIPTION:
+							replacement = product.getDescription();
+							break;
+						case TAGS:
+							Set<Tag> tags = product.getTags();
+							StringBuilder builder = new StringBuilder();
+							for (Tag t : tags) {
+								builder.append(t.toString());
+							}
+							replacement = builder.toString();
+							break;
+					}
+				}
+
+				//Inform matcher of the new html string
+				baseHTML = refMatcher.replaceFirst(replacement);
+				refMatcher.reset(baseHTML);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return baseHTML;
+	}
+
+	/**
+	 * Construct a product page for the product in the map. It is expected that this map contains exactly one product.
+	 *
+	 * @param baseHTML the plain html of the page
+	 * @param products a map containing only the product to make a product page for
+	 * @return the html representation of the page, or null if no such page was found
+	 */
+	private String constructProductPage(String baseHTML, Map<Integer, Product> products) {
+		//Only valid if exactly one product was specified
+		if (products.values().size() == 1) {
+			Product product = products.values().toArray(new Product[0])[0];
+
+			baseHTML = baseHTML.replaceAll("(\\[@ref=)[?]([\\s\\w=]+])", "$1" + String.valueOf(product.getID()) + "$2");
+			return constructRegularPage(baseHTML, products);
 		}
 
 		return null;

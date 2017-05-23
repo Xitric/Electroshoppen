@@ -48,8 +48,19 @@ public class CMSImpl implements CMS {
 
 	@Override
 	public String getLandingPage() throws IOException {
-		//TODO: Store in database, perhaps?
+		//TODO: Store id in database, perhaps?
 		return getPage(5);
+	}
+
+	@Override
+	public String getProductPage(int productID) throws IOException {
+		//Get product from pim
+		Map<Integer, Product> product = new HashMap<>();
+		product.put(productID, pim.getProductInformation(productID));
+
+		//Construct the page
+		//TODO: Store id in database, perhaps?
+		return pageManager.constructPage(7, product);
 	}
 
 	@Override

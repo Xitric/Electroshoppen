@@ -32,6 +32,15 @@ public interface CMS {
 	String getLandingPage() throws IOException;
 
 	/**
+	 * Get e product page for the product with the specified id.
+	 *
+	 * @param productID the id of the product
+	 * @return the html of the product page, or null if the page does no exist
+	 * @throws IOException if the operation failed
+	 */
+	String getProductPage(int productID) throws IOException;
+
+	/**
 	 * Get a collection of templates that support the specified type of page.
 	 *
 	 * @param pageType the type of page
