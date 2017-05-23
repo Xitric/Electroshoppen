@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The manager for loading, saving and editing dynamic pages.
@@ -60,7 +62,45 @@ class PageManager {
 				String html = template.enrichPage(page).toString();
 				html = html.replaceAll("(\\[@link=(\\w+)])", "<a href=\"$2\">");
 				html = html.replaceAll("(\\[@link])", "</a>");
+				try {
+					//Compile product references
+					//Matcher for pulling out the reference ids and types
+					Matcher refMatcher = Pattern.compile("(\\[@ref=)([\\w]+)( type=)([\\w]+)(])").matcher(html);
+					//Loop through all matches
+					while (refMatcher.find()) {
+						System.out.println("Loop");
+						int productID = Integer.parseInt(refMatcher.group(2));
+						CMS.ReferenceType refType = CMS.ReferenceType.valueOf(refMatcher.group(4));
+//						Product product = products.get(productID);
+						String replacement = "!REFERENCE ERROR!";
 
+						switch (refType) {
+							case NAME:
+								//							replacement = product.getName();
+								replacement = "HP OMEN";
+								break;
+							case PRICE:
+								//							replacement = String.valueOf(product.getPrice());
+								replacement = "852145";
+								break;
+							case IMAGE:
+								//TODO: Generate image tag
+								break;
+							case DESCRIPTION:
+								//							replacement = product.getDescription();
+								replacement = "A long description";
+								break;
+							case TAGS:
+								//TODO: Eh... concatenation?
+								break;
+						}
+
+						html = refMatcher.replaceFirst(replacement);
+						refMatcher.reset(html);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				return html;
 			}
 		}
