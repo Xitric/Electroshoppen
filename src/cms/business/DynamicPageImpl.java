@@ -254,7 +254,6 @@ public class DynamicPageImpl implements DynamicPage {
 	@Override
 	public void setTextLink(DocumentMarker marker, int link) {
 		XMLElement reference = getContentElementByID(marker.getSelectedElementID());
-
 		if (reference == null || !marker.hasRangeSelection()) return; //Not a valid selection
 
 		String current = reference.getTextContent();
@@ -273,6 +272,24 @@ public class DynamicPageImpl implements DynamicPage {
 		reference.setTextContent(result);
 	}
 
+	@Override
+	public void setReference(DocumentMarker marker, int productID, String type) {
+		XMLElement reference = getContentElementByID(marker.getSelectedElementID());
+		if (reference == null || !marker.hasRangeSelection()) return; //Not a valid selection
+
+		String current = reference.getTextContent();
+		//TODO: Test collision
+
+		//We have ensured that the user has specified sufficient and legal information, so we insert a new reference at
+		//the marker
+		String result = current.substring(0, marker.getStartSelection());
+		result += REF.replace("%1", String.valueOf(productID)).replace("%2", type);
+		result += current.substring(marker.getEndSelection());
+
+		//Insert into reference element
+		reference.setTextContent(result);
+	}
+
 	/**
 	 * Tests if there is a link description in the specified string in the specified range.
 	 *
@@ -282,8 +299,8 @@ public class DynamicPageImpl implements DynamicPage {
 	 * @return true if a link was detected, false otherwise
 	 */
 	private boolean hasLinkInRange(String text, int start, int end) {
-		Matcher startMatcher = Pattern.compile("(\\[@ref=)[\\w]+(])").matcher(text);
-		Matcher endMatcher = Pattern.compile("(\\[@])").matcher(text);
+		Matcher startMatcher = Pattern.compile("(\\[@link=)[\\w]+(])").matcher(text);
+		Matcher endMatcher = Pattern.compile("(\\[@link])").matcher(text);
 
 		//Loop through all links in the text
 		while (startMatcher.find()) {

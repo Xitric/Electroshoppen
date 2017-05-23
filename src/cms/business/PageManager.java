@@ -45,8 +45,8 @@ class PageManager {
 			if (page != null) {
 				//Compile page links
 				String html = template.enrichPage(page).toString();
-				html = html.replaceAll("(\\[@ref=(\\w+)])", "<a href=\"$2\">");
-				html = html.replaceAll("(\\[@])", "</a>");
+				html = html.replaceAll("(\\[@link=(\\w+)])", "<a href=\"$2\">");
+				html = html.replaceAll("(\\[@link])", "</a>");
 
 				return html;
 			}
@@ -246,7 +246,12 @@ class PageManager {
 	 * @throws IllegalStateException if there is no active page
 	 */
 	public XMLElement createReference(DocumentMarker marker, int productID, CMS.ReferenceType type) {
-		return null;
+		if (activePage == null)
+			throw new IllegalStateException("No active page to remove from!");
+
+		activePage.setReference(marker, productID, type.toString());
+
+		return activeTemplate.enrichPage(activePage);
 	}
 
 	/**

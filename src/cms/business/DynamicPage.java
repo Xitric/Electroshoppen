@@ -15,10 +15,13 @@ public interface DynamicPage {
 	String ID_ATTRIB = "id";
 
 	/** The start of a link element. */
-	String LINK_START = "[@ref=%]";
+	String LINK_START = "[@link=%]";
 
 	/** The end of a link element. */
-	String LINK_END = "[@]";
+	String LINK_END = "[@link]";
+
+	/** A reference element. */
+	String REF = "[@ref=%1 type=%2]";
 
 	/**
 	 * Test whether the id of this page is valid.
@@ -43,18 +46,18 @@ public interface DynamicPage {
 	void setID(int id);
 
 	/**
-	 * Set the name of this page.
-	 *
-	 * @param name the new name
-	 */
-	void setName(String name);
-
-	/**
 	 * Get the name of this page.
 	 *
 	 * @return the name of this page
 	 */
 	String getName();
+
+	/**
+	 * Set the name of this page.
+	 *
+	 * @param name the new name
+	 */
+	void setName(String name);
 
 	/**
 	 * Get the content for the template element with the specified id. The content will be wrapped in a {@code <div>}
@@ -97,6 +100,17 @@ public interface DynamicPage {
 	 * @throws IllegalArgumentException if the new link overlaps an existing link
 	 */
 	void setTextLink(DocumentMarker marker, int link);
+
+	/**
+	 * eplace the text at the location specified by the {@link DocumentMarker} with a reference of the specified type to
+	 * the product with the specified id.
+	 *
+	 * @param marker    the location of the text to replace
+	 * @param productID the id of the product to link to
+	 * @param type      the type of reference to create
+	 * @throws IllegalArgumentException if the new reference overlaps an existing reference
+	 */
+	void setReference(DocumentMarker marker, int productID, String type);
 
 	/**
 	 * Remove the element at the location specified by the {@link DocumentMarker}.
