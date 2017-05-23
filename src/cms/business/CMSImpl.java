@@ -30,7 +30,8 @@ public class CMSImpl implements CMS {
 
 	@Override
 	public String getPage(int id) throws IOException {
-		return pageManager.constructPage(id);
+		//TODO: Get ids from page manager, get products from pim and convert to map
+		return pageManager.constructPage(id, null); //TODO: Replace null
 	}
 
 	@Override

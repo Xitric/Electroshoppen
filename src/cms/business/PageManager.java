@@ -1,9 +1,12 @@
 package cms.business;
 
+import pim.business.Product;
 import shared.Image;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,16 +29,26 @@ class PageManager {
 		this.persistence = persistence;
 	}
 
-	//TODO: Product list from CMSImpl
+	/**
+	 * Get the ids of all products referenced in the specified page.
+	 *
+	 * @param pageID the id of the page to get product ids from
+	 * @return the product ids in the specified page, may be empty
+	 * @throws IOException if there was an error loading the page
+	 */
+	public List<Integer> getProducIDsFromPage(int pageID) throws IOException {
+		return new ArrayList<>();
+	}
 
 	/**
 	 * Construct the page with the specified id and make it ready for web use.
 	 *
-	 * @param pageID the id of the page to get
+	 * @param pageID   the id of the page to get
+	 * @param products the products to enrich the page with
 	 * @return the html representation of the page, or null if no such page was found
 	 * @throws IOException if there was an error loading the page
 	 */
-	public String constructPage(int pageID) throws IOException {
+	public String constructPage(int pageID, Map<Integer, Product> products) throws IOException {
 		//Read the page template
 		Template template = persistence.getTemplateForPage(pageID);
 		if (template != null) {
