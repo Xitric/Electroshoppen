@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import org.w3c.dom.html.HTMLElement;
+import pim.business.Product;
 import shared.Image;
 
 import java.io.IOException;
@@ -157,6 +158,16 @@ public class CMSViewController implements Initializable {
 		} else if (option == insertPageLinkToggle) {
 			int id = Integer.parseInt(pageIdField.getText()); //Should be safe as we control the contents of this field
 			present(cms.createLink(marker, id), false);
+		} else if (option == nameLinkToggle){
+			present(cms.createReference(marker, Integer.parseInt(productIdField.getText()), CMS.ReferenceType.NAME), false);
+		} else if (option == priceLinkToggle){
+			present(cms.createReference(marker, Integer.parseInt(productIdField.getText()), CMS.ReferenceType.PRICE), false);
+		} else if (option == imageLinkToggle){
+			present(cms.createReference(marker, Integer.parseInt(productIdField.getText()), CMS.ReferenceType.IMAGE), false);
+		} else if (option == descriptionLinkToggle){
+			present(cms.createReference(marker, Integer.parseInt(productIdField.getText()), CMS.ReferenceType.DESCRIPTION), false);
+		} else if (option == tagsLinkToggle){
+			present(cms.createReference(marker, Integer.parseInt(productIdField.getText()), CMS.ReferenceType.TAGS), false);
 		}
 	}
 
@@ -278,9 +289,15 @@ public class CMSViewController implements Initializable {
 	}
 
 	@FXML
-	private void browseProductOnAction(ActionEvent event) {
+	private void browseProductOnAction(ActionEvent event) throws IOException {
 		//TODO: Select from product list
-		productIdField.setText("30");
+		ListViewDialog<Product> productDialog = new ListViewDialog<>(cms.getAllProducts());
+		productDialog.setTitle("Select product");
+		productDialog.setHeaderText("Select product to insert");
+		Optional<Product> result = productDialog.showAndWait();
+		result.ifPresent(product -> {
+			productIdField.setText(Integer.toString(product.getID()));
+		});
 	}
 
 	@FXML

@@ -12,6 +12,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import pim.business.PIM;
 import pim.business.PIMFacade;
 import shared.presentation.ElectroshopController;
 
@@ -30,8 +31,9 @@ public class Electroshoppen extends Application {
 
 		//Load up the mediators for the controllers
 		ElectroshopController controller = loader.getController();
-		controller.setPIM(PIMFacade.createPIM());
-		controller.setCMS(CMSFacade.createCMS());
+		PIM pim = PIMFacade.createPIM();
+		controller.setPIM(pim);
+		controller.setCMS(CMSFacade.createCMS(pim));
 		controller.setDAM(new DAM((stage.getOwner()))); //Don't mind this, the DAM is a dummy class
 
 		//Set up the scene and show the gui
