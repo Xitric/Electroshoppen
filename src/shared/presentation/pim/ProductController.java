@@ -225,7 +225,13 @@ public class ProductController implements Initializable {
 				product.setAttribute(value.getParent(), value.getValue());
 			}
 
-			//TODO: Tags
+			//Tags
+			ArrayList<Tag> allTags = new ArrayList<>();
+			String[] tagArray = tagTextArea.getText().split(", ");
+			for(String tag : tagArray){
+				allTags.add(pim.createTag(tag));
+			}
+			product.setTags(allTags);
 
 			List<shared.Image> images = new ArrayList<>();
 			for (Node n: productImagePane.getChildren()) {

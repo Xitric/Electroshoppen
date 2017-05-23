@@ -216,6 +216,11 @@ class PIMImpl implements PIM {
 	}
 
 	@Override
+	public Tag createTag(String name) {
+		return tagManager.createTag(name);
+	}
+
+	@Override
 	public Category createCategory(String categoryName) throws IOException {
 		return categoryManager.createCategory(categoryName);
 	}

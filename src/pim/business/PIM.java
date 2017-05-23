@@ -173,4 +173,11 @@ public interface PIM {
 	 * @throws IOException if the operation failed
 	 */
 	void removeCategory(String categoryName) throws IOException;
+
+	/**
+	 * Create a new tag
+	 * @param name name of the tag
+	 * @return the tag that was created
+	 */
+	Tag createTag(String name);
 }
