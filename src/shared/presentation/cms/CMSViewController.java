@@ -16,9 +16,7 @@ import shared.Image;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Controller for the CMS view.
@@ -287,35 +285,21 @@ public class CMSViewController implements Initializable {
 
 	@FXML
 	private void browsePageDialog() throws IOException {
-		Dialog<Integer> dialog = new Dialog<>();
-		dialog.setTitle("Insert link");
-		dialog.setHeaderText("Insert the selected link");
-
-		DialogPane dialogPane = dialog.getDialogPane();
-		dialogPane.getStylesheets().add(getClass().getResource("../electroshop.css").toExternalForm());
-
-		ListView<Page> pageView = new ListView<>();
+		//Construct list of page objects to choose between
 		Map<Integer, String> pagesInfo = cms.getPageInfo();
-		ObservableList<Page> pages = FXCollections.observableArrayList();
+		List<Page> pages = new ArrayList<>();
 		for (Map.Entry<Integer, String> entry : pagesInfo.entrySet()) {
 			pages.add(new Page(entry.getKey(), entry.getValue()));
 		}
-		pageView.setItems(pages);
-		dialog.getDialogPane().setContent(pageView);
 
-		ButtonType confirmButtonType = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, ButtonType.CANCEL);
+		//Show dialog
+		Dialog<Page> dialog = new ListViewDialog<>(pages);
+		dialog.setTitle("Insert link");
+		dialog.setHeaderText("Insert the selected link");
 
-		//Specify how a result is gathered from the dialog
-		dialog.setResultConverter(button -> {
-			if (button == confirmButtonType) {
-				return pageView.getSelectionModel().getSelectedItem().getPageId();
-			}
-			return null;
-		});
-		Optional<Integer> result = dialog.showAndWait();
-		result.ifPresent(integer -> {
-			pageIdField.setText(Integer.toString(integer));
+		Optional<Page> result = dialog.showAndWait();
+		result.ifPresent(page -> {
+			pageIdField.setText(Integer.toString(page.getPageId()));
 			insertPageLinkToggle.setSelected(true);
 		});
 	}
