@@ -92,6 +92,15 @@ public class Image {
 	}
 
 	/**
+	 * Get the url of this image. If the image was not created from an url, this method will return null.
+	 *
+	 * @return the url of the image, or null if the image was not created from an url
+	 */
+	public String getURL() {
+		return url;
+	}
+
+	/**
 	 * Get a buffered image representation of this image. If this image was constructed using a url, this method will
 	 * use lazy loading.
 	 *

@@ -6,7 +6,7 @@
 package shared.presentation;
 
 import cms.business.CMS;
-import shared.presentation.cms.CMSViewController;
+import dam.business.DAM;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,6 +14,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import pim.business.PIM;
+import shared.presentation.cms.CMSViewController;
 import shared.presentation.pim.AttributeController;
 import shared.presentation.pim.CategoryController;
 import shared.presentation.pim.ProductController;
@@ -87,6 +88,16 @@ public class ElectroshopController implements Initializable {
 	public void setCMS(CMS cms) {
 		cmsTabPageController.setCMS(cms);
 		webshopTabPageController.setCMS(cms);
+	}
+
+	/**
+	 * Set the DAM facade for this controller to use.
+	 *
+	 * @param dam the mediator for the dam
+	 */
+	public void setDAM(DAM dam) {
+		//TODO: Product
+		cmsTabPageController.setDAM(dam);
 	}
 
 	@FXML

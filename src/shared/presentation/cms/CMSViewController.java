@@ -2,6 +2,7 @@ package shared.presentation.cms;
 
 import cms.business.CMS;
 import cms.business.DocumentMarker;
+import dam.business.DAM;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,8 +11,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
-import javafx.stage.FileChooser;
 import org.w3c.dom.html.HTMLElement;
+import shared.Image;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -73,9 +74,6 @@ public class CMSViewController implements Initializable {
 	private TextArea htmlPreview;
 
 	@FXML
-	private TreeView<Page> pageTreeView;
-
-	@FXML
 	private StackPane editorPane;
 
 	@FXML
@@ -83,10 +81,14 @@ public class CMSViewController implements Initializable {
 
 	private SelectableWebView editor;
 
-	/**
-	 * The mediator for the business layer.
-	 */
+	/** The currently selected image. */
+	private Image selectedImage;
+
+	/** The mediator for the business layer. */
 	private CMS cms;
+
+	/** The mediator for the dam. */
+	private DAM dam;
 
 	/**
 	 * Set the business mediator for this controller to use.
@@ -103,6 +105,15 @@ public class CMSViewController implements Initializable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Set the dam mediator for this controller to use.
+	 *
+	 * @param dam the mediator for the dam
+	 */
+	public void setDAM(DAM dam) {
+		this.dam = dam;
 	}
 
 	@Override
@@ -125,7 +136,7 @@ public class CMSViewController implements Initializable {
 	public void onEnter() {
 		if (cms != null) {
 			try {
-				populateTreeView();
+				populatePageListView();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -267,14 +278,12 @@ public class CMSViewController implements Initializable {
 
 	@FXML
 	private void browseOnAction(ActionEvent event) {
-		//TODO: Duplication, we should combine the gui packages and reuse code
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Open Resource File");
-		fileChooser.getExtensionFilters().addAll(
-				new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.bmp", "*.gif", "*.png", "*.jpeg", "*.wbmp"));
-		File selectedFile = fileChooser.showOpenDialog(insertImageUrlField.getScene().getWindow());
-		if (selectedFile != null) {
-			insertImageUrlField.setText(selectedFile.getPath());
+		selectedImage = dam.getImage();
+		if (selectedImage == null || selectedImage.getURL() == null) {
+			insertImageUrlField.clear();
+		} else {
+			insertImageUrlField.setText(selectedImage.getURL());
+			insertImageToggle.setSelected(true);
 		}
 	}
 
@@ -313,7 +322,10 @@ public class CMSViewController implements Initializable {
 			return null;
 		});
 		Optional<Integer> result = dialog.showAndWait();
-		result.ifPresent(integer -> pageIdField.setText(Integer.toString(integer)));
+		result.ifPresent(integer -> {
+			pageIdField.setText(Integer.toString(integer));
+			insertPageLinkToggle.setSelected(true);
+		});
 	}
 
 	@FXML
@@ -344,7 +356,7 @@ public class CMSViewController implements Initializable {
 	/**
 	 * Fill in the tree view on the left with the available pages in the CMS for easy access.
 	 */
-	private void populateTreeView() throws IOException {
+	private void populatePageListView() throws IOException {
 		ObservableList<Page> pages = FXCollections.observableArrayList();
 		Map<Integer, String> pageInformation = cms.getPageInfo();
 		for (Map.Entry<Integer, String> entry : pageInformation.entrySet()) {
@@ -353,7 +365,9 @@ public class CMSViewController implements Initializable {
 		pageListView.setItems(pages);
 	}
 
-
+	/**
+	 * Inner class for representing an entry in the page list view with a proper toString() method.
+	 */
 	private class Page {
 		private int pageId;
 		private String pageName;
