@@ -31,6 +31,8 @@ public interface PIM {
 	 */
 	Product getProductInformation(int id) throws IOException;
 
+	Set<Product> getPopularProducts(int amount) throws IOException;
+
 	/**
 	 * Create an image from the specified url.
 	 *

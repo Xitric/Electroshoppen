@@ -6,10 +6,7 @@ import pim.business.Product;
 import shared.Image;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Implementation of the CMS interface.
@@ -49,7 +46,12 @@ public class CMSImpl implements CMS {
 	@Override
 	public String getLandingPage() throws IOException {
 		//TODO: Store id in database, perhaps?
-		return getPage(5);
+		Set<Product> popularProducts = pim.getPopularProducts(5);
+		Map<Integer, Product> products = new HashMap<>();
+		for(Product product : popularProducts){
+			products.put(product.getID(), product);
+		}
+		return pageManager.constructPage(8, products);
 	}
 
 	@Override

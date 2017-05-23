@@ -116,6 +116,11 @@ class PIMImpl implements PIM {
 		return productManager.getProduct(id);
 	}
 
+	@Override
+	public Set<Product> getPopularProducts(int amount) throws IOException {
+		return productManager.getPopularProducts(amount);
+	}
+
 
 	@Override
 	public Image createImage(String url) throws IOException {

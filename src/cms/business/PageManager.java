@@ -76,6 +76,8 @@ class PageManager {
 
 				if (template.getType() == CMS.PageType.PRODUCT_PAGE) {
 					return constructProductPage(html, products);
+				} else if(template.getType() == CMS.PageType.LANDING_PAGE) {
+					return constructLandingPage(html, products);
 				} else {
 					return constructRegularPage(html, products);
 				}
@@ -83,6 +85,13 @@ class PageManager {
 		}
 
 		return null;
+	}
+
+	public String constructLandingPage(String baseHTML, Map<Integer, Product> popularProducts){
+		for(Product product: popularProducts.values()){
+			baseHTML = baseHTML.replaceFirst("(\\[@ref=)[?]([\\s\\w=]+])", "$1" + String.valueOf(product.getID()) + "$2");
+		}
+		return constructRegularPage(baseHTML, popularProducts);
 	}
 
 	/**
