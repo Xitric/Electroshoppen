@@ -81,7 +81,7 @@ public class ElectroshopController implements Initializable {
 	}
 
 	/**
-	 * Set the CMS facade for this controller to use.
+	 * Set the Webshop facade for this controller to use.
 	 *
 	 * @param cms the mediator for the cms
 	 */

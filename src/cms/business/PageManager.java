@@ -76,7 +76,7 @@ class PageManager {
 
 				if (template.getType() == CMS.PageType.PRODUCT_PAGE) {
 					return constructProductPage(html, products);
-				} else if(template.getType() == CMS.PageType.LANDING_PAGE) {
+				} else if (template.getType() == CMS.PageType.LANDING_PAGE) {
 					return constructLandingPage(html, products);
 				} else {
 					return constructRegularPage(html, products);
@@ -85,13 +85,6 @@ class PageManager {
 		}
 
 		return null;
-	}
-
-	public String constructLandingPage(String baseHTML, Map<Integer, Product> popularProducts){
-		for(Product product: popularProducts.values()){
-			baseHTML = baseHTML.replaceFirst("(\\[@ref=)[?]([\\s\\w=]+])", "$1" + String.valueOf(product.getID()) + "$2");
-		}
-		return constructRegularPage(baseHTML, popularProducts);
 	}
 
 	/**
@@ -127,7 +120,7 @@ class PageManager {
 							break;
 						case IMAGE:
 							StringBuilder builderImg = new StringBuilder();
-							for (Image img: product.getImages()) {
+							for (Image img : product.getImages()) {
 								String imageData = encodeToByte64(img.getImage());
 								builderImg.append("<img src=\"").append(imageData).append("\"/>");
 							}
@@ -155,6 +148,21 @@ class PageManager {
 			e.printStackTrace();
 		}
 		return baseHTML;
+	}
+
+	/**
+	 * Construct a landing page displaying the products in the map as popular products. This will only display as many
+	 * products as can fit on the landing page.
+	 *
+	 * @param baseHTML        the plain html of the page
+	 * @param popularProducts the popular products to display
+	 * @return the html representation of the page, or null if no such page was found
+	 */
+	private String constructLandingPage(String baseHTML, Map<Integer, Product> popularProducts) {
+		for (Product product : popularProducts.values()) {
+			baseHTML = baseHTML.replaceFirst("(\\[@ref=)[?]([\\s\\w=]+])", "$1" + String.valueOf(product.getID()) + "$2");
+		}
+		return constructRegularPage(baseHTML, popularProducts);
 	}
 
 	/**

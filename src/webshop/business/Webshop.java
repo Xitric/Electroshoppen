@@ -1,8 +1,10 @@
 package webshop.business;
 
 /**
- * @author Emil
+ * Interface describing the functionality that must be provided by all webshop implementations.
+ *
+ * @author Kasper
  */
-public class Webshop {
+public interface Webshop {
 
 }

@@ -161,6 +161,7 @@ class PIMImpl implements PIM {
 		attributeManager.saveAttribute(attribute);
 	}
 
+	@Override
 	public Attribute createAttribute(String name, Object defaultValue, Set<Object>legalValues) throws IOException {
 		return attributeManager.createAttribute(name, defaultValue, legalValues);
 	}
