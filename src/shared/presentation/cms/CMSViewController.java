@@ -15,6 +15,7 @@ import javafx.scene.layout.StackPane;
 import org.w3c.dom.html.HTMLElement;
 import pim.business.Product;
 import shared.Image;
+import shared.presentation.AlertUtil;
 import shared.presentation.ListViewDialog;
 
 import java.io.IOException;
@@ -93,11 +94,15 @@ public class CMSViewController implements Initializable {
 	public void setCMS(CMS cms) {
 		this.cms = cms;
 
-		//TODO: Temp
 		try {
 			present(cms.editPage(1), true);
 		} catch (IOException e) {
-			e.printStackTrace();
+			AlertUtil.newAlertDialog(
+					Alert.AlertType.ERROR,
+					"Error",
+					"CMS error",
+					"CMS could not be set")
+					.showAndWait();
 		}
 	}
 
@@ -260,10 +265,19 @@ public class CMSViewController implements Initializable {
 		try {
 			present(cms.editPage(selectedPage.pageId), true);
 		} catch (NumberFormatException e) {
-			//TODO
+			AlertUtil.newAlertDialog(
+					Alert.AlertType.ERROR,
+					"Error",
+					"CMS error",
+					"Incorrect number format")
+					.showAndWait();
 		} catch (IOException e) {
-			//TODO
-			e.printStackTrace();
+			AlertUtil.newAlertDialog(
+					Alert.AlertType.ERROR,
+					"Error",
+					"CMS error",
+					"Database could not be reached properly")
+					.showAndWait();
 		}
 
 	}
@@ -327,8 +341,12 @@ public class CMSViewController implements Initializable {
 		try {
 			cms.savePage();
 		} catch (IOException e) {
-			//TODO
-			e.printStackTrace();
+			AlertUtil.newAlertDialog(
+					Alert.AlertType.ERROR,
+					"Error",
+					"CMS error",
+					"No content of the page has been saved to the database")
+					.showAndWait();
 		}
 	}
 

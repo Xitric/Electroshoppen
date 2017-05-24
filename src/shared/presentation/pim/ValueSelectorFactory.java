@@ -9,6 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import shared.presentation.AlertUtil;
 
 import java.awt.*;
 
@@ -284,14 +285,24 @@ public class ValueSelectorFactory {
 				min = Integer.parseInt(minField.getText());
 				isMinSpecified = true; //Skipped if above throws an exception
 			} catch (NumberFormatException e) {
-				//TODO: Notify user
+				AlertUtil.newAlertDialog(
+						Alert.AlertType.ERROR,
+						"Error",
+						"Number format error",
+						"Use the proper format")
+						.showAndWait();
 			}
 
 			try {
 				max = Integer.parseInt(maxField.getText());
 				isMaxSpecified = true; //Skipped if above throws an exception
 			} catch (NumberFormatException e) {
-				//TODO: Notify user
+				AlertUtil.newAlertDialog(
+						Alert.AlertType.ERROR,
+						"Error",
+						"Number format error",
+						"Use the proper format")
+						.showAndWait();
 			}
 
 			if (!isMaxSpecified) {
@@ -365,8 +376,12 @@ public class ValueSelectorFactory {
 				double number = Double.parseDouble(textField.getText());
 				return number;
 			} catch (NumberFormatException e) {
-				e.printStackTrace();
-				//TODO: Notify user
+				AlertUtil.newAlertDialog(
+						Alert.AlertType.ERROR,
+						"Error",
+						"Number format error",
+						"Use the proper format")
+						.showAndWait();
 
 				//Illegal input, return null
 				return null;

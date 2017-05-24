@@ -87,13 +87,17 @@ public class AttributeController implements Initializable {
 	 */
 	public void onEnter() {
 		if (pim != null) {
-			//TODO
 			try {
 				List<Attribute> attributes = pim.getAttributes();
 				Collections.sort(attributes);
 				attributeList.setAll(attributes);
 			} catch (IOException e) {
-
+				AlertUtil.newAlertDialog(
+						Alert.AlertType.ERROR,
+						"Error",
+						"PIM Error",
+						"Unable to retrieve attributes from database")
+						.showAndWait();
 			}
 		}
 	}
