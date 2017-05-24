@@ -12,7 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import pim.business.Attribute;
 import pim.business.PIM;
-import shared.Utility;
+import shared.presentation.AlertUtil;
 
 import java.io.IOException;
 import java.net.URL;
@@ -143,13 +143,13 @@ public class AttributeController implements Initializable {
 						//Get the new attribute and add it to the list
 						attributeList.add(attribute);
 					} catch (IOException e) {
-						Utility.newErrorAlert("Changes are not accepted!",
+						AlertUtil.newErrorAlert("Changes are not accepted!",
 								"Could not save attribute",
 								"Something went wrong when saving the attribute")
 								.showAndWait();
 					}
 				} catch (NoSuchElementException e) {
-					Utility.newErrorAlert("Changes are not accepted!",
+					AlertUtil.newErrorAlert("Changes are not accepted!",
 							"Critical error",
 							"No element could be found")
 							.showAndWait();
@@ -185,7 +185,7 @@ public class AttributeController implements Initializable {
 				pim.removeAttribute(selection.getID());
 				attributeList.remove(selection);
 			} catch (IOException e) {
-				Utility.newErrorAlert("Changes are not accepted!",
+				AlertUtil.newErrorAlert("Changes are not accepted!",
 						"Could not remove attribute",
 						"Something went wrong when removing the attribute")
 						.showAndWait();
@@ -206,7 +206,7 @@ public class AttributeController implements Initializable {
 			pim.saveAttribute(selection);
 			attributeListView.refresh();
 		} catch (IOException e) {
-			Utility.newErrorAlert("Changes are not accepted!",
+			AlertUtil.newErrorAlert("Changes are not accepted!",
 					"Could not save attribute",
 					"Something went wrong when saving the attribute")
 					.showAndWait();
