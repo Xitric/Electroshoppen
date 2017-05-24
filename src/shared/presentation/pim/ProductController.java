@@ -17,7 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 import pim.business.*;
-import shared.Utility;
+import shared.presentation.AlertUtil;
 
 import java.io.IOException;
 import java.net.URL;
@@ -354,7 +354,7 @@ public class ProductController implements Initializable {
 							attributeValues.put(button, new Pair<>(newValue, attributeLabel));
 							attributeLabel.setText(newValue.toString());
 						} catch (IllegalArgumentException e) {
-							Utility.newErrorAlert("Changes are not accepted!",
+							AlertUtil.newErrorAlert("Changes are not accepted!",
 									"Illegal Value!",
 									"Please choose a legal value as input")
 									.showAndWait();
@@ -373,7 +373,7 @@ public class ProductController implements Initializable {
 							attributeValues.put(button, new Pair<>(newValue, attributeLabel));
 							attributeLabel.setText(newValue.toString());
 						} catch (IllegalArgumentException e) {
-							Utility.newErrorAlert("Changes are not accepted!",
+							AlertUtil.newErrorAlert("Changes are not accepted!",
 									"Illegal Value!",
 									"Please choose a legal value as input")
 									.showAndWait();
