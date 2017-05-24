@@ -20,7 +20,7 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * Controller for the CMS view.
+ * Controller for the cms view.
  *
  * @author Kasper
  * @author Niels
@@ -90,7 +90,6 @@ public class CMSViewController implements Initializable {
 	 */
 	public void setCMS(CMS cms) {
 		this.cms = cms;
-		onEnter();
 
 		//TODO: Temp
 		try {
@@ -347,7 +346,7 @@ public class CMSViewController implements Initializable {
 	}
 
 	/**
-	 * Fill in the tree view on the left with the available pages in the CMS for easy access.
+	 * Fill in the tree view on the left with the available pages in the cms for easy access.
 	 */
 	private void populatePageListView() throws IOException {
 		ObservableList<Page> pages = FXCollections.observableArrayList();

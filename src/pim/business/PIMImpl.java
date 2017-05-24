@@ -117,6 +117,11 @@ class PIMImpl implements PIM {
 		return productManager.getProduct(id);
 	}
 
+	@Override
+	public Set<Product> getPopularProducts(int amount) throws IOException {
+		return productManager.getPopularProducts(amount);
+	}
+
 
 	@Override
 	public Image createImage(String url) throws IOException {
@@ -157,6 +162,7 @@ class PIMImpl implements PIM {
 		attributeManager.saveAttribute(attribute);
 	}
 
+	@Override
 	public Attribute createAttribute(String name, Object defaultValue, Set<Object>legalValues) throws IOException {
 		return attributeManager.createAttribute(name, defaultValue, legalValues);
 	}
@@ -214,6 +220,11 @@ class PIMImpl implements PIM {
 		}
 
 		categoryManager.deleteCategory(categoryName);
+	}
+
+	@Override
+	public Tag createTag(String name) {
+		return tagManager.createTag(name);
 	}
 
 	@Override

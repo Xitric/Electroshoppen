@@ -32,6 +32,8 @@ public interface PIM {
 	 */
 	Product getProductInformation(int id) throws IOException;
 
+	Set<Product> getPopularProducts(int amount) throws IOException;
+
 	/**
 	 * Create an image from the specified url.
 	 *
@@ -174,4 +176,11 @@ public interface PIM {
 	 * @throws IOException if the operation failed
 	 */
 	void removeCategory(String categoryName) throws IOException;
+
+	/**
+	 * Create a new tag
+	 * @param name name of the tag
+	 * @return the tag that was created
+	 */
+	Tag createTag(String name);
 }

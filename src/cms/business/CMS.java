@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Interface describing the functionality that must be provided by all CMS implementations.
+ * Interface describing the functionality that must be provided by all cms implementations.
  *
  * @author Kasper
  * @author Emil
@@ -49,6 +49,14 @@ public interface CMS {
 	Map<Integer, String> getProductPages () throws IOException;
 
 
+	 /*
+	 * Get e product page for the product with the specified id.
+	 *
+	 * @param productID the id of the product
+	 * @return the html of the product page, or null if the page does no exist
+	 * @throws IOException if the operation failed
+	 */
+	String getProductPage(int productID) throws IOException;
 
 	/**
 	 * Get a collection of templates that support the specified type of page.
@@ -60,7 +68,7 @@ public interface CMS {
 	Collection<Template> getTemplatesForPageType(PageType pageType) throws IOException;
 
 	/**
-	 * Create a new page with the specified name, page type, and template. This page will be set as active in the CMS,
+	 * Create a new page with the specified name, page type, and template. This page will be set as active in the cms,
 	 * discarding current, unsaved data.
 	 *
 	 * @param name       the name of the page to create
@@ -73,7 +81,7 @@ public interface CMS {
 	String createNewPage(String name, PageType pageType, int templateID);
 
 	/**
-	 * Start editing the page with the specified id. This will activate the specified page in the CMS.
+	 * Start editing the page with the specified id. This will activate the specified page in the cms.
 	 *
 	 * @param id the id of the page to edit
 	 * @return the html representation of the page, or null if the page does not exist
@@ -172,7 +180,7 @@ public interface CMS {
 	void savePage() throws IOException;
 
 	/**
-	 * Getting IDs and Names of all pages from the CMS Database.
+	 * Getting IDs and Names of all pages from the cms Database.
 	 *
 	 * @return Returns a Map where ID is the key and Name of a page is the Value
 	 * @throws IOException if the operation failed
@@ -186,7 +194,7 @@ public interface CMS {
 	List<Product> getAllProducts() throws IOException;
 
 	/**
-	 * A type of page handled by this CMS.
+	 * A type of page handled by this cms.
 	 */
 	enum PageType {
 		PRODUCT_PAGE,
@@ -196,7 +204,7 @@ public interface CMS {
 	}
 
 	/**
-	 * A type of product reference that can be handled by this CMS.
+	 * A type of product reference that can be handled by this cms.
 	 */
 	enum ReferenceType {
 		NAME,

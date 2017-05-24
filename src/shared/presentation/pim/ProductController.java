@@ -17,7 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 import pim.business.*;
-import shared.Utility;
+import shared.presentation.AlertUtil;
 
 import java.io.IOException;
 import java.net.URL;
@@ -112,7 +112,6 @@ public class ProductController implements Initializable {
 	 */
 	public void setPIM(PIM pim) {
 		this.pim = pim;
-		onEnter();
 	}
 
 	/**
@@ -226,7 +225,13 @@ public class ProductController implements Initializable {
 				product.setAttribute(value.getParent(), value.getValue());
 			}
 
-			//TODO: Tags
+			//Tags
+			ArrayList<Tag> allTags = new ArrayList<>();
+			String[] tagArray = tagTextArea.getText().split(", ");
+			for(String tag : tagArray){
+				allTags.add(pim.createTag(tag));
+			}
+			product.setTags(allTags);
 
 			List<shared.Image> images = new ArrayList<>();
 			for (Node n: productImagePane.getChildren()) {
@@ -349,7 +354,7 @@ public class ProductController implements Initializable {
 							attributeValues.put(button, new Pair<>(newValue, attributeLabel));
 							attributeLabel.setText(newValue.toString());
 						} catch (IllegalArgumentException e) {
-							Utility.newErrorAlert("Changes are not accepted!",
+							AlertUtil.newErrorAlert("Changes are not accepted!",
 									"Illegal Value!",
 									"Please choose a legal value as input")
 									.showAndWait();
@@ -368,7 +373,7 @@ public class ProductController implements Initializable {
 							attributeValues.put(button, new Pair<>(newValue, attributeLabel));
 							attributeLabel.setText(newValue.toString());
 						} catch (IllegalArgumentException e) {
-							Utility.newErrorAlert("Changes are not accepted!",
+							AlertUtil.newErrorAlert("Changes are not accepted!",
 									"Illegal Value!",
 									"Please choose a legal value as input")
 									.showAndWait();

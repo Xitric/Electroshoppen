@@ -78,7 +78,7 @@ public interface CMSPersistenceFacade {
 	void deletePage(int id) throws IOException;
 
 	/**
-	 * Used to retrieve all page IDs and Names of the pages in the CMS database.
+	 * Used to retrieve all page IDs and Names of the pages in the cms database.
 	 *
 	 * @return all page ids and names
 	 * @throws IOException if the operation fails

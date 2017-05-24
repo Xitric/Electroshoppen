@@ -4,13 +4,12 @@ import cms.persistence.CMSPersistenceFactory;
 import pim.business.PIM;
 import pim.business.Product;
 import shared.Image;
+
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * Implementation of the CMS interface.
+ * Implementation of the cms interface.
  *
  * @author Kasper
  * @author Emil
@@ -20,8 +19,11 @@ public class CMSImpl implements CMS {
 	private final CMSPersistenceFacade persistence;
 	private final PageManager pageManager;
 	private final PIM pim;
+
 	/**
-	 * Constructs a new CMS implementation.
+	 * Constructs a new cms implementation.
+	 *
+	 * @param pim the mediator for the pim subsystem
 	 */
 	public CMSImpl(PIM pim) {
 		persistence = CMSPersistenceFactory.createDatabaseMediator();
@@ -31,14 +33,39 @@ public class CMSImpl implements CMS {
 
 	@Override
 	public String getPage(int id) throws IOException {
-		//TODO: Get ids from page manager, get products from pim and convert to map
-		return pageManager.constructPage(id, null); //TODO: Replace null
+		//Get ids of referenced products on page
+		List<Integer> productIDs = pageManager.getProducIDsFromPage(id);
+		Map<Integer, Product> products = new HashMap<>();
+
+		//Get products from the pim
+		for (int i : productIDs) {
+			products.put(i, pim.getProductInformation(i));
+		}
+
+		//Construct the page
+		return pageManager.constructPage(id, products);
 	}
 
 	@Override
 	public String getLandingPage() throws IOException {
-		//TODO: Store in database, perhaps?
-		return getPage(5);
+		//TODO: Store id in database, perhaps?
+		Set<Product> popularProducts = pim.getPopularProducts(5);
+		Map<Integer, Product> products = new HashMap<>();
+		for(Product product : popularProducts){
+			products.put(product.getID(), product);
+		}
+		return pageManager.constructPage(8, products);
+	}
+
+	@Override
+	public String getProductPage(int productID) throws IOException {
+		//Get product from pim
+		Map<Integer, Product> product = new HashMap<>();
+		product.put(productID, pim.getProductInformation(productID));
+
+		//Construct the page
+		//TODO: Store id in database, perhaps?
+		return pageManager.constructPage(7, product);
 	}
 
 	@Override

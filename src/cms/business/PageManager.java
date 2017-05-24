@@ -1,13 +1,16 @@
 package cms.business;
 
 import pim.business.Product;
+import pim.business.Tag;
 import shared.Image;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The manager for loading, saving and editing dynamic pages.
@@ -37,7 +40,20 @@ class PageManager {
 	 * @throws IOException if there was an error loading the page
 	 */
 	public List<Integer> getProducIDsFromPage(int pageID) throws IOException {
-		return new ArrayList<>();
+		ArrayList<Integer> listOfIDs = new ArrayList<>();
+		Template template = persistence.getTemplateForPage(pageID);
+		if (template != null) {
+			DynamicPage page = persistence.getPage(pageID);
+			if (page != null) {
+				String html = template.enrichPage(page).toString();
+				Pattern pattern = Pattern.compile("(\\[@ref=)([\\w]+)");
+				Matcher matcher = pattern.matcher(html);
+				while (matcher.find()) {
+					listOfIDs.add(Integer.parseInt(matcher.group(2)));
+				}
+			}
+		}
+		return listOfIDs;
 	}
 
 	/**
@@ -56,18 +72,117 @@ class PageManager {
 			//If this succeeded, read the page content
 			DynamicPage page = persistence.getPage(pageID);
 			if (page != null) {
-				//Compile page links
 				String html = template.enrichPage(page).toString();
-				html = html.replaceAll("(\\[@link=(\\w+)])", "<a href=\"$2\">");
-				html = html.replaceAll("(\\[@link])", "</a>");
 
-				return html;
+				if (template.getType() == CMS.PageType.PRODUCT_PAGE) {
+					return constructProductPage(html, products);
+				} else if (template.getType() == CMS.PageType.LANDING_PAGE) {
+					return constructLandingPage(html, products);
+				} else {
+					return constructRegularPage(html, products);
+				}
 			}
 		}
 
 		return null;
 	}
-	//String output = input.replaceAll("foob(..)foo", "foof$1foo");
+
+	/**
+	 * Construct a regular page (not a product page) with the specified products.
+	 *
+	 * @param baseHTML the plain html of the page
+	 * @param products the products to enrich the page with
+	 * @return the html representation of the page, or null if no such page was found
+	 */
+	private String constructRegularPage(String baseHTML, Map<Integer, Product> products) {
+		//Compile page links
+		baseHTML = baseHTML.replaceAll("(\\[@link=(\\w+)])", "<a href=\"$2\">");
+		baseHTML = baseHTML.replaceAll("(\\[@link])", "</a>");
+		try {
+			//Compile product references
+			//Matcher for pulling out the reference ids and types
+			Matcher refMatcher = Pattern.compile("(\\[@ref=)([\\w]+)( type=)([\\w]+)(])").matcher(baseHTML);
+			//Loop through all matches
+			while (refMatcher.find()) {
+				int productID = Integer.parseInt(refMatcher.group(2));
+				CMS.ReferenceType refType = CMS.ReferenceType.valueOf(refMatcher.group(4));
+				Product product = products.get(productID);
+				String replacement = "!REFERENCE ERROR!";
+
+				//Generate the string to insert into the reference
+				if (product != null) {
+					switch (refType) {
+						case NAME:
+							replacement = product.getName();
+							break;
+						case PRICE:
+							replacement = String.valueOf(product.getPrice());
+							break;
+						case IMAGE:
+							StringBuilder builderImg = new StringBuilder();
+							for (Image img : product.getImages()) {
+								String imageData = encodeToByte64(img.getImage());
+								builderImg.append("<img src=\"").append(imageData).append("\"/>");
+							}
+							replacement = builderImg.toString();
+							break;
+						case DESCRIPTION:
+							replacement = product.getDescription();
+							break;
+						case TAGS:
+							Set<Tag> tags = product.getTags();
+							StringBuilder builder = new StringBuilder();
+							for (Tag t : tags) {
+								builder.append(t.toString());
+							}
+							replacement = builder.toString();
+							break;
+					}
+				}
+
+				//Inform matcher of the new html string
+				baseHTML = refMatcher.replaceFirst(replacement);
+				refMatcher.reset(baseHTML);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return baseHTML;
+	}
+
+	/**
+	 * Construct a landing page displaying the products in the map as popular products. This will only display as many
+	 * products as can fit on the landing page.
+	 *
+	 * @param baseHTML        the plain html of the page
+	 * @param popularProducts the popular products to display
+	 * @return the html representation of the page, or null if no such page was found
+	 */
+	private String constructLandingPage(String baseHTML, Map<Integer, Product> popularProducts) {
+		for (Product product : popularProducts.values()) {
+			baseHTML = baseHTML.replaceFirst("(\\[@ref=)[?]([\\s\\w=]+])", "$1" + String.valueOf(product.getID()) + "$2");
+		}
+		return constructRegularPage(baseHTML, popularProducts);
+	}
+
+	/**
+	 * Construct a product page for the product in the map. It is expected that this map contains exactly one product.
+	 *
+	 * @param baseHTML the plain html of the page
+	 * @param products a map containing only the product to make a product page for
+	 * @return the html representation of the page, or null if no such page was found
+	 */
+	private String constructProductPage(String baseHTML, Map<Integer, Product> products) {
+		//Only valid if exactly one product was specified
+		if (products.values().size() == 1) {
+			Product product = products.values().toArray(new Product[0])[0];
+
+			baseHTML = baseHTML.replaceAll("(\\[@ref=)[?]([\\s\\w=]+])", "$1" + String.valueOf(product.getID()) + "$2");
+			return constructRegularPage(baseHTML, products);
+		}
+
+		return null;
+	}
 
 	/**
 	 * Create a new page with the specified name, page type, and template. This page will be set as active, discarding
@@ -225,7 +340,12 @@ class PageManager {
 		if (activePage == null)
 			throw new IllegalStateException("No active page to insert into!");
 
-		activePage.insertImage(marker, image);
+		//Attempt to transform the buffered image to a format supported in the web view
+		try {
+			activePage.insertImage(marker, encodeToByte64(image.getImage()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		return activeTemplate.enrichPage(activePage);
 	}
@@ -292,5 +412,19 @@ class PageManager {
 		if (activePage != null && activeTemplate != null) {
 			persistence.savePage(activePage, activeTemplate);
 		}
+	}
+
+	/**
+	 * Encode the specified image to a format supported by the web view.
+	 *
+	 * @param img the image to encode
+	 * @return the encoded image as a string
+	 */
+	private String encodeToByte64(BufferedImage img) throws IOException {
+		//Attempt to transform the buffered image to a format supported in the web view
+		//Source: http://stackoverflow.com/questions/22984430/javafx2-webview-and-in-memory-images#answer-37215917
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		ImageIO.write(img, "PNG", output);
+		return "data:image/png;base64," + Base64.getMimeEncoder().encodeToString(output.toByteArray());
 	}
 }

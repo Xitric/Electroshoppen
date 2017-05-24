@@ -49,7 +49,6 @@ public class WebshopController implements Initializable {
 	 */
 	public void setCMS(CMS cms) {
 		this.cms = cms;
-		onEnter();
 
 		//Attempt to load and show the landing page
 		try {
