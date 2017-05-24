@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Implementation of the Webshop interface.
+ * Implementation of the cms interface.
  *
  * @author Kasper
  */
@@ -20,7 +20,7 @@ public class CMSImpl implements CMS {
 	private final PIM pim;
 
 	/**
-	 * Constructs a new Webshop implementation.
+	 * Constructs a new cms implementation.
 	 *
 	 * @param pim the mediator for the pim subsystem
 	 */

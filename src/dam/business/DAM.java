@@ -24,7 +24,7 @@ public class DAM {
 
 	/**
 	 * Get an image from the DAM. This will open an image choosing dialog. The returned image will not have and id, as
-	 * it is considered new to either the PIM or the Webshop, depending on where it is received.
+	 * it is considered new to either the PIM or the CMS, depending on where it is received.
 	 *
 	 * @return the chosen image, or null if the user did not choose and image
 	 */
