@@ -10,6 +10,7 @@ import java.util.Set;
  * Interface describing the functionality that must be provided by all PIM implementations.
  *
  * @author Kasper
+ * @author Emil
  */
 public interface PIM {
 

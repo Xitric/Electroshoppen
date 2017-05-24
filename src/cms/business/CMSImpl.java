@@ -13,6 +13,7 @@ import java.util.Map;
  * Implementation of the CMS interface.
  *
  * @author Kasper
+ * @author Emil
  */
 public class CMSImpl implements CMS {
 
@@ -39,6 +40,28 @@ public class CMSImpl implements CMS {
 		//TODO: Store in database, perhaps?
 		return getPage(5);
 	}
+
+	@Override
+	public Map<Integer, String> getLandingPages() throws IOException {
+		return persistence.getPagesByType(PageType.LANDING_PAGE.toString());
+	}
+
+	@Override
+	public Map<Integer, String> getGuidePages() throws IOException {
+		return persistence.getPagesByType(PageType.GUIDE.toString());
+	}
+
+	@Override
+	public Map<Integer, String> getArticlePages() throws IOException {
+		return persistence.getPagesByType(PageType.ARTICLE.toString());
+	}
+
+	@Override
+	public Map<Integer, String> getProductPages() throws IOException {
+		return persistence.getPagesByType(PageType.PRODUCT_PAGE.toString());
+	}
+
+
 
 	@Override
 	public Collection<Template> getTemplatesForPageType(PageType pageType) throws IOException {

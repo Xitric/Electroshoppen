@@ -1,8 +1,10 @@
 package cms.business;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import pim.business.Product;
 import shared.Image;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,7 @@ import java.util.Map;
  * Interface describing the functionality that must be provided by all CMS implementations.
  *
  * @author Kasper
+ * @author Emil
  */
 public interface CMS {
 
@@ -30,6 +33,22 @@ public interface CMS {
 	 * @throws IOException if the operation failed
 	 */
 	String getLandingPage() throws IOException;
+
+	/**
+	 * Getting IDs and Names of all landing pages
+	 *
+	 * @return Returns a Map where ID is the key and Name of a page is the Value
+	 * @throws IOException if the operation failed
+	 */
+	Map<Integer, String> getLandingPages () throws IOException;
+
+	Map<Integer, String> getGuidePages () throws IOException;
+
+	Map<Integer, String> getArticlePages () throws IOException;
+
+	Map<Integer, String> getProductPages () throws IOException;
+
+
 
 	/**
 	 * Get a collection of templates that support the specified type of page.

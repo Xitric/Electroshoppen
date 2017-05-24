@@ -9,6 +9,7 @@ import java.util.Set;
  *
  * @author Mikkel
  * @author Kasper
+ * @author Emil
  */
 class CategoryManager {
 

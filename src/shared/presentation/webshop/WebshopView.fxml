@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -12,7 +13,7 @@
 
 <BorderPane stylesheets="@webshopview.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shared.presentation.webshop.WebshopController">
    <top>    
-      <VBox alignment="TOP_CENTER" prefHeight="90.0" prefWidth="440.0" BorderPane.alignment="CENTER">
+      <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" prefHeight="90.0" prefWidth="440.0" BorderPane.alignment="CENTER">
          <children>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
@@ -34,17 +35,17 @@
             </HBox>
             <HBox id="menuHBox" alignment="TOP_CENTER" prefWidth="440.0">
                <children>
-                  <Button fx:id="homeBtn" mnemonicParsing="false" onAction="#buttonOnAction" text="Home" />
-                  <Button fx:id="productsBtn" mnemonicParsing="false" onAction="#buttonOnAction" text="Products" />
-                  <Button fx:id="articlesBtn" mnemonicParsing="false" onAction="#buttonOnAction" text="Articles" />
-                  <Button fx:id="guidesBtn" mnemonicParsing="false" onAction="#buttonOnAction" text="Guides" />
+                  <Button fx:id="landingBtn" mnemonicParsing="false" onAction="#landingOnAction" text="Home" />
+                  <Button fx:id="productsBtn" mnemonicParsing="false" onAction="#productsOnAction" text="Products" />
+                  <Button fx:id="articlesBtn" mnemonicParsing="false" onAction="#articlesOnAction" text="Articles" />
+                  <Button fx:id="guidesBtn" mnemonicParsing="false" onAction="#guidesOnAction" text="Guides" />
                </children>
             </HBox>
          </children>
       </VBox>
    </top>
    <center>
-      <TitledPane fx:id="titledPaneCenter" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" BorderPane.alignment="CENTER">
+      <TitledPane fx:id="titledPaneCenter" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" prefHeight="226.0" prefWidth="417.0" text="Home" BorderPane.alignment="CENTER">
          <content>
             <WebView fx:id="webView" prefHeight="200.0" prefWidth="200.0" />
          </content>
@@ -61,4 +62,14 @@
          </children>
       </HBox>
    </bottom>
+   <left>
+      <TitledPane fx:id="titledPaneLeft" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" prefWidth="163.0" text="Pages" BorderPane.alignment="CENTER">
+         <content>
+            <VBox prefWidth="100.0">
+               <children>
+                  <ListView fx:id="listViewAside" maxHeight="1.7976931348623157E308" prefWidth="200.0" />
+               </children>
+            </VBox>
+         </content></TitledPane>
+   </left>
 </BorderPane>

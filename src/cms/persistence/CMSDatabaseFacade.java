@@ -17,6 +17,7 @@ import java.util.Set;
  * Implementation of the CMSPersistenceFacade interface for use with JDBC.
  *
  * @author Kasper
+ * @author Emil
  */
 class CMSDatabaseFacade implements CMSPersistenceFacade {
 
@@ -181,6 +182,23 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 			throw new IOException("Unable to read template with id " + id + "!", e);
 		}
 	}
+
+	@Override
+	public Map<Integer, String> getPagesByType(String type) throws IOException {
+		Connection connection = getConnection();
+		Map<Integer, String> pagesByType = new HashMap<>();
+		try (PreparedStatement getPageIDs = connection.prepareStatement("SELECT * FROM page NATURAL JOIN pagelayout NATURAL JOIN template WHERE type = ?;")) {
+			getPageIDs.setString(1, type);
+			ResultSet pageData = getPageIDs.executeQuery();
+			while (pageData.next()) {
+				pagesByType.put(pageData.getInt("pageid"), pageData.getString("pagename"));
+			}
+			return pagesByType;
+		} catch (SQLException e) {
+			throw new IOException("Unable to retrieve page information");
+		}
+	}
+
 
 	@Override
 	public void savePage(DynamicPage page, Template template) throws IOException {
