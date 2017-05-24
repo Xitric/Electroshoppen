@@ -6,18 +6,20 @@ import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import pim.business.Attribute;
 import pim.business.PIM;
+import shared.presentation.AlertUtil;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 
 /**
@@ -25,7 +27,7 @@ import java.util.ResourceBundle;
  *
  * @author Kasper
  */
-public class CreateAttributeDialog implements Initializable {
+public class CreateAttributeDialog extends Dialog<Attribute> implements Initializable {
 
 	@FXML
 	private TextField nameField;
@@ -71,6 +73,61 @@ public class CreateAttributeDialog implements Initializable {
 	 */
 	private ValueSelector currentSelector;
 
+	private Attribute attribute;
+
+	/**
+	 * Constructs a new dialog for creating new attributes.
+	 *
+	 * @param pim the mediator for the pim
+	 */
+	public CreateAttributeDialog(PIM pim) {
+		this.pim = pim;
+
+		setTitle("Create attribute");
+		setHeaderText("Specify attribute information");
+		ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+		getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+		//Style the dialog
+		getDialogPane().getStylesheets().add(getClass().getResource("../electroshop.css").toExternalForm());
+
+		//Load fxml content
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CreateAttributeDialog.fxml"));
+			fxmlLoader.setController(this);
+			Parent root = fxmlLoader.load();
+			getDialogPane().setContent(root);
+			getDialogPane().getScene().getWindow().sizeToScene();
+		} catch (IOException e) {
+			e.printStackTrace();
+			AlertUtil.newErrorAlert("Error opening dialog!",
+					"There was an error opening the \"create attribute\" dialog. Contact the system administrator.")
+					.showAndWait();
+		}
+
+		//Specify how a result is gathered
+		setResultConverter(button -> {
+			if (button == saveButtonType) {
+				return attribute;
+			}
+
+			return null;
+		});
+
+		//Ensure that the user cannot press OK unless data is specified properly. We also construct the attribute when
+		//the save button is pressed
+		final Button saveButton = (Button) getDialogPane().lookupButton(saveButtonType);
+		saveButton.addEventFilter(ActionEvent.ACTION, event -> {
+			attribute = getAttribute();
+			if (attribute == null) {
+				event.consume();
+				AlertUtil.newErrorAlert("Insufficient information specified",
+						"You must specify at least a name and a default value.")
+						.showAndWait();
+			}
+		});
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		//Listen to changes in the selected data type
@@ -93,21 +150,13 @@ public class CreateAttributeDialog implements Initializable {
 	}
 
 	/**
-	 * Set the business mediator for this controller to use.
-	 *
-	 * @param pim the mediator for the pim
-	 */
-	public void setPIM(PIM pim) {
-		this.pim = pim;
-	}
-
-	/**
 	 * Get the attribute created by this dialog, or null if no proper attribute has been specified.
 	 *
 	 * @return the resulting attribute
 	 */
-	public Attribute getAttribute() {
-		if (nameField.getText().isEmpty() || defaultValue == null) throw new NoSuchElementException("Invalid attribute data");
+	private Attribute getAttribute() {
+		if (nameField.getText().isEmpty() || defaultValue == null)
+			return null;
 		String name = nameField.getText();
 
 		try {
@@ -117,8 +166,7 @@ public class CreateAttributeDialog implements Initializable {
 				return pim.createAttribute(name, defaultValue, null);
 			}
 		} catch (IOException e) {
-			//TODO: Error dialog
-			throw new NoSuchElementException("Error creating attribute");
+			return null;
 		}
 	}
 

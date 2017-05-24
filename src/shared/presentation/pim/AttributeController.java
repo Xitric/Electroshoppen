@@ -5,7 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -102,60 +101,33 @@ public class AttributeController implements Initializable {
 	@FXML
 	private void addButtonOnAction(ActionEvent event) {
 		//Create dialog for specifying attribute information
-		Dialog<Attribute> dialog = new Dialog<>();
-		dialog.setTitle("Create attribute");
-		dialog.setHeaderText("Specify attribute information");
+		Dialog<Attribute> dialog = new CreateAttributeDialog(pim);
 
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("CreateAttributeDialog.fxml"));
-
-		try {
-			dialog.getDialogPane().setContent(loader.load());
-			((CreateAttributeDialog) loader.getController()).setPIM(pim);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
-
-		//Specify how a result is gathered from the dialog
-		dialog.setResultConverter(button -> {
-			if (button == saveButtonType) {
-				//TODO: Reopen dialog if user specified insufficient information
-				return ((CreateAttributeDialog) loader.getController()).getAttribute();
-			}
-
-			return null;
-		});
-
-		//If a result could be gathered, register it
-		boolean resultWasBad = true;
-		while (resultWasBad) {
+		//Keep showing dialog until the changes have gone smoothly
+		boolean issue = true;
+		while (issue) {
 			Optional<Attribute> result = dialog.showAndWait();
+
 			if (result.isPresent()) {
+				Attribute attribute = result.get();
+
 				try {
-					Attribute attribute = result.get();
+					pim.saveAttribute(attribute);
 
-					try {
-						pim.saveAttribute(attribute);
-						resultWasBad = false;
+					//Get the new attribute and add it to the list
+					attributeList.add(attribute);
 
-						//Get the new attribute and add it to the list
-						attributeList.add(attribute);
-					} catch (IOException e) {
-						AlertUtil.newErrorAlert("Changes are not accepted!",
-								"Could not save attribute",
-								"Something went wrong when saving the attribute")
-								.showAndWait();
-					}
-				} catch (NoSuchElementException e) {
+					//Everything went smoothly
+					issue = false;
+				} catch (IOException e) {
 					AlertUtil.newErrorAlert("Changes are not accepted!",
-							"Critical error",
-							"No element could be found")
+							"Could not save attribute",
+							"Something went wrong when saving the attribute.\nThe dialog will be reopened for your convenience.")
 							.showAndWait();
 				}
 			} else {
-				resultWasBad = false;
+				//User cancelled
+				issue = false;
 			}
 		}
 	}
