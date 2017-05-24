@@ -23,7 +23,7 @@ public class ListViewDialog<T> extends Dialog<T> {
 	 */
 	public ListViewDialog(Collection<T> elements) {
 		ListView<T> pageView = new ListView<>();
-		pageView.setItems(FXCollections.observableArrayList(elements));
+		pageView.setItems(FXCollections.observableArrayList(elements).sorted());
 		getDialogPane().setContent(pageView);
 
 		ButtonType confirmButtonType = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
