@@ -507,12 +507,13 @@ public class XMLElement implements Cloneable {
 
 	/**
 	 * Set the value of the specified attribute. If the value is null or empty, the attribute will either not be created
-	 * or removed if it already exists.
+	 * or removed if it already exists. If the name is null, this method does nothing.
 	 *
 	 * @param name  the name of the attribute
 	 * @param value the value to set
 	 */
 	public void setAttribute(String name, String value) {
+		if (name == null) return;
 		if (value == null || value.isEmpty()) {
 			attributes.remove(name);
 		} else {

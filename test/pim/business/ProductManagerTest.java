@@ -7,7 +7,6 @@ import shared.Image;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,7 +40,8 @@ class ProductManagerTest {
 			//Test basic data
 			Assertions.assertEquals(p.getID(), 30);
 			Assertions.assertEquals(p.getName(), "HP OMEN 15-AX005NO");
-			Assertions.assertEquals(p.getDescription(), "Some generic laptop with mediocre specs.");
+			Assertions.assertEquals(p.getDescription(), "Cool gaming laptop.\n" +
+					"Specs: Intel core I7-6700HQ (2,5 - 3,6 Ghz), Nvidia GeForce GTX 960M with 4GB og dedicated DDR5 memory, 8GB DDR4 memory, 256GB M.2 NVMe SSD, 15,6\" (1920 x 1080), Windows 10.");
 			Assertions.assertEquals(p.getPrice(), 8999.95);
 
 			//Test categories
@@ -66,7 +66,7 @@ class ProductManagerTest {
 			}
 
 			//Test images
-			BufferedImage expectedImage = ImageIO.read(new File("res/omen-ax005no.jpg"));
+			BufferedImage expectedImage = ImageIO.read(getClass().getResourceAsStream("omen-ax005no.jpg"));
 			Assertions.assertTrue(p.getImages().size() == 1);
 			for (Image i : p.getImages()) {
 				Assertions.assertTrue(compareImages(i.getImage(), expectedImage));
