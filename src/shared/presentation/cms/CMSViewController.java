@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import org.w3c.dom.html.HTMLElement;
 import pim.business.Product;
@@ -327,6 +328,13 @@ public class CMSViewController implements Initializable {
 		} catch (IOException e) {
 			//TODO
 			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	private void pageBrowserOnClick(MouseEvent event) {
+		if(event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
+			openPage();
 		}
 	}
 

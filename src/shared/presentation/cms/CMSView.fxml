@@ -29,7 +29,7 @@
             <VBox spacing="8.0">
                <children>
                   <Button mnemonicParsing="false" onAction="#openPage" text="Open" />
-                  <ListView fx:id="pageListView" VBox.vgrow="ALWAYS">
+                  <ListView fx:id="pageListView" onMouseClicked="#pageBrowserOnClick" VBox.vgrow="ALWAYS">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
