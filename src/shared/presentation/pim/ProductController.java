@@ -139,7 +139,6 @@ public class ProductController implements Initializable {
 	}
 
 	private void removeImage(RemoveableImage img) {
-		//TODO
 		productImagePane.getChildren().remove(img);
 	}
 

@@ -39,8 +39,6 @@ class CMSDatabaseFacade implements CMSPersistenceFacade {
 
 	}
 
-	//TODO: Should we use a shared method?
-
 	/**
 	 * Get the connection to the database. If the connection has been closed because of inactivity, it will be
 	 * automatically reopened.

@@ -48,7 +48,8 @@ public class CMSImpl implements CMS {
 
 	@Override
 	public String getLandingPage() throws IOException {
-		//TODO: Store id in database, perhaps?
+		// We know the pageID probably should've been retrieved from the database,
+		// but there's no proper user interface to change such things, so it was left out for now.
 		Set<Product> popularProducts = pim.getPopularProducts(5);
 		Map<Integer, Product> products = new HashMap<>();
 		for(Product product : popularProducts){
@@ -63,8 +64,8 @@ public class CMSImpl implements CMS {
 		Map<Integer, Product> product = new HashMap<>();
 		product.put(productID, pim.getProductInformation(productID));
 
-		//Construct the page
-		//TODO: Store id in database, perhaps?
+		//Construct the page | We know the pageID probably should've been retrieved from the database,
+		// but there's no proper user interface to change such things, so it was left out for now.
 		return pageManager.constructPage(7, product);
 	}
 
