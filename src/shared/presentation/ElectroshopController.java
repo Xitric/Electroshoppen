@@ -78,6 +78,7 @@ public class ElectroshopController implements Initializable {
 		categoryTabPageController.setPIM(pim);
 		attributeTabPageController.setPIM(pim);
 		productTabPageController.setPIM(pim);
+		webshopTabPageController.setPIM(pim);
 	}
 
 	/**
