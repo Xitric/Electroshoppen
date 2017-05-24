@@ -14,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import org.w3c.dom.html.HTMLElement;
 import pim.business.Product;
 import shared.Image;
+import shared.presentation.ListViewDialog;
 
 import java.io.IOException;
 import java.net.URL;

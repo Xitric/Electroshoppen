@@ -18,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 import pim.business.*;
 import shared.presentation.AlertUtil;
+import shared.presentation.ListViewDialog;
 
 import java.io.IOException;
 import java.net.URL;
@@ -270,7 +271,7 @@ public class ProductController implements Initializable {
 			//Set basic information
 			idLabel.setText(String.valueOf(product.getID()));
 			nameLabel.setText(product.getName());
-			priceLabel.setText("$" + product.getPrice());
+			priceLabel.setText(product.getPrice() + "kr.");
 			descriptionTextArea.setText(product.getDescription());
 
 			//Categories
@@ -341,43 +342,28 @@ public class ProductController implements Initializable {
 			Label attributeLabel = attributeValues.get(button).getValue();
 
 			if (attributeValue != null) {
+				Optional result;
+
 				if (attributeValue.getParent().getLegalValues() == null) { //Unrestricted
 					//Show attribute dialog and get result
-					Optional result = ValueSelectorFactory.getDialogValueSelectorForType(
+					result = ValueSelectorFactory.getDialogValueSelectorForType(
 							ValueSelectorFactory.AttributeType.fromClass(attributeValue.getValue().getClass())).showAndWait();
-
-					//If a value was selected, update it
-					if (result.isPresent()) {
-
-						try {
-							Attribute.AttributeValue newValue = attributeValue.getParent().createValue(result.get());
-							attributeValues.put(button, new Pair<>(newValue, attributeLabel));
-							attributeLabel.setText(newValue.toString());
-						} catch (IllegalArgumentException e) {
-							AlertUtil.newErrorAlert("Changes are not accepted!",
-									"Illegal Value!",
-									"Please choose a legal value as input")
-									.showAndWait();
-						}
-					}
 				} else { //Restricted
-					//TODO: Show list of possibilities. Remove this code
-					//Show attribute dialog and get result
-					Optional result = ValueSelectorFactory.getDialogValueSelectorForType(
-							ValueSelectorFactory.AttributeType.fromClass(attributeValue.getValue().getClass())).showAndWait();
+					Dialog dialog = new ListViewDialog<>(attributeValue.getParent().getLegalValues());
+					result = dialog.showAndWait();
+				}
 
-					//If a value was selected, update it
-					if (result.isPresent()) {
-						try {
-							Attribute.AttributeValue newValue = attributeValue.getParent().createValue(result.get());
-							attributeValues.put(button, new Pair<>(newValue, attributeLabel));
-							attributeLabel.setText(newValue.toString());
-						} catch (IllegalArgumentException e) {
-							AlertUtil.newErrorAlert("Changes are not accepted!",
-									"Illegal Value!",
-									"Please choose a legal value as input")
-									.showAndWait();
-						}
+				//If a value was selected, update it
+				if (result.isPresent()) {
+					try {
+						Attribute.AttributeValue newValue = attributeValue.getParent().createValue(result.get());
+						attributeValues.put(button, new Pair<>(newValue, attributeLabel));
+						attributeLabel.setText(newValue.toString());
+					} catch (IllegalArgumentException e) {
+						AlertUtil.newErrorAlert("Changes are not accepted!",
+								"Illegal Value!",
+								"Please choose a legal value as input")
+								.showAndWait();
 					}
 				}
 			}

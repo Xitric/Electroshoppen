@@ -1,4 +1,4 @@
-package shared.presentation.cms;
+package shared.presentation;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.ButtonBar;
@@ -38,6 +38,6 @@ public class ListViewDialog<T> extends Dialog<T> {
 		});
 
 		//Style the dialog
-		getDialogPane().getStylesheets().add(getClass().getResource("../electroshop.css").toExternalForm());
+		getDialogPane().getStylesheets().add(getClass().getResource("electroshop.css").toExternalForm());
 	}
 }
