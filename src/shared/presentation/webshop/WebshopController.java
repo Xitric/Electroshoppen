@@ -1,15 +1,12 @@
 package shared.presentation.webshop;
 
 import cms.business.CMS;
-import com.sun.org.apache.bcel.internal.generic.LineNumberGen;
-import javafx.beans.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TitledPane;
@@ -38,12 +35,12 @@ public class WebshopController implements Initializable {
 	private WebView webView;
 
 	private ObservableList<Object> asideList;
-	private PIM pim;
+
 	/**
 	 * The mediator for the business layer.
 	 */
 	private CMS cms;
-
+	private PIM pim;
 
 	/**
 	 * Set the business mediator for this controller to use.
