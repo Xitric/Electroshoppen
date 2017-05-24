@@ -34,7 +34,7 @@ public class CMSImpl implements CMS {
 	@Override
 	public String getPage(int id) throws IOException {
 		//Get ids of referenced products on page
-		List<Integer> productIDs = pageManager.getProducIDsFromPage(id);
+		List<Integer> productIDs = pageManager.getProductIDsFromPage(id);
 		Map<Integer, Product> products = new HashMap<>();
 
 		//Get products from the pim

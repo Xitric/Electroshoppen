@@ -39,7 +39,7 @@ class PageManager {
 	 * @return the product ids in the specified page, may be empty
 	 * @throws IOException if there was an error loading the page
 	 */
-	public List<Integer> getProducIDsFromPage(int pageID) throws IOException {
+	public List<Integer> getProductIDsFromPage(int pageID) throws IOException {
 		ArrayList<Integer> listOfIDs = new ArrayList<>();
 		Template template = persistence.getTemplateForPage(pageID);
 		if (template != null) {
