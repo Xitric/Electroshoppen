@@ -58,6 +58,11 @@ public class WebshopController implements Initializable {
 		}
 	}
 
+	/**
+	 * Set the business mediator for this controller to use.
+	 *
+	 * @param pim the mediator for the pim
+	 */
 	public void setPIM(PIM pim) {
 		this.pim = pim;
 	}
@@ -131,14 +136,23 @@ public class WebshopController implements Initializable {
 	}
 
 
-	private void setListViewFromMap(Map<Integer, String> map) throws IOException {
+	/**
+	 * Makes a list from the map with Page objects and show Page names in the list view.
+	 *
+	 * @param map The pages from the cms
+	 */
+	private void setListViewFromMap(Map<Integer, String> map) {
 		List<Page> listPage = new ArrayList<>();
 		for (Map.Entry<Integer, String> entry : map.entrySet()) {
 			Page p = new Page(entry.getKey(), entry.getValue());
 			listPage.add(p);
 		}
 		asideList.setAll(listPage);
-		present(cms.getPage(map.keySet().iterator().next()));
+		try {
+			present(cms.getPage(map.keySet().iterator().next()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void listViewAsideChanged(javafx.beans.Observable observable) {
@@ -147,7 +161,6 @@ public class WebshopController implements Initializable {
 			try {
 				if (selected instanceof Page) {
 					present(cms.getPage(((Page) selected).getPageId()));
-
 				} else if (selected instanceof Product) {
 					present(cms.getProductPage(((Product) selected).getID()));
 				}
@@ -202,6 +215,9 @@ public class WebshopController implements Initializable {
 				"}");
 	}
 
+	/**
+	 * Inner class for representing an entry in the page list view with a proper toString() method.
+	 */
 	private class Page {
 		private int pageId;
 		private String pageName;
