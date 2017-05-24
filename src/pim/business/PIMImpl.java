@@ -179,7 +179,6 @@ class PIMImpl implements PIM {
 
 	@Override
 	public List<Category> getCategoriesWithAttribute(int attributeID) throws IOException {
-		//TODO
 		List<Category> categories = new ArrayList<>();
 		for (Category category : categoryManager.getCategories()) {
 			for (Attribute attribute : category.getAttributes()) {
