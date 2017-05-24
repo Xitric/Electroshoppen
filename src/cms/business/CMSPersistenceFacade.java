@@ -1,5 +1,7 @@
 package cms.business;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
@@ -8,6 +10,7 @@ import java.util.Set;
  * Interface describing a class that can be used for accessing the persistence layer.
  *
  * @author Kasper
+ * @author Emil
  */
 public interface CMSPersistenceFacade {
 
@@ -48,6 +51,15 @@ public interface CMSPersistenceFacade {
 	DynamicPage getPage(int id) throws IOException;
 
 	/**
+	 * Get the pages with the specified type.
+	 *
+	 * @param type the type of the pages to get
+	 * @return Returns a Map where ID is the key and Name of a page is the Value
+	 * @throws IOException if the operation fails
+	 */
+	Map<Integer, String> getPagesByType(String type) throws IOException;
+
+	/**
 	 * Save the specified page. If the page has no id, a new one will be generated.
 	 *
 	 * @param page     the page to save
@@ -55,6 +67,7 @@ public interface CMSPersistenceFacade {
 	 * @throws IOException if the operation fails
 	 */
 	void savePage(DynamicPage page, Template template) throws IOException;
+
 
 	/**
 	 * Delete the page with the specified id.

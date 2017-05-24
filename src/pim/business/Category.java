@@ -8,6 +8,7 @@ import java.util.*;
  *
  * @author Mads
  * @author Kasper
+ * @author Emil
  */
 public class Category implements Comparable<Category> {
 

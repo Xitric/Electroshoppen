@@ -12,6 +12,7 @@ import java.util.concurrent.TimeoutException;
  * Implementation of the PIM interface.
  *
  * @author Kasper
+ * @author Emil 
  */
 class PIMImpl implements PIM {
 
