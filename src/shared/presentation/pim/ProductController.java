@@ -129,11 +129,15 @@ public class ProductController implements Initializable {
 	 */
 	public void onEnter() {
 		if (pim != null) {
-			//TODO:
 			try {
 				populateTreeView(pim.getProducts(), true);
 			} catch (IOException e) {
-				e.printStackTrace();
+				AlertUtil.newAlertDialog(
+						Alert.AlertType.ERROR,
+						"Error",
+						"PIM Error",
+						"Unable to retrieve information for TreeView")
+						.showAndWait();
 			}
 		}
 	}
@@ -257,7 +261,12 @@ public class ProductController implements Initializable {
 			shared.Image image = pim.createImage(url);
 			productImagePane.getChildren().add(new RemoveableImage(image, this::removeImage));
 		} catch (IOException e) {
-			//TODO: Whatever
+			AlertUtil.newAlertDialog(
+					Alert.AlertType.ERROR,
+					"Error",
+					"PIM Error",
+					"Unable to retrieve image from database")
+					.showAndWait();
 		}
 	}
 
@@ -274,13 +283,17 @@ public class ProductController implements Initializable {
 			descriptionTextArea.setText(product.getDescription());
 
 			//Categories
-			//TODO: Exception handling
 			try {
 				List<Category> categories = pim.getCategories();
 				categories.removeAll(product.getCategories());
 				availableCategories.setAll(categories);
 			} catch (IOException e) {
-				e.printStackTrace();
+				AlertUtil.newAlertDialog(
+						Alert.AlertType.ERROR,
+						"Error",
+						"PIM Error",
+						"Unable to retrieve categories from database")
+						.showAndWait();
 			}
 			containedCategories.setAll(product.getCategories());
 
@@ -377,7 +390,6 @@ public class ProductController implements Initializable {
 	 *                      contain the categories of the specified products
 	 */
 	private void populateTreeView(List<Product> products, boolean allCategories) {
-		//TODO:
 		try {
 			TreeItem<Object> treeRoot = new TreeItem<>();
 			treeRoot.setExpanded(true);
@@ -423,7 +435,12 @@ public class ProductController implements Initializable {
 			productTreeView.setRoot(treeRoot);
 			productTreeView.setShowRoot(false);
 		} catch (IOException e) {
-			e.printStackTrace();
+			AlertUtil.newAlertDialog(
+					Alert.AlertType.ERROR,
+					"Error",
+					"PIM Error",
+					"Unable to populate TreeView")
+					.showAndWait();
 		}
 	}
 }

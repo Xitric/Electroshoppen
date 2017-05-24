@@ -23,7 +23,12 @@ class XMLElementTest {
 		attributes.put("a2", "v2");
 
 		Assertions.assertThrows(IllegalArgumentException.class, () -> XMLElement.createRoot(null, "Hello, world!", attributes));
+		XMLElement element1 = XMLElement.createRoot("p", null, attributes);
 
+		XMLElement element2 = XMLElement.createRoot("p", "Hello, world!", null);
+
+		XMLElement element3 = XMLElement.createRoot("p", "Hello, world!", attributes);
+	
 	}
 
 	//Possible input:

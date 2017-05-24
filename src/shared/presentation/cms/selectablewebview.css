@@ -1,13 +1,3 @@
-.nonselectable {
-    min-height: 100px;
-}
-
-.nonselectable .div {
-    min-height: 100px;
-    min-width: 50px;
-    background-color: red;
-}
-
 * {
     position: relative;
 }

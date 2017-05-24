@@ -1,19 +1,19 @@
 package shared.presentation.webshop;
 
 import cms.business.CMS;
-import javafx.beans.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TitledPane;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
+import pim.business.PIM;
+import pim.business.Product;
 
 import java.io.IOException;
 import java.net.URL;
@@ -40,7 +40,7 @@ public class WebshopController implements Initializable {
 	 * The mediator for the business layer.
 	 */
 	private CMS cms;
-
+	private PIM pim;
 
 	/**
 	 * Set the business mediator for this controller to use.
@@ -52,11 +52,14 @@ public class WebshopController implements Initializable {
 
 		//Attempt to load and show the landing page
 		try {
-			setListViewFromMap(cms.getLandingPages());
-			//	present(cms.getLandingPage());
+			present(cms.getLandingPage());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void setPIM(PIM pim) {
+		this.pim = pim;
 	}
 
 	/**
@@ -67,7 +70,6 @@ public class WebshopController implements Initializable {
 		asideList = FXCollections.observableArrayList();
 		listViewAside.setItems(asideList);
 		listViewAside.getSelectionModel().selectedItemProperty().addListener(this::listViewAsideChanged);
-
 	}
 
 	public void onEnter() {
@@ -87,9 +89,10 @@ public class WebshopController implements Initializable {
 
 	@FXML
 	private void landingOnAction(ActionEvent event) {
+		asideList.setAll();
+		titledPaneCenter.setText("Home");
 		try {
-			setListViewFromMap(cms.getLandingPages());
-			titledPaneCenter.setText("Home");
+			present(cms.getLandingPage());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -98,7 +101,9 @@ public class WebshopController implements Initializable {
 	@FXML
 	private void productsOnAction(ActionEvent event) {
 		try {
-			setListViewFromMap(cms.getProductPages());
+			List<Product> p = new LinkedList<>(pim.getProducts());
+			asideList.setAll(p);
+			present(cms.getProductPage(p.iterator().next().getID()));
 			titledPaneCenter.setText("Products");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -125,6 +130,7 @@ public class WebshopController implements Initializable {
 		}
 	}
 
+
 	private void setListViewFromMap(Map<Integer, String> map) throws IOException {
 		List<Page> listPage = new ArrayList<>();
 		for (Map.Entry<Integer, String> entry : map.entrySet()) {
@@ -136,10 +142,15 @@ public class WebshopController implements Initializable {
 	}
 
 	private void listViewAsideChanged(javafx.beans.Observable observable) {
-		Page selected = (Page) listViewAside.getSelectionModel().getSelectedItem();
+		Object selected = listViewAside.getSelectionModel().getSelectedItem();
 		if (selected != null) {
 			try {
-				present(cms.getPage(selected.getPageId()));
+				if (selected instanceof Page) {
+					present(cms.getPage(((Page) selected).getPageId()));
+
+				} else if (selected instanceof Product) {
+					present(cms.getProductPage(((Product) selected).getID()));
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
