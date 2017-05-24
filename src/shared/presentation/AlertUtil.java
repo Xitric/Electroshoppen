@@ -52,35 +52,23 @@ public class AlertUtil {
 		switch (type) {
 			case CONFIRMATION:
 				alert = new Alert(Alert.AlertType.CONFIRMATION);
-				alert.setTitle(title);
-				alert.setHeaderText(header);
-				alert.setContentText(content);
 				break;
 			case ERROR:
 				alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle(title);
-				alert.setHeaderText(header);
-				alert.setContentText(content);
 				break;
 			case WARNING:
 				alert = new Alert(Alert.AlertType.WARNING);
-				alert.setTitle(title);
-				alert.setHeaderText(header);
-				alert.setContentText(content);
 				break;
 			case INFORMATION:
 				alert = new Alert(Alert.AlertType.INFORMATION);
-				alert.setTitle(title);
-				alert.setHeaderText(header);
-				alert.setContentText(content);
 				break;
 			default:
 				alert = new Alert(Alert.AlertType.NONE);
-				alert.setTitle(title);
-				alert.setHeaderText(header);
-				alert.setContentText(content);
 				break;
 		}
+		alert.setTitle(title);
+		alert.setHeaderText(header);
+		alert.setContentText(content);
 		return alert;
 	}
 }
