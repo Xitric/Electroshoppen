@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
  */
 public class XMLElement implements Cloneable {
 
-	//TODO: Should we handle both text content and child elements?
-
 	/**
 	 * The name of the attribute to consider as the id of an element.
 	 */
@@ -247,9 +245,24 @@ public class XMLElement implements Cloneable {
 	 *                                  elements is a parent of this xml element
 	 */
 	public void addChildren(Collection<XMLElement> elements) {
-		//TODO: Should we keep adding, even if one insertion fails?
+		List<XMLElement> failed = new ArrayList<>();
+
+		//Insert as many elements as possible
 		for (XMLElement element : elements) {
-			addChild(element);
+			try {
+				addChild(element);
+			} catch (IllegalArgumentException e) {
+				failed.add(element);
+			}
+		}
+
+		//Notify the user if some elements were not inserted
+		if (failed.size() != 0) {
+			StringBuilder msg = new StringBuilder("Error inserting the following elements:");
+			for (XMLElement e : failed) {
+				msg.append("\t").append(e);
+			}
+			throw new IllegalArgumentException(msg.toString());
 		}
 	}
 

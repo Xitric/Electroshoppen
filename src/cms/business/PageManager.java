@@ -121,8 +121,11 @@ class PageManager {
 						case IMAGE:
 							StringBuilder builderImg = new StringBuilder();
 							for (Image img : product.getImages()) {
-								String imageData = encodeToByte64(img.getImage());
-								builderImg.append("<img src=\"").append(imageData).append("\"/>");
+								//This was a quickfix for preventing images in the webshop from becoming too large
+								BufferedImage image = img.getImage();
+								int height = image.getHeight() / image.getWidth() * 300;
+								String imageData = encodeToByte64(image);
+								builderImg.append("<img src=\"").append(imageData).append("\" width=\"200\" height=\"").append(height).append("\"/>");
 							}
 							replacement = builderImg.toString();
 							break;
