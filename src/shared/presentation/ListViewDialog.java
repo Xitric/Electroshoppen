@@ -1,4 +1,4 @@
-package shared.presentation.cms;
+package shared.presentation;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.ButtonBar;
@@ -23,7 +23,7 @@ public class ListViewDialog<T> extends Dialog<T> {
 	 */
 	public ListViewDialog(Collection<T> elements) {
 		ListView<T> pageView = new ListView<>();
-		pageView.setItems(FXCollections.observableArrayList(elements));
+		pageView.setItems(FXCollections.observableArrayList(elements).sorted());
 		getDialogPane().setContent(pageView);
 
 		ButtonType confirmButtonType = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
@@ -38,6 +38,6 @@ public class ListViewDialog<T> extends Dialog<T> {
 		});
 
 		//Style the dialog
-		getDialogPane().getStylesheets().add(getClass().getResource("../electroshop.css").toExternalForm());
+		getDialogPane().getStylesheets().add(getClass().getResource("electroshop.css").toExternalForm());
 	}
 }

@@ -261,7 +261,8 @@ public class DynamicPageImpl implements DynamicPage {
 		if (reference == null || !marker.hasRangeSelection()) return; //Not a valid selection
 
 		String current = reference.getTextContent();
-		//TODO: Test collision
+		if (hasReferenceInRange(current, marker.getStartSelection(), marker.getEndSelection()))
+			throw new IllegalArgumentException("References cannot overlap!");
 
 		//We have ensured that the user has specified sufficient and legal information, so we insert a new reference at
 		//the marker
@@ -287,10 +288,10 @@ public class DynamicPageImpl implements DynamicPage {
 
 		//Loop through all links in the text
 		while (startMatcher.find()) {
-			int startLink = startLink = startMatcher.start();
+			int startLink = startMatcher.start();
 
 			if (endMatcher.find()) {
-				int endLink = endLink = endMatcher.start();
+				int endLink = endMatcher.start();
 
 				//An existing link has been located, so we test for collision
 				if (start < endLink + LINK_END.length() && end > startLink) return true; //Collision detected
@@ -300,6 +301,30 @@ public class DynamicPageImpl implements DynamicPage {
 		//No collision detected
 		return false;
 
+	}
+
+	/**
+	 * Tests if there is a product reference in the specified string in the specified range.
+	 *
+	 * @param text  the string to test
+	 * @param start the beginning of the range, inclusive
+	 * @param end   the end of the range, exclusive
+	 * @return true if a reference was detected, false otherwise
+	 */
+	private boolean hasReferenceInRange(String text, int start, int end) {
+		Matcher matcher = Pattern.compile("(\\[@ref=)[\\w]+( type=)[\\w]+(])").matcher(text);
+
+		//Loop through all references in the text
+		while (matcher.find()) {
+			int startRef = matcher.start();
+			int endRef = matcher.end();
+
+			//An existing link has been located, so we test for collision
+			if (start < endRef && end > startRef) return true; //Collision detected
+		}
+
+		//No collision detected
+		return false;
 	}
 
 	@Override
