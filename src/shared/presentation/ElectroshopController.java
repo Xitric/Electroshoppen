@@ -88,6 +88,8 @@ public class ElectroshopController implements Initializable {
 	public void setCMS(CMS cms) {
 		cmsTabPageController.setCMS(cms);
 		webshopTabPageController.setCMS(cms);
+
+		cmsTabPageController.onEnter();
 	}
 
 	/**
@@ -96,7 +98,7 @@ public class ElectroshopController implements Initializable {
 	 * @param dam the mediator for the dam
 	 */
 	public void setDAM(DAM dam) {
-		//TODO: Product
+		productTabPageController.setDAM(dam);
 		cmsTabPageController.setDAM(dam);
 	}
 
