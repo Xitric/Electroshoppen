@@ -101,12 +101,21 @@ public class WebshopController implements Initializable {
 		try {
 			setListViewFromMap(cms.getProductPages());
 			titledPaneCenter.setText("Products");
-	}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
 
-		titledPaneCenter.setText(centerPane);
+	@FXML
+	private void articlesOnAction(ActionEvent event) {
+		try {
+			setListViewFromMap(cms.getArticlePages());
+			titledPaneCenter.setText("Articles");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@FXML
 	private void guidesOnAction(ActionEvent event) {
 		try {
@@ -126,6 +135,7 @@ public class WebshopController implements Initializable {
 		asideList.setAll(listPage);
 		present(cms.getPage(map.keySet().iterator().next()));
 	}
+
 	private void listViewAsideChanged(javafx.beans.Observable observable) {
 		Page selected = (Page) listViewAside.getSelectionModel().getSelectedItem();
 		if (selected != null) {
