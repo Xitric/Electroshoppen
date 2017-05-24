@@ -152,7 +152,6 @@ public class AttributeController implements Initializable {
 
 		Optional<ButtonType> choice = confirmationDialog.showAndWait();
 		if (choice.isPresent() && choice.get() == ButtonType.OK) {
-			//TODO:
 			try {
 				pim.removeAttribute(selection.getID());
 				attributeList.remove(selection);
@@ -173,7 +172,6 @@ public class AttributeController implements Initializable {
 		selection.setName(attributeNameField.getText());
 		selection.setDefaultValue(defaultValue);
 
-		//TODO:
 		try {
 			pim.saveAttribute(selection);
 			attributeListView.refresh();

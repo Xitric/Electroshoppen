@@ -157,7 +157,6 @@ public class CategoryController implements Initializable {
 		if (selection == null) return;
 
 		selection.setAttributes(listViewAdd.getItems());
-		//TODO:
 		try {
 			pim.saveCategory(selection);
 		} catch (IOException e) {
