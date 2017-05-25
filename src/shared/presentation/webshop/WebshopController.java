@@ -1,23 +1,26 @@
 package shared.presentation.webshop;
 
-import cms.business.CMS;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TitledPane;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
-import pim.business.PIM;
 import pim.business.Product;
+import shared.presentation.AlertUtil;
+import webshop.business.Webshop;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Controller for the web shop view.
@@ -39,32 +42,15 @@ public class WebshopController implements Initializable {
 	/**
 	 * The mediator for the business layer.
 	 */
-	private CMS cms;
-	private PIM pim;
+	private Webshop webshop;
 
 	/**
 	 * Set the business mediator for this controller to use.
 	 *
-	 * @param cms the mediator for the cms
+	 * @param web the mediator for the web shop
 	 */
-	public void setCMS(CMS cms) {
-		this.cms = cms;
-
-		//Attempt to load and show the landing page
-		try {
-			present(cms.getLandingPage());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Set the business mediator for this controller to use.
-	 *
-	 * @param pim the mediator for the pim
-	 */
-	public void setPIM(PIM pim) {
-		this.pim = pim;
+	public void setWebshop(Webshop web) {
+		this.webshop = web;
 	}
 
 	/**
@@ -78,26 +64,27 @@ public class WebshopController implements Initializable {
 	}
 
 	public void onEnter() {
-
+		//Attempt to load and show the landing page
+		try {
+			present(webshop.getLandingPage());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
 	private void cartOnAction(ActionEvent event) {
-		TextInputDialog dialog = new TextInputDialog();
-		dialog.setTitle("Check out");
-		dialog.setHeaderText("Enter your ...");
-		dialog.setContentText("...:");
-		Optional<String> result = dialog.showAndWait();
-		result.ifPresent(name -> {
-		});
+		AlertUtil.newAlertDialog(Alert.AlertType.INFORMATION, "Check Out", "Never implemented",
+				"This functionality was never implemented, as it was not a focus of the project. The button has been left for illustration purposes only.")
+				.showAndWait();
 	}
 
 	@FXML
 	private void landingOnAction(ActionEvent event) {
-		asideList.setAll();
+		asideList.clear();
 		titledPaneCenter.setText("Home");
 		try {
-			present(cms.getLandingPage());
+			present(webshop.getLandingPage());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -106,9 +93,7 @@ public class WebshopController implements Initializable {
 	@FXML
 	private void productsOnAction(ActionEvent event) {
 		try {
-			List<Product> p = new LinkedList<>(pim.getProducts());
-			asideList.setAll(p);
-			present(cms.getProductPage(p.iterator().next().getID()));
+			asideList.setAll(webshop.getAllProducts());
 			titledPaneCenter.setText("Products");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -118,7 +103,7 @@ public class WebshopController implements Initializable {
 	@FXML
 	private void articlesOnAction(ActionEvent event) {
 		try {
-			setListViewFromMap(cms.getArticlePages());
+			setListViewFromMap(webshop.getArticlePages());
 			titledPaneCenter.setText("Articles");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -128,7 +113,7 @@ public class WebshopController implements Initializable {
 	@FXML
 	private void guidesOnAction(ActionEvent event) {
 		try {
-			setListViewFromMap(cms.getGuidePages());
+			setListViewFromMap(webshop.getGuidePages());
 			titledPaneCenter.setText("Guides");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -147,22 +132,21 @@ public class WebshopController implements Initializable {
 			Page p = new Page(entry.getKey(), entry.getValue());
 			listPage.add(p);
 		}
+
 		asideList.setAll(listPage);
-		try {
-			present(cms.getPage(map.keySet().iterator().next()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
+	/**
+	 * Called when the user's selection in the list view to the left changes.
+	 */
 	private void listViewAsideChanged(javafx.beans.Observable observable) {
 		Object selected = listViewAside.getSelectionModel().getSelectedItem();
 		if (selected != null) {
 			try {
 				if (selected instanceof Page) {
-					present(cms.getPage(((Page) selected).getPageId()));
+					present(webshop.getPage(((Page) selected).getPageId()));
 				} else if (selected instanceof Product) {
-					present(cms.getProductPage(((Product) selected).getID()));
+					present(webshop.getProductPage(((Product) selected).getID()));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -175,7 +159,7 @@ public class WebshopController implements Initializable {
 		try {
 			//Calling toString() on the anchor element returns the content of the href attribute, which is the id of the
 			//page we want to access
-			present(cms.getPage(Integer.parseInt(anchor.toString())));
+			present(webshop.getPage(Integer.parseInt(anchor.toString())));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

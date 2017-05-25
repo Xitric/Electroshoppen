@@ -34,14 +34,6 @@ public interface CMS {
 	String getLandingPage() throws IOException;
 
 	/**
-	 * Getting IDs and Names of all landing pages
-	 *
-	 * @return Returns a Map where ID is the key and Name of a page is the Value
-	 * @throws IOException if the operation failed
-	 */
-	Map<Integer, String> getLandingPages () throws IOException;
-
-	/**
 	 * Getting IDs and Names of all guide pages
 	 *
 	 * @return Returns a Map where ID is the key and Name of a page is the Value
@@ -56,15 +48,6 @@ public interface CMS {
 	 * @throws IOException if the operation failed
 	 */
 	Map<Integer, String> getArticlePages () throws IOException;
-
-	/**
-	 * Getting IDs and Names of all product pages
-	 *
-	 * @return Returns a Map where ID is the key and Name of a page is the Value
-	 * @throws IOException if the operation failed
-	 */
-	Map<Integer, String> getProductPages () throws IOException;
-
 
 	 /**
 	 * Get e product page for the product with the specified id.

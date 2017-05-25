@@ -70,11 +70,6 @@ public class CMSImpl implements CMS {
 	}
 
 	@Override
-	public Map<Integer, String> getLandingPages() throws IOException {
-		return persistence.getPagesByType(PageType.LANDING_PAGE.toString());
-	}
-
-	@Override
 	public Map<Integer, String> getGuidePages() throws IOException {
 		return persistence.getPagesByType(PageType.GUIDE.toString());
 	}
@@ -83,13 +78,6 @@ public class CMSImpl implements CMS {
 	public Map<Integer, String> getArticlePages() throws IOException {
 		return persistence.getPagesByType(PageType.ARTICLE.toString());
 	}
-
-	@Override
-	public Map<Integer, String> getProductPages() throws IOException {
-		return persistence.getPagesByType(PageType.PRODUCT_PAGE.toString());
-	}
-
-
 
 	@Override
 	public Collection<Template> getTemplatesForPageType(PageType pageType) throws IOException {

@@ -19,6 +19,7 @@ import shared.presentation.pim.AttributeController;
 import shared.presentation.pim.CategoryController;
 import shared.presentation.pim.ProductController;
 import shared.presentation.webshop.WebshopController;
+import webshop.business.Webshop;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -78,7 +79,6 @@ public class ElectroshopController implements Initializable {
 		categoryTabPageController.setPIM(pim);
 		attributeTabPageController.setPIM(pim);
 		productTabPageController.setPIM(pim);
-		webshopTabPageController.setPIM(pim);
 	}
 
 	/**
@@ -88,9 +88,16 @@ public class ElectroshopController implements Initializable {
 	 */
 	public void setCMS(CMS cms) {
 		cmsTabPageController.setCMS(cms);
-		webshopTabPageController.setCMS(cms);
-
 		cmsTabPageController.onEnter();
+	}
+
+	/**
+	 * Set the web shop facade for this controller to use.
+	 *
+	 * @param web the mediator for the web shop
+	 */
+	public void setWebshop(Webshop web) {
+		webshopTabPageController.setWebshop(web);
 	}
 
 	/**

@@ -5,6 +5,7 @@
  */
 package electroshoppen;
 
+import cms.business.CMS;
 import cms.business.CMSFacade;
 import dam.business.DAM;
 import javafx.application.Application;
@@ -15,6 +16,7 @@ import javafx.stage.Stage;
 import pim.business.PIM;
 import pim.business.PIMFacade;
 import shared.presentation.ElectroshopController;
+import webshop.business.WebshopFacade;
 
 /**
  * Main class for the application.
@@ -32,14 +34,16 @@ public class Electroshoppen extends Application {
 		//Load up the mediators for the controllers
 		ElectroshopController controller = loader.getController();
 		PIM pim = PIMFacade.createPIM();
+		CMS cms = CMSFacade.createCMS(pim);
 		controller.setPIM(pim);
-		controller.setCMS(CMSFacade.createCMS(pim));
+		controller.setCMS(cms);
+		controller.setWebshop(WebshopFacade.createWebshop(cms, pim));
 		controller.setDAM(new DAM((stage.getOwner()))); //Don't mind this, the DAM is a dummy class
 
 		//Set up the scene and show the gui
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
-		stage.setTitle("Next Gen PIM");
+		stage.setTitle("Next Gen PIM/CMS/Webshop");
 		stage.show();
 	}
 
