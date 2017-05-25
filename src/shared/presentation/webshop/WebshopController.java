@@ -93,8 +93,9 @@ public class WebshopController implements Initializable {
 	@FXML
 	private void productsOnAction(ActionEvent event) {
 		try {
-			asideList.setAll(webshop.getAllProducts());
 			titledPaneCenter.setText("Products");
+			asideList.setAll(webshop.getAllProducts());
+			listViewAside.getSelectionModel().selectFirst();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -103,8 +104,9 @@ public class WebshopController implements Initializable {
 	@FXML
 	private void articlesOnAction(ActionEvent event) {
 		try {
-			setListViewFromMap(webshop.getArticlePages());
 			titledPaneCenter.setText("Articles");
+			setListViewFromMap(webshop.getArticlePages());
+			listViewAside.getSelectionModel().selectFirst();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -113,13 +115,13 @@ public class WebshopController implements Initializable {
 	@FXML
 	private void guidesOnAction(ActionEvent event) {
 		try {
-			setListViewFromMap(webshop.getGuidePages());
 			titledPaneCenter.setText("Guides");
+			setListViewFromMap(webshop.getGuidePages());
+			listViewAside.getSelectionModel().selectFirst();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
 
 	/**
 	 * Makes a list from the map with Page objects and show Page names in the list view.
