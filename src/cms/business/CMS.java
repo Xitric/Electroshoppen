@@ -1,10 +1,9 @@
 package cms.business;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import pim.business.Product;
 import shared.Image;
+
 import java.io.IOException;
-import java.sql.Connection;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -42,14 +41,32 @@ public interface CMS {
 	 */
 	Map<Integer, String> getLandingPages () throws IOException;
 
+	/**
+	 * Getting IDs and Names of all guide pages
+	 *
+	 * @return Returns a Map where ID is the key and Name of a page is the Value
+	 * @throws IOException if the operation failed
+	 */
 	Map<Integer, String> getGuidePages () throws IOException;
 
+	/**
+	 * Getting IDs and Names of all article pages
+	 *
+	 * @return Returns a Map where ID is the key and Name of a page is the Value
+	 * @throws IOException if the operation failed
+	 */
 	Map<Integer, String> getArticlePages () throws IOException;
 
+	/**
+	 * Getting IDs and Names of all product pages
+	 *
+	 * @return Returns a Map where ID is the key and Name of a page is the Value
+	 * @throws IOException if the operation failed
+	 */
 	Map<Integer, String> getProductPages () throws IOException;
 
 
-	 /*
+	 /**
 	 * Get e product page for the product with the specified id.
 	 *
 	 * @param productID the id of the product
