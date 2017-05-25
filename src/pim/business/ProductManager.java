@@ -62,9 +62,7 @@ class ProductManager implements ProductChangeListener {
 		Set<Integer> popularProductIds = new HashSet<>();
 		Set<Product> popularProducts = new HashSet<>();
 
-		Iterator<ProductReview> it = reviews.iterator();
-		while (it.hasNext()) {
-			ProductReview next = it.next();
+		for (ProductReview next : reviews) {
 			int productId = next.getProductid();
 			Date date = next.getTime();
 			int rating = next.getRating();
@@ -105,11 +103,10 @@ class ProductManager implements ProductChangeListener {
 
 		}
 
-		Iterator<Integer> ite = popularProductIds.iterator();
-		while (ite.hasNext()){
-			popularProducts.add(persistence.getProductByID(ite.next()));
+		for (Integer popularProductId : popularProductIds) {
+			popularProducts.add(persistence.getProductByID(popularProductId));
 		}
-		return  popularProducts;
+		return popularProducts;
 	}
 
 	/**
