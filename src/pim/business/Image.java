@@ -1,4 +1,4 @@
-package shared;
+package pim.business;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

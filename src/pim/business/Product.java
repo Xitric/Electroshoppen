@@ -1,7 +1,5 @@
 package pim.business;
 
-import shared.Image;
-
 import java.util.*;
 
 /**

@@ -2,7 +2,7 @@ package dam.business;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import shared.Image;
+import pim.business.Image;
 
 import java.io.File;
 

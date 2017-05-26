@@ -1,7 +1,6 @@
 package pim.business;
 
 import pim.persistence.DataCache;
-import shared.Image;
 
 import java.io.IOException;
 import java.util.Collection;

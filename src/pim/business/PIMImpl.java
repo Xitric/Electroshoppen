@@ -2,7 +2,6 @@ package pim.business;
 
 import erp.business.SupplierIntegrator;
 import pim.persistence.PIMPersistenceFactory;
-import shared.Image;
 
 import java.io.IOException;
 import java.util.*;

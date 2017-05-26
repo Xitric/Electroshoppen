@@ -3,7 +3,7 @@ package cms.business;
 import cms.persistence.CMSPersistenceFactory;
 import pim.business.PIM;
 import pim.business.Product;
-import shared.Image;
+import pim.business.Image;
 
 import java.io.IOException;
 import java.util.*;

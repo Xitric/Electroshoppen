@@ -196,7 +196,7 @@ public class ProductController implements Initializable {
 
 	@FXML
 	private void browseButtonOnAction(ActionEvent event) {
-		shared.Image img = dam.getImage();
+		pim.business.Image img = dam.getImage();
 
 		if (img == null || img.getURL() == null) {
 			browseTextField.clear();
@@ -237,7 +237,7 @@ public class ProductController implements Initializable {
 			}
 			product.setTags(allTags);
 
-			List<shared.Image> images = new ArrayList<>();
+			List<pim.business.Image> images = new ArrayList<>();
 			for (Node n: productImagePane.getChildren()) {
 				if (n instanceof RemoveableImage) {
 					RemoveableImage image = (RemoveableImage) n;
@@ -258,7 +258,7 @@ public class ProductController implements Initializable {
 	private void uploadButtonOnAction(ActionEvent event) {
 		try {
 			String url = browseTextField.getText();
-			shared.Image image = pim.createImage(url);
+			pim.business.Image image = pim.createImage(url);
 			productImagePane.getChildren().add(new RemoveableImage(image, this::removeImage));
 		} catch (IOException e) {
 			AlertUtil.newAlertDialog(
@@ -329,7 +329,7 @@ public class ProductController implements Initializable {
 
 			//Set images
 			productImagePane.getChildren().clear();
-			for (shared.Image img : product.getImages()) {
+			for (pim.business.Image img : product.getImages()) {
 				productImagePane.getChildren().add(new RemoveableImage(img, this::removeImage));
 			}
 		} else { //Else clear the fields

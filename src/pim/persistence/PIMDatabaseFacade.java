@@ -2,7 +2,6 @@ package pim.persistence;
 
 import pim.business.*;
 import shared.DBUtil;
-import shared.Image;
 
 import java.io.*;
 import java.sql.Connection;

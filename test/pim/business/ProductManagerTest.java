@@ -3,7 +3,6 @@ package pim.business;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import pim.persistence.PIMPersistenceFactory;
-import shared.Image;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

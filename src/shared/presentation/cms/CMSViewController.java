@@ -14,7 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import org.w3c.dom.html.HTMLElement;
 import pim.business.Product;
-import shared.Image;
+import pim.business.Image;
 import shared.presentation.AlertUtil;
 import shared.presentation.ListViewDialog;
 

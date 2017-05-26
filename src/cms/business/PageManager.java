@@ -2,7 +2,7 @@ package cms.business;
 
 import pim.business.Product;
 import pim.business.Tag;
-import shared.Image;
+import pim.business.Image;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

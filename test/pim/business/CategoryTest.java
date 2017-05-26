@@ -26,6 +26,11 @@ class CategoryTest {
 		someCategory.addAttribute(someAttribute);
 		Assertions.assertTrue(someCategory.getAttributes().size() == 1 && someCategory.getAttributes().contains(someAttribute));
 		Assertions.assertTrue(p.getAttributeValues().size() == 1 && p.getAttributeValues().get(0).getValue().equals(someAttribute.getDefaultValue()));
+
+		//Add existing attribute
+		someCategory.addAttribute(someAttribute);
+		Assertions.assertTrue(someCategory.getAttributes().size() == 1 && someCategory.getAttributes().contains(someAttribute));
+		Assertions.assertTrue(p.getAttributeValues().size() == 1 && p.getAttributeValues().get(0).getValue().equals(someAttribute.getDefaultValue()));
 	}
 
 	@Test
@@ -40,6 +45,11 @@ class CategoryTest {
 		someCategory.addAttribute(someAttribute2);
 
 		//Remove an attribute
+		someCategory.removeAttribute(someAttribute1);
+		Assertions.assertTrue(someCategory.getAttributes().size() == 1 && someCategory.getAttributes().contains(someAttribute2));
+		Assertions.assertTrue(p.getAttributeValues().size() == 1 && p.getAttributeValues().get(0).getValue().equals(someAttribute2.getDefaultValue()));
+
+		//Remove nonexistent attribute
 		someCategory.removeAttribute(someAttribute1);
 		Assertions.assertTrue(someCategory.getAttributes().size() == 1 && someCategory.getAttributes().contains(someAttribute2));
 		Assertions.assertTrue(p.getAttributeValues().size() == 1 && p.getAttributeValues().get(0).getValue().equals(someAttribute2.getDefaultValue()));

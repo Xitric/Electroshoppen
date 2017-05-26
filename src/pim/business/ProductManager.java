@@ -1,7 +1,5 @@
 package pim.business;
 
-import shared.Image;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;

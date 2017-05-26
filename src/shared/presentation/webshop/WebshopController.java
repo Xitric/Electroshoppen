@@ -60,7 +60,7 @@ public class WebshopController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		asideList = FXCollections.observableArrayList();
 		listViewAside.setItems(asideList);
-		listViewAside.getSelectionModel().selectedItemProperty().addListener(this::listViewAsideChanged);
+		listViewAside.getSelectionModel().selectedItemProperty().addListener(this::listViewSelectionChanged);
 	}
 
 	public void onEnter() {
@@ -141,7 +141,7 @@ public class WebshopController implements Initializable {
 	/**
 	 * Called when the user's selection in the list view to the left changes.
 	 */
-	private void listViewAsideChanged(javafx.beans.Observable observable) {
+	private void listViewSelectionChanged(javafx.beans.Observable observable) {
 		Object selected = listViewAside.getSelectionModel().getSelectedItem();
 		if (selected != null) {
 			try {
