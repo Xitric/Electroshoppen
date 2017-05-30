@@ -241,9 +241,11 @@ public class ProductController implements Initializable {
 
 			//Tags
 			ArrayList<Tag> allTags = new ArrayList<>();
-			String[] tagArray = tagTextArea.getText().split(", ");
-			for(String tag : tagArray){
-				allTags.add(pim.createTag(tag));
+			if (! tagTextArea.getText().isEmpty()) {
+				String[] tagArray = tagTextArea.getText().split(", ");
+				for(String tag : tagArray){
+					allTags.add(pim.createTag(tag));
+				}
 			}
 			product.setTags(allTags);
 
