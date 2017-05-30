@@ -1,12 +1,6 @@
 #This is a comment line, it will be ignored by the parser. The line format is:
 #id:name:price
-0:Logitech G500:99,99
-1:Some Product 1:9,99
-2:Some Product 2:14,99
-3:Some Product 3:54,99
-4:Some Product 4:34,99
-5:Some Product 5:29,99
-6:Some Product 6:119,99
-7:Some Product 7:109,99
-8:Some Product 8:89,99
-9:Some Product 9:9,99
+1000:Das Keyboard 4 Professional:1299,99
+1001:CODE keyboard:1099,99
+1002:Acer H277h:2399,99
+1003:Acer H277hu:3399,99

@@ -64,7 +64,6 @@
     background-size: cover;
     transform: rotate(45deg);
     border: 0;
-    /*TODO: no border on button?*/
 }
 
 .deleter:active {

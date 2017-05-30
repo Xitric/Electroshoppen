@@ -305,14 +305,11 @@ public class CMSViewController implements Initializable {
 
 	@FXML
 	private void browseProductOnAction(ActionEvent event) throws IOException {
-		//TODO: Select from product list
 		ListViewDialog<Product> productDialog = new ListViewDialog<>(cms.getAllProducts());
 		productDialog.setTitle("Select product");
 		productDialog.setHeaderText("Select product to insert");
 		Optional<Product> result = productDialog.showAndWait();
-		result.ifPresent(product -> {
-			productIdField.setText(Integer.toString(product.getID()));
-		});
+		result.ifPresent(product -> productIdField.setText(Integer.toString(product.getID())));
 	}
 
 	@FXML

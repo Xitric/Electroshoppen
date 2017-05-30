@@ -20,6 +20,7 @@
          <content>
             <VBox spacing="8.0">
                <children>
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#synchronizeButtonOnAction" text="Synchronize with ERP" VBox.vgrow="ALWAYS" />
                   <HBox alignment="CENTER_LEFT" spacing="4.0">
                      <children>
                         <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshButtonOnAction" />

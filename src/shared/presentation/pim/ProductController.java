@@ -173,13 +173,23 @@ public class ProductController implements Initializable {
 	}
 
 	@FXML
+	private void synchronizeButtonOnAction(ActionEvent event) {
+		pim.synchronize();
+		try {
+			populateTreeView(pim.getProducts(), true);
+		} catch (IOException e) {
+			AlertUtil.newErrorAlert("PIM Error", "Error retrieving products from the PIM").showAndWait();
+		}
+	}
+
+	@FXML
 	private void addButtonOnAction(ActionEvent event) {
 		Category selection = availableCategoriesView.getSelectionModel().getSelectedItem();
 		if (selection != null) {
 			availableCategories.remove(selection);
 			containedCategories.add(selection);
 
-			//TODO: How do we handle new attributes?
+			//New attributes have not been handled. The user must save and refresh manually
 		}
 	}
 
@@ -190,7 +200,7 @@ public class ProductController implements Initializable {
 			availableCategories.add(selection);
 			containedCategories.remove(selection);
 
-			//TODO: How do we handle lost attributes?
+			//Lost attributes have not been handled. The user must save and refresh manually
 		}
 	}
 
