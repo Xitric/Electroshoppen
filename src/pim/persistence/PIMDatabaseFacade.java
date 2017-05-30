@@ -19,8 +19,8 @@ import java.util.Set;
 class PIMDatabaseFacade implements PIMPersistenceFacade {
 
 	/* Variables for database connection */
-	private final static String url = "jdbc:postgresql://46.101.142.251:5432/electroshop";
-//	private final static String url = "jdbc:postgresql://localhost/NAME_HERE"; Use this if a local database is desired
+//	private final static String url = "jdbc:postgresql://46.101.142.251:5432/electroshop";
+	private final static String url = "jdbc:postgresql://localhost:5432/PIM";
 	private final static String user = "postgres";
 	private final static String password = "1234";
 
