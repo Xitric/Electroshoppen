@@ -12,6 +12,7 @@ import javafx.scene.image.ImageView;
 import pim.business.Attribute;
 import pim.business.PIM;
 import shared.presentation.AlertUtil;
+import shared.presentation.ListViewDialog;
 
 import java.io.IOException;
 import java.net.URL;
@@ -138,9 +139,16 @@ public class AttributeController implements Initializable {
 
 	@FXML
 	private void editDefaultButtonOnAction(ActionEvent event) {
-		//Show attribute dialog and get result
-		Optional result = ValueSelectorFactory.getDialogValueSelectorForType(
-				ValueSelectorFactory.AttributeType.fromClass(defaultValue.getClass())).showAndWait();
+		Optional result;
+
+		if (attributeLegalValuesList.isEmpty()) { //Unrestricted
+			//Show attribute dialog and get result
+			result = ValueSelectorFactory.getDialogValueSelectorForType(
+					ValueSelectorFactory.AttributeType.fromClass(defaultValue.getClass())).showAndWait();
+		} else { //Restricted
+			Dialog dialog = new ListViewDialog<>(attributeLegalValuesList);
+			result = dialog.showAndWait();
+		}
 
 		//If a value was selected, update it
 		if (result.isPresent()) {
