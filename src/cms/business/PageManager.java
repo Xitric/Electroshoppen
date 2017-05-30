@@ -1,8 +1,8 @@
 package cms.business;
 
+import pim.business.Image;
 import pim.business.Product;
 import pim.business.Tag;
-import pim.business.Image;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -136,9 +136,15 @@ class PageManager {
 							Set<Tag> tags = product.getTags();
 							StringBuilder builder = new StringBuilder();
 							for (Tag t : tags) {
-								builder.append(t.toString());
+								builder.append(t.toString()).append(", ");
 							}
-							replacement = builder.toString();
+
+							if (builder.length() != 0) {
+								replacement = builder.delete(builder.length() - 2, builder.length()).toString();
+							} else {
+								replacement = "";
+							}
+
 							break;
 					}
 				}
