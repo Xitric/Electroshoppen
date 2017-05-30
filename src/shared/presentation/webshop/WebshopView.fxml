@@ -51,23 +51,12 @@
          </content>
       </TitledPane>
    </center>
-   <bottom>
-      <HBox fx:id="footerHbox" prefHeight="17.0" prefWidth="606.0" BorderPane.alignment="CENTER">
-         <children>
-            <ImageView fitHeight="150.0" fitWidth="500.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@paymentIcons.png" />
-               </image>
-            </ImageView>
-         </children>
-      </HBox>
-   </bottom>
    <left>
       <TitledPane fx:id="titledPaneLeft" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" prefWidth="163.0" text="Pages" BorderPane.alignment="CENTER">
          <content>
             <VBox prefWidth="100.0">
                <children>
-                  <ListView fx:id="listViewAside" maxHeight="1.7976931348623157E308" prefWidth="200.0" />
+                  <ListView fx:id="listViewAside" maxHeight="1.7976931348623157E308" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
          </content></TitledPane>
