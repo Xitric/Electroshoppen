@@ -244,6 +244,23 @@ public class CMSViewController implements Initializable {
 	}
 
 	@FXML
+	private void helpOnAction(ActionEvent event) {
+		AlertUtil.newAlertDialog(Alert.AlertType.INFORMATION, "How to use", "Quick guide for Next Gen CMS",
+				"Select an existing page from the list on the left, or create a new page by going to File -> New...\n\n" +
+						"Press an element in the view on the right to select it. If a parent container element is selected, items can only be inserted into it. " +
+						"Otherwise, items can be inserted before, after, or into the element using the corresponding (+) buttons. An element can also be removed " +
+						"by pressing the (x) button in the top right corner of the selection.\n\n" +
+						"To insert a specific type of element, select its radio button in the tool window below the editor.\n\n" +
+						"Product references and page links are special, in that they require that some of the text on the page is highlighted. Also, they are " +
+						"inserted using the middle insert button (insert into). They will replace the highlighted text. Text in the editor can be double-clicked " +
+						"to edit it directly.\n\n" +
+						"When inserting text, most html markup is supported.\n\n" +
+						"When you are done, be sure to press the 'Save' button in the lower-right corner. Otherwise your changes will be lost if you switch to " +
+						"another page.")
+				.showAndWait();
+	}
+
+	@FXML
 	private void newPageOnAction(ActionEvent event) {
 		//Show dialog to user
 		NewPageDialog dialog = new NewPageDialog(cms);
