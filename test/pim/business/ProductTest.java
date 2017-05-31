@@ -35,7 +35,7 @@ class ProductTest {
 		p.addCategory(someCategory1);
 		Assertions.assertTrue(p.getCategories().size() == 1 && p.getCategories().contains(someCategory1));
 		Assertions.assertTrue(p.getAttributeValues().size() == 2);
-		for (Attribute.AttributeValue value: p.getAttributeValues()) {
+		for (Attribute.AttributeValue value : p.getAttributeValues()) {
 			Assertions.assertTrue(Arrays.asList(firstAttribute, secondAttribute).contains(value.getParent()));
 			Assertions.assertTrue(value.getParent().getDefaultValue() == value.getValue());
 		}
@@ -44,7 +44,7 @@ class ProductTest {
 		p.addCategory(someCategory2);
 		Assertions.assertTrue(p.getCategories().size() == 2 && p.getCategories().containsAll(Arrays.asList(someCategory1, someCategory2)));
 		Assertions.assertTrue(p.getAttributeValues().size() == 2);
-		for (Attribute.AttributeValue value: p.getAttributeValues()) {
+		for (Attribute.AttributeValue value : p.getAttributeValues()) {
 			Assertions.assertTrue(Arrays.asList(firstAttribute, secondAttribute).contains(value.getParent()));
 			Assertions.assertTrue(value.getParent().getDefaultValue() == value.getValue());
 		}
@@ -53,7 +53,7 @@ class ProductTest {
 		p.addCategory(someCategory3);
 		Assertions.assertTrue(p.getCategories().size() == 3 && p.getCategories().containsAll(Arrays.asList(someCategory1, someCategory2, someCategory3)));
 		Assertions.assertTrue(p.getAttributeValues().size() == 3);
-		for (Attribute.AttributeValue value: p.getAttributeValues()) {
+		for (Attribute.AttributeValue value : p.getAttributeValues()) {
 			Assertions.assertTrue(Arrays.asList(firstAttribute, secondAttribute, thirdAttribute).contains(value.getParent()));
 			Assertions.assertTrue(value.getParent().getDefaultValue() == value.getValue());
 		}
@@ -77,7 +77,7 @@ class ProductTest {
 		p.removeCategory(someCategory3);
 		Assertions.assertTrue(p.getCategories().size() == 2 && p.getCategories().containsAll(Arrays.asList(someCategory1, someCategory2)));
 		Assertions.assertTrue(p.getAttributeValues().size() == 3);
-		for (Attribute.AttributeValue value: p.getAttributeValues()) {
+		for (Attribute.AttributeValue value : p.getAttributeValues()) {
 			Assertions.assertTrue(Arrays.asList(firstAttribute, secondAttribute, thirdAttribute).contains(value.getParent()));
 			Assertions.assertTrue(value.getParent().getDefaultValue() == value.getValue());
 		}
@@ -86,7 +86,7 @@ class ProductTest {
 		p.removeCategory(someCategory2);
 		Assertions.assertTrue(p.getCategories().size() == 1 && p.getCategories().containsAll(Collections.singletonList(someCategory1)));
 		Assertions.assertTrue(p.getAttributeValues().size() == 2);
-		for (Attribute.AttributeValue value: p.getAttributeValues()) {
+		for (Attribute.AttributeValue value : p.getAttributeValues()) {
 			Assertions.assertTrue(Arrays.asList(firstAttribute, secondAttribute).contains(value.getParent()));
 			Assertions.assertTrue(value.getParent().getDefaultValue() == value.getValue());
 		}
@@ -106,7 +106,7 @@ class ProductTest {
 		//Add invalid attribute thirdAttribute
 		p.setAttribute(thirdAttribute, new Object());
 		Assertions.assertTrue(p.getAttributeValues().size() == 2);
-		for (Attribute.AttributeValue value: p.getAttributeValues()) {
+		for (Attribute.AttributeValue value : p.getAttributeValues()) {
 			Assertions.assertTrue(Arrays.asList(firstAttribute, secondAttribute).contains(value.getParent()));
 			Assertions.assertTrue(value.getParent().getDefaultValue() == value.getValue());
 		}
@@ -114,7 +114,7 @@ class ProductTest {
 		//Add invalid attribute value 'e'
 		Assertions.assertThrows(IllegalArgumentException.class, () -> p.setAttribute(secondAttribute, 'e'));
 		Assertions.assertTrue(p.getAttributeValues().size() == 2);
-		for (Attribute.AttributeValue value: p.getAttributeValues()) {
+		for (Attribute.AttributeValue value : p.getAttributeValues()) {
 			Assertions.assertTrue(Arrays.asList(firstAttribute, secondAttribute).contains(value.getParent()));
 			Assertions.assertTrue(value.getParent().getDefaultValue() == value.getValue());
 		}
@@ -122,7 +122,7 @@ class ProductTest {
 		//Add legal attribute value 'a'
 		p.setAttribute(secondAttribute, 'a');
 		Assertions.assertTrue(p.getAttributeValues().size() == 2);
-		for (Attribute.AttributeValue value: p.getAttributeValues()) {
+		for (Attribute.AttributeValue value : p.getAttributeValues()) {
 			Assertions.assertTrue(Arrays.asList(firstAttribute, secondAttribute).contains(value.getParent()));
 			if (value.getParent() == firstAttribute) {
 				Assertions.assertTrue(value.getParent().getDefaultValue() == value.getValue());

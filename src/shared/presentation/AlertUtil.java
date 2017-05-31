@@ -41,13 +41,13 @@ public class AlertUtil {
 	 * Constructs a new alert of any type, depending on the arguments given.
 	 * The alert is populated by the corresponding String arguments
 	 *
-	 * @param type		The type of alert
-	 * @param title		The title text of the alert dialog
-	 * @param header	The header text of the alert dialog
-	 * @param content	The content text of the alert dialog
-	 * @return	Returns an alert dialog using the arguments given
+	 * @param type    The type of alert
+	 * @param title   The title text of the alert dialog
+	 * @param header  The header text of the alert dialog
+	 * @param content The content text of the alert dialog
+	 * @return Returns an alert dialog using the arguments given
 	 */
-	public static Alert newAlertDialog(Alert.AlertType type, String title, String header,String content) {
+	public static Alert newAlertDialog(Alert.AlertType type, String title, String header, String content) {
 		Alert alert;
 		switch (type) {
 			case CONFIRMATION:

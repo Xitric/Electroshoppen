@@ -67,7 +67,7 @@ class XMLElementTest {
 		Assertions.assertEquals(element1.getTagName(), "p");
 		Assertions.assertTrue(element1.getTextContent().isEmpty());
 		Assertions.assertTrue(element1.isRoot());
-		for (String att: attributes.keySet()) {
+		for (String att : attributes.keySet()) {
 			Assertions.assertEquals(element1.getAttribute(att), attributes.get(att));
 		}
 
@@ -80,7 +80,7 @@ class XMLElementTest {
 		Assertions.assertEquals(element3.getTagName(), "p");
 		Assertions.assertEquals(element3.getTextContent(), "Hello, world!");
 		Assertions.assertTrue(element1.isRoot());
-		for (String att: attributes.keySet()) {
+		for (String att : attributes.keySet()) {
 			Assertions.assertEquals(element3.getAttribute(att), attributes.get(att));
 		}
 	}
@@ -102,7 +102,7 @@ class XMLElementTest {
 		XMLElement element1 = root.createChild("p", null, attributes);
 		Assertions.assertEquals(element1.getTagName(), "p");
 		Assertions.assertTrue(element1.getTextContent().isEmpty());
-		for (String att: attributes.keySet()) {
+		for (String att : attributes.keySet()) {
 			Assertions.assertEquals(element1.getAttribute(att), attributes.get(att));
 		}
 		Assertions.assertEquals(element1.getParent(), root);
@@ -117,7 +117,7 @@ class XMLElementTest {
 		XMLElement element3 = root.createChild("p", "Hello, world!", attributes);
 		Assertions.assertEquals(element3.getTagName(), "p");
 		Assertions.assertEquals(element3.getTextContent(), "Hello, world!");
-		for (String att: attributes.keySet()) {
+		for (String att : attributes.keySet()) {
 			Assertions.assertEquals(element3.getAttribute(att), attributes.get(att));
 		}
 		Assertions.assertEquals(element3.getParent(), root);
