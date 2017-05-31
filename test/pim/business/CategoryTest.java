@@ -1,7 +1,7 @@
 package pim.business;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Test class for {@link Product}. This class tests the following methods:
@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
  *
  * @author Kasper
  */
-class CategoryTest {
+public class CategoryTest {
 
 	@Test
-	void addAttribute() {
+	public void addAttribute() {
 		//Set up
 		Product p = new Product(1, "Some product", "Some product description", 14.99);
 		Category someCategory = new Category("Some category");
@@ -24,17 +24,17 @@ class CategoryTest {
 
 		//Add an attribute
 		someCategory.addAttribute(someAttribute);
-		Assertions.assertTrue(someCategory.getAttributes().size() == 1 && someCategory.getAttributes().contains(someAttribute));
-		Assertions.assertTrue(p.getAttributeValues().size() == 1 && p.getAttributeValues().get(0).getValue().equals(someAttribute.getDefaultValue()));
+		Assert.assertTrue(someCategory.getAttributes().size() == 1 && someCategory.getAttributes().contains(someAttribute));
+		Assert.assertTrue(p.getAttributeValues().size() == 1 && p.getAttributeValues().get(0).getValue().equals(someAttribute.getDefaultValue()));
 
 		//Add existing attribute
 		someCategory.addAttribute(someAttribute);
-		Assertions.assertTrue(someCategory.getAttributes().size() == 1 && someCategory.getAttributes().contains(someAttribute));
-		Assertions.assertTrue(p.getAttributeValues().size() == 1 && p.getAttributeValues().get(0).getValue().equals(someAttribute.getDefaultValue()));
+		Assert.assertTrue(someCategory.getAttributes().size() == 1 && someCategory.getAttributes().contains(someAttribute));
+		Assert.assertTrue(p.getAttributeValues().size() == 1 && p.getAttributeValues().get(0).getValue().equals(someAttribute.getDefaultValue()));
 	}
 
 	@Test
-	void removeAttribute() {
+	public void removeAttribute() {
 		//Set up
 		Product p = new Product(1, "Some product", "Some product description", 14.99);
 		Category someCategory = new Category("Some category");
@@ -46,12 +46,12 @@ class CategoryTest {
 
 		//Remove an attribute
 		someCategory.removeAttribute(someAttribute1);
-		Assertions.assertTrue(someCategory.getAttributes().size() == 1 && someCategory.getAttributes().contains(someAttribute2));
-		Assertions.assertTrue(p.getAttributeValues().size() == 1 && p.getAttributeValues().get(0).getValue().equals(someAttribute2.getDefaultValue()));
+		Assert.assertTrue(someCategory.getAttributes().size() == 1 && someCategory.getAttributes().contains(someAttribute2));
+		Assert.assertTrue(p.getAttributeValues().size() == 1 && p.getAttributeValues().get(0).getValue().equals(someAttribute2.getDefaultValue()));
 
 		//Remove nonexistent attribute
 		someCategory.removeAttribute(someAttribute1);
-		Assertions.assertTrue(someCategory.getAttributes().size() == 1 && someCategory.getAttributes().contains(someAttribute2));
-		Assertions.assertTrue(p.getAttributeValues().size() == 1 && p.getAttributeValues().get(0).getValue().equals(someAttribute2.getDefaultValue()));
+		Assert.assertTrue(someCategory.getAttributes().size() == 1 && someCategory.getAttributes().contains(someAttribute2));
+		Assert.assertTrue(p.getAttributeValues().size() == 1 && p.getAttributeValues().get(0).getValue().equals(someAttribute2.getDefaultValue()));
 	}
 }

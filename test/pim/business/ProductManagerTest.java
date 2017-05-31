@@ -1,7 +1,5 @@
 package pim.business;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import pim.persistence.PIMPersistenceFactory;
 
 import javax.imageio.ImageIO;
@@ -11,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Test class for {@link Product}. This class tests the following methods:
@@ -20,10 +20,10 @@ import java.util.Set;
  *
  * @author Kasper
  */
-class ProductManagerTest {
+public class ProductManagerTest {
 
 	@Test
-	void getProduct() {
+	public void getProduct() {
 		//Set up
 		PIMPersistenceFacade persistence = PIMPersistenceFactory.createDatabaseMediator();
 		ProductManager pManager = new ProductManager(persistence);
@@ -37,48 +37,48 @@ class ProductManagerTest {
 			Product p = pManager.getProduct(30);
 
 			//Test basic data
-			Assertions.assertEquals(p.getID(), 30);
-			Assertions.assertEquals(p.getName(), "HP OMEN 15-AX005NO");
-			Assertions.assertEquals(p.getDescription(), "Cool gaming laptop.\n" +
-					"Specs: Intel core I7-6700HQ (2,5 - 3,6 Ghz), Nvidia GeForce GTX 960M with 4GB og dedicated DDR5 memory, 8GB DDR4 memory, 256GB M.2 NVMe SSD, 15,6\" (1920 x 1080), Windows 10.");
-			Assertions.assertEquals(p.getPrice(), 8999.95);
+			Assert.assertEquals(30, p.getID());
+			Assert.assertEquals("HP OMEN 15-AX005NO", p.getName());
+			Assert.assertEquals("Cool gaming laptop.\n" +
+					"Specs: Intel core I7-6700HQ (2,5 - 3,6 Ghz), Nvidia GeForce GTX 960M with 4GB og dedicated DDR5 memory, 8GB DDR4 memory, 256GB M.2 NVMe SSD, 15,6\" (1920 x 1080), Windows 10.", p.getDescription());
+			Assert.assertEquals(8999.95, p.getPrice(), 0.0);
 
 			//Test categories
 			Set<String> expectedCategories = new HashSet<>(Collections.singletonList("Laptops"));
-			Assertions.assertTrue(p.getCategories().size() == expectedCategories.size());
+			Assert.assertTrue(p.getCategories().size() == expectedCategories.size());
 			for (Category c : p.getCategories()) {
-				Assertions.assertTrue(expectedCategories.contains(c.getName()));
+				Assert.assertTrue(expectedCategories.contains(c.getName()));
 			}
 
 			//Test attributes
 			Set<Integer> expectedAttributes = new HashSet<>(Arrays.asList(3, 4, 6, 7, 8, 12));
-			Assertions.assertTrue(p.getAttributeValues().size() == expectedAttributes.size());
+			Assert.assertTrue(p.getAttributeValues().size() == expectedAttributes.size());
 			for (Attribute.AttributeValue a : p.getAttributeValues()) {
-				Assertions.assertTrue(expectedAttributes.contains(a.getParent().getID()));
+				Assert.assertTrue(expectedAttributes.contains(a.getParent().getID()));
 			}
 
 			//Test tags
 			Set<String> expectedTags = new HashSet<>(Arrays.asList("Value-product", "Epic", "Must-have"));
-			Assertions.assertTrue(p.getTags().size() == expectedTags.size());
+			Assert.assertTrue(p.getTags().size() == expectedTags.size());
 			for (Tag t : p.getTags()) {
-				Assertions.assertTrue(expectedTags.contains(t.getName()));
+				Assert.assertTrue(expectedTags.contains(t.getName()));
 			}
 
 			//Test images
 			BufferedImage expectedImage = ImageIO.read(getClass().getResourceAsStream("omen-ax005no.jpg"));
-			Assertions.assertTrue(p.getImages().size() == 1);
+			Assert.assertTrue(p.getImages().size() == 1);
 			for (Image i : p.getImages()) {
-				Assertions.assertTrue(compareImages(i.getImage(), expectedImage));
+				Assert.assertTrue(compareImages(i.getImage(), expectedImage));
 			}
 		} catch (IOException e) {
-			Assertions.fail("Database connection might be lost, try again", e);
+			Assert.fail("Database connection might be lost, try again");
 		}
 
 		//Try reading a nonexistent product
 		try {
-			Assertions.assertTrue(pManager.getProduct(-1) == null);
+			Assert.assertTrue(pManager.getProduct(-1) == null);
 		} catch (IOException e) {
-			Assertions.fail("Database connection might be lost, try again", e);
+			Assert.fail("Database connection might be lost, try again");
 		}
 	}
 

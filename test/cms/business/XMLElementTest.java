@@ -1,17 +1,16 @@
 package cms.business;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.Assert;
 
 /**
  * @author Kasper
  */
-class XMLElementTest {
+public class XMLElementTest {
 
 	private static XMLElement tree;
 	private static XMLElement head;
@@ -22,8 +21,8 @@ class XMLElementTest {
 	private static XMLElement div3;
 	private static XMLElement p;
 
-	@BeforeAll
-	static void prepTree() {
+	@Before
+	public void prepTree() {
 		tree = XMLElement.createRoot("html");
 		head = XMLElement.createRoot("head");
 		tree.addChild(head);
@@ -55,33 +54,33 @@ class XMLElementTest {
 	//Null or empty text content
 	//Null attributes map
 	//All proper input
-	@Test
-	void createRoot() {
+	@Test(expected=IllegalArgumentException.class)
+	public void createRoot() {
 		Map<String, String> attributes = new HashMap<>();
 		attributes.put("a1", "v1");
 		attributes.put("a2", "v2");
-
-		Assertions.assertThrows(IllegalArgumentException.class, () -> XMLElement.createRoot(null, "Hello, world!", attributes));
+		
+		XMLElement.createRoot(null, "Hello, world!", attributes);
 
 		XMLElement element1 = XMLElement.createRoot("p", null, attributes);
-		Assertions.assertEquals(element1.getTagName(), "p");
-		Assertions.assertTrue(element1.getTextContent().isEmpty());
-		Assertions.assertTrue(element1.isRoot());
+		Assert.assertEquals("p", element1.getTagName());
+		Assert.assertTrue(element1.getTextContent().isEmpty());
+		Assert.assertTrue(element1.isRoot());
 		for (String att : attributes.keySet()) {
-			Assertions.assertEquals(element1.getAttribute(att), attributes.get(att));
+			Assert.assertEquals(element1.getAttribute(att), attributes.get(att));
 		}
 
 		XMLElement element2 = XMLElement.createRoot("p", "Hello, world!", null);
-		Assertions.assertEquals(element2.getTagName(), "p");
-		Assertions.assertEquals(element2.getTextContent(), "Hello, world!");
-		Assertions.assertTrue(element1.isRoot());
+		Assert.assertEquals("p", element2.getTagName());
+		Assert.assertEquals("Hello, world!", element2.getTextContent());
+		Assert.assertTrue(element1.isRoot());
 
 		XMLElement element3 = XMLElement.createRoot("p", "Hello, world!", attributes);
-		Assertions.assertEquals(element3.getTagName(), "p");
-		Assertions.assertEquals(element3.getTextContent(), "Hello, world!");
-		Assertions.assertTrue(element1.isRoot());
+		Assert.assertEquals("p", element3.getTagName());
+		Assert.assertEquals("Hello, world!", element3.getTextContent());
+		Assert.assertTrue(element1.isRoot());
 		for (String att : attributes.keySet()) {
-			Assertions.assertEquals(element3.getAttribute(att), attributes.get(att));
+			Assert.assertEquals(element3.getAttribute(att), attributes.get(att));
 		}
 	}
 
@@ -90,40 +89,40 @@ class XMLElementTest {
 	//Null or empty text content
 	//Null attributes map
 	//All proper input
-	@Test
-	void createChild() {
+	@Test(expected=IllegalArgumentException.class)
+	public void createChild() {
 		Map<String, String> attributes = new HashMap<>();
 		attributes.put("a1", "v1");
 		attributes.put("a2", "v2");
 		XMLElement root = XMLElement.createRoot("root");
 
-		Assertions.assertThrows(IllegalArgumentException.class, () -> root.createChild(null, "Hello, world!", attributes));
+		root.createChild(null, "Hello, world!", attributes);
 
 		XMLElement element1 = root.createChild("p", null, attributes);
-		Assertions.assertEquals(element1.getTagName(), "p");
-		Assertions.assertTrue(element1.getTextContent().isEmpty());
+		Assert.assertEquals("p", element1.getTagName());
+		Assert.assertTrue(element1.getTextContent().isEmpty());
 		for (String att : attributes.keySet()) {
-			Assertions.assertEquals(element1.getAttribute(att), attributes.get(att));
+			Assert.assertEquals(element1.getAttribute(att), attributes.get(att));
 		}
-		Assertions.assertEquals(element1.getParent(), root);
-		Assertions.assertTrue(root.contains(element1));
+		Assert.assertEquals(element1.getParent(), root);
+		Assert.assertTrue(root.contains(element1));
 
 		XMLElement element2 = root.createChild("p", "Hello, world!", null);
-		Assertions.assertEquals(element2.getTagName(), "p");
-		Assertions.assertEquals(element2.getTextContent(), "Hello, world!");
-		Assertions.assertEquals(element2.getParent(), root);
-		Assertions.assertTrue(root.contains(element2));
+		Assert.assertEquals("p", element2.getTagName());
+		Assert.assertEquals("Hello, world!", element2.getTextContent());
+		Assert.assertEquals(element2.getParent(), root);
+		Assert.assertTrue(root.contains(element2));
 
 		XMLElement element3 = root.createChild("p", "Hello, world!", attributes);
-		Assertions.assertEquals(element3.getTagName(), "p");
-		Assertions.assertEquals(element3.getTextContent(), "Hello, world!");
+		Assert.assertEquals("p", element3.getTagName());
+		Assert.assertEquals("Hello, world!", element3.getTextContent());
 		for (String att : attributes.keySet()) {
-			Assertions.assertEquals(element3.getAttribute(att), attributes.get(att));
+			Assert.assertEquals(element3.getAttribute(att), attributes.get(att));
 		}
-		Assertions.assertEquals(element3.getParent(), root);
-		Assertions.assertTrue(root.contains(element3));
+		Assert.assertEquals(element3.getParent(), root);
+		Assert.assertTrue(root.contains(element3));
 
-		Assertions.assertTrue(root.getChildren().size() == 3);
+		Assert.assertTrue(root.getChildren().size() == 3);
 	}
 
 	//Possible input:
@@ -132,33 +131,33 @@ class XMLElementTest {
 	//A parent of the element
 	//A child with an existing parent
 	//A child with no existing parent
-	@Test
-	void addChild() {
+	@Test(expected=IllegalArgumentException.class)
+	public void addChild() {
 		XMLElement root = XMLElement.createRoot("p");
 		XMLElement child1 = XMLElement.createRoot("p");
 		XMLElement rootNew = XMLElement.createRoot("p");
 
 		//The element itself
-		Assertions.assertThrows(IllegalArgumentException.class, () -> root.addChild(root));
+		root.addChild(root);
 
 		//A child with no existing parent
 		root.addChild(child1);
-		Assertions.assertTrue(root.getChildren().size() == 1);
-		Assertions.assertTrue(root.getChildren().get(0) == child1);
-		Assertions.assertTrue(child1.getParent() == root);
+		Assert.assertTrue(root.getChildren().size() == 1);
+		Assert.assertTrue(root.getChildren().get(0) == child1);
+		Assert.assertTrue(child1.getParent() == root);
 
 		//A current child of the element
-		Assertions.assertThrows(IllegalArgumentException.class, () -> root.addChild(child1));
+		root.addChild(child1);
 
 		//A parent of the element
-		Assertions.assertThrows(IllegalArgumentException.class, () -> child1.addChild(root));
+		child1.addChild(root);
 
 		//A child with an existing parent
 		rootNew.addChild(child1);
-		Assertions.assertTrue(rootNew.getChildren().size() == 1);
-		Assertions.assertTrue(rootNew.getChildren().get(0) == child1);
-		Assertions.assertTrue(child1.getParent() == rootNew);
-		Assertions.assertTrue(root.getChildren().size() == 0);
+		Assert.assertTrue(rootNew.getChildren().size() == 1);
+		Assert.assertTrue(rootNew.getChildren().get(0) == child1);
+		Assert.assertTrue(child1.getParent() == rootNew);
+		Assert.assertTrue(root.getChildren().isEmpty());
 	}
 
 	//Possible input:
@@ -167,8 +166,8 @@ class XMLElementTest {
 	//Index size()
 	//Index in between 0 and size()
 	//Index < 0 or > size()
-	@Test
-	void addChild1() {
+	@Test(expected=IndexOutOfBoundsException.class)
+	public void addChild1() {
 		XMLElement root = XMLElement.createRoot("p");
 		XMLElement child1 = XMLElement.createRoot("p");
 		XMLElement child2 = XMLElement.createRoot("p");
@@ -181,30 +180,30 @@ class XMLElementTest {
 
 		//Index 0
 		root.addChild(child1, 0);
-		Assertions.assertTrue(root.getChildren().size() == 5);
-		Assertions.assertTrue(root.getChildren().get(0) == child1);
+		Assert.assertTrue(root.getChildren().size() == 5);
+		Assert.assertTrue(root.getChildren().get(0) == child1);
 
 		//Index size()
 		int index = root.getChildren().size();
 		root.addChild(child2, index);
-		Assertions.assertTrue(root.getChildren().size() == 6);
-		Assertions.assertTrue(root.getChildren().get(index) == child2);
+		Assert.assertTrue(root.getChildren().size() == 6);
+		Assert.assertTrue(root.getChildren().get(index) == child2);
 
 		//Index in between 0 and size()
 		root.addChild(child3, 2);
-		Assertions.assertTrue(root.getChildren().size() == 7);
-		Assertions.assertTrue(root.getChildren().get(2) == child3);
+		Assert.assertTrue(root.getChildren().size() == 7);
+		Assert.assertTrue(root.getChildren().get(2) == child3);
 
 		//Index < 0 or > size()
-		Assertions.assertThrows(IndexOutOfBoundsException.class, () -> root.addChild(child4, -1));
-		Assertions.assertThrows(IndexOutOfBoundsException.class, () -> root.addChild(child4, 10));
+		root.addChild(child4, -1);
+		root.addChild(child4, 10);
 	}
 
 	//Possible input:
 	//A valid child
 	//An invalid child
 	@Test
-	void removeChild() {
+	public void removeChild() {
 		XMLElement root = XMLElement.createRoot("p");
 		XMLElement child1 = XMLElement.createRoot("p");
 		XMLElement child2 = XMLElement.createRoot("p");
@@ -216,22 +215,22 @@ class XMLElementTest {
 
 		//A valid child
 		root.removeChild(child2);
-		Assertions.assertTrue(root.getChildren().size() == 2);
-		Assertions.assertEquals(root.getChildren().get(0), child1);
-		Assertions.assertEquals(root.getChildren().get(1), child3);
-		Assertions.assertTrue(child2.isRoot());
+		Assert.assertTrue(root.getChildren().size() == 2);
+		Assert.assertEquals(root.getChildren().get(0), child1);
+		Assert.assertEquals(root.getChildren().get(1), child3);
+		Assert.assertTrue(child2.isRoot());
 
 		//An invalid child
 		root.removeChild(other);
-		Assertions.assertTrue(root.getChildren().size() == 2);
-		Assertions.assertEquals(root.getChildren().get(0), child1);
-		Assertions.assertEquals(root.getChildren().get(1), child3);
+		Assert.assertTrue(root.getChildren().size() == 2);
+		Assert.assertEquals(root.getChildren().get(0), child1);
+		Assert.assertEquals(root.getChildren().get(1), child3);
 	}
 
 	//Possible input:
 	//None
 	@Test
-	void clear() {
+	public void clear() {
 		XMLElement root = XMLElement.createRoot("p");
 		XMLElement child = XMLElement.createRoot("q");
 		root.addChild(child);
@@ -240,10 +239,10 @@ class XMLElementTest {
 		root.addChild(XMLElement.createRoot("q"));
 		root.addChild(XMLElement.createRoot("q"));
 
-		Assertions.assertTrue(root.getChildren().size() == 5);
+		Assert.assertTrue(root.getChildren().size() == 5);
 		root.clear();
-		Assertions.assertTrue(root.getChildren().size() == 0);
-		Assertions.assertTrue(child.isRoot());
+		Assert.assertTrue(root.getChildren().isEmpty());
+		Assert.assertTrue(child.isRoot());
 	}
 
 	//Possible input:
@@ -251,22 +250,22 @@ class XMLElementTest {
 	//A tag in the deeper children
 	//A nonexisting tag
 	@Test
-	void getChildrenByTagDeep() {
+	public void getChildrenByTagDeep() {
 		//A tag in the immediate children
 		List<XMLElement> children = tree.getChildrenByTagDeep("head");
-		Assertions.assertTrue(children.size() == 1);
-		Assertions.assertEquals(children.get(0), head);
+		Assert.assertTrue(children.size() == 1);
+		Assert.assertEquals(children.get(0), head);
 
 		//A tag in the deeper children
 		List<XMLElement> deepChildren = tree.getChildrenByTagDeep("div");
-		Assertions.assertTrue(deepChildren.size() == 3);
-		Assertions.assertTrue(deepChildren.contains(div1));
-		Assertions.assertTrue(deepChildren.contains(div2));
-		Assertions.assertTrue(deepChildren.contains(div3));
+		Assert.assertTrue(deepChildren.size() == 3);
+		Assert.assertTrue(deepChildren.contains(div1));
+		Assert.assertTrue(deepChildren.contains(div2));
+		Assert.assertTrue(deepChildren.contains(div3));
 
 		//A nonexisting tag
 		List<XMLElement> noChildren = tree.getChildrenByTagDeep("foo");
-		Assertions.assertTrue(noChildren.size() == 0);
+		Assert.assertTrue(noChildren.isEmpty());
 	}
 
 	//Possible input:
@@ -274,66 +273,66 @@ class XMLElementTest {
 	//An id among the deeper children
 	//A nonexisting id
 	@Test
-	void getChildByID() {
+	public void getChildByID() {
 		//An id among the immediate children
 		XMLElement immediateChild = tree.getChildByID("sc");
-		Assertions.assertEquals(immediateChild, script);
+		Assert.assertEquals(immediateChild, script);
 
 		//An id among the deeper children
 		XMLElement deepChild1 = tree.getChildByID("p1");
-		Assertions.assertEquals(deepChild1, p);
+		Assert.assertEquals(deepChild1, p);
 
 		XMLElement deepChild2 = tree.getChildByID("div1");
-		Assertions.assertEquals(deepChild2, div1);
+		Assert.assertEquals(deepChild2, div1);
 
 		//A nonexisting id
 		XMLElement noChild = tree.getChildByID("bar");
-		Assertions.assertNull(noChild);
+		Assert.assertNull(noChild);
 	}
 
 	//Possible input:
 	//A class already on the element
 	//A new class
 	@Test
-	void addClass() {
+	public void addClass() {
 		XMLElement element = XMLElement.createRoot("p");
 
 		//A new class
 		element.addClass("foo");
-		Assertions.assertTrue(element.getClasses().length == 1);
-		Assertions.assertEquals(element.getClasses()[0], "foo");
+		Assert.assertTrue(element.getClasses().length == 1);
+		Assert.assertEquals("foo", element.getClasses()[0]);
 
 		element.addClass("bar");
-		Assertions.assertTrue(element.getClasses().length == 2);
-		Assertions.assertEquals(element.getClasses()[0], "foo");
-		Assertions.assertEquals(element.getClasses()[1], "bar");
+		Assert.assertTrue(element.getClasses().length == 2);
+		Assert.assertEquals("foo", element.getClasses()[0]);
+		Assert.assertEquals("bar", element.getClasses()[1]);
 
 		//A class already on the element
 		element.addClass("bar");
-		Assertions.assertTrue(element.getClasses().length == 2);
-		Assertions.assertEquals(element.getClasses()[0], "foo");
-		Assertions.assertEquals(element.getClasses()[1], "bar");
+		Assert.assertTrue(element.getClasses().length == 2);
+		Assert.assertEquals("foo", element.getClasses()[0]);
+		Assert.assertEquals("bar", element.getClasses()[1]);
 	}
 
 	//Possible input:
 	//A class on the element
 	//A class not on the element
 	@Test
-	void removeClass() {
+	public void removeClass() {
 		XMLElement element = XMLElement.createRoot("p");
 		element.addClass("foo");
 		element.addClass("bar");
 
 		//A class not on the element
 		element.removeClass("apples");
-		Assertions.assertTrue(element.getClasses().length == 2);
-		Assertions.assertEquals(element.getClasses()[0], "foo");
-		Assertions.assertEquals(element.getClasses()[1], "bar");
+		Assert.assertTrue(element.getClasses().length == 2);
+		Assert.assertEquals("foo", element.getClasses()[0]);
+		Assert.assertEquals("bar", element.getClasses()[1]);
 
 		//A class on the element
 		element.removeClass("foo");
-		Assertions.assertTrue(element.getClasses().length == 1);
-		Assertions.assertEquals(element.getClasses()[0], "bar");
+		Assert.assertTrue(element.getClasses().length == 1);
+		Assert.assertEquals("bar", element.getClasses()[0]);
 	}
 
 	//Possible input:
@@ -344,7 +343,7 @@ class XMLElementTest {
 	//A name of an existing attribute and a valid value
 	//A name of an existing attribute and a null or empty value
 	@Test
-	void setAttribute() {
+	public void setAttribute() {
 		Map<String, String> attributes = new HashMap<>();
 		attributes.put("a1", "v1");
 		attributes.put("a2", "v2");
@@ -352,26 +351,26 @@ class XMLElementTest {
 
 		//A null name and a valid value
 		element.setAttribute(null, "bar");
-		Assertions.assertNull(element.getAttribute(null));
+		Assert.assertNull(element.getAttribute(null));
 
 		//A null name and a null or empty value
 		element.setAttribute(null, "");
-		Assertions.assertNull(element.getAttribute(null));
+		Assert.assertNull(element.getAttribute(null));
 
 		//A name of a nonexsiting attribute and a valid value
 		element.setAttribute("a3", "bar");
-		Assertions.assertEquals(element.getAttribute("a3"), "bar");
+		Assert.assertEquals("bar", element.getAttribute("a3"));
 
 		//A name of a nonexsiting attribute and a null or empty value
 		element.setAttribute("a4", "");
-		Assertions.assertNull(element.getAttribute("a4"));
+		Assert.assertNull(element.getAttribute("a4"));
 
 		//A name of an existing attribute and a valid value
 		element.setAttribute("a1", "foo");
-		Assertions.assertEquals(element.getAttribute("a1"), "foo");
+		Assert.assertEquals("foo", element.getAttribute("a1"));
 
 		//A name of an existing attribute and a null or empty value
 		element.setAttribute("a2", "");
-		Assertions.assertNull(element.getAttribute("a2"));
+		Assert.assertNull(element.getAttribute("a2"));
 	}
 }
