@@ -174,11 +174,17 @@ public class ProductController implements Initializable {
 
 	@FXML
 	private void synchronizeButtonOnAction(ActionEvent event) {
-		pim.synchronize();
-		try {
-			populateTreeView(pim.getProducts(), true);
-		} catch (IOException e) {
-			AlertUtil.newErrorAlert("PIM Error", "Error retrieving products from the PIM").showAndWait();
+		boolean success = pim.synchronize();
+
+		if (success) {
+			//Refresh product list
+			try {
+				populateTreeView(pim.getProducts(), true);
+			} catch (IOException e) {
+				AlertUtil.newErrorAlert("Error", "PIM Error", "Error retrieving products from the PIM").showAndWait();
+			}
+		} else {
+			AlertUtil.newErrorAlert("Error", "Synchronization Error", "Synchronization failed, try again later (as in right now)").showAndWait();
 		}
 	}
 

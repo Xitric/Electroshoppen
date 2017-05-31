@@ -13,8 +13,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import org.w3c.dom.html.HTMLElement;
-import pim.business.Product;
 import pim.business.Image;
+import pim.business.Product;
 import shared.presentation.AlertUtil;
 import shared.presentation.ListViewDialog;
 
@@ -93,17 +93,6 @@ public class CMSViewController implements Initializable {
 	 */
 	public void setCMS(CMS cms) {
 		this.cms = cms;
-
-		try {
-			present(cms.editPage(1), true);
-		} catch (IOException e) {
-			AlertUtil.newAlertDialog(
-					Alert.AlertType.ERROR,
-					"Error",
-					"CMS error",
-					"CMS could not be set")
-					.showAndWait();
-		}
 	}
 
 	/**
@@ -137,7 +126,9 @@ public class CMSViewController implements Initializable {
 			try {
 				populatePageListView();
 			} catch (IOException e) {
-				e.printStackTrace();
+				AlertUtil.newErrorAlert("Error", "CMS Error",
+						"Unable to display existing pages!")
+						.showAndWait();
 			}
 		}
 	}
@@ -150,6 +141,7 @@ public class CMSViewController implements Initializable {
 	private void editorInsert(DocumentMarker marker) {
 		Toggle option = insertOptionGroup.getSelectedToggle();
 
+		//Determine what to insert. Then delegate the call to the business layer
 		if (option == insertTextToggle) {
 			String text = insertTextField.getText();
 			if (!text.isEmpty()) {
@@ -159,20 +151,22 @@ public class CMSViewController implements Initializable {
 			try {
 				present(cms.insertImage(marker, new Image(insertImageUrlField.getText())), false);
 			} catch (IllegalArgumentException e) {
-				//invalid image
+				AlertUtil.newErrorAlert("Error", "Insertion error",
+						"Invalid image file!")
+						.showAndWait();
 			}
 		} else if (option == insertPageLinkToggle) {
 			int id = Integer.parseInt(pageIdField.getText()); //Should be safe as we control the contents of this field
 			present(cms.createLink(marker, id), false);
-		} else if (option == nameLinkToggle){
+		} else if (option == nameLinkToggle) {
 			present(cms.createReference(marker, Integer.parseInt(productIdField.getText()), CMS.ReferenceType.NAME), false);
-		} else if (option == priceLinkToggle){
+		} else if (option == priceLinkToggle) {
 			present(cms.createReference(marker, Integer.parseInt(productIdField.getText()), CMS.ReferenceType.PRICE), false);
-		} else if (option == imageLinkToggle){
+		} else if (option == imageLinkToggle) {
 			present(cms.createReference(marker, Integer.parseInt(productIdField.getText()), CMS.ReferenceType.IMAGE), false);
-		} else if (option == descriptionLinkToggle){
+		} else if (option == descriptionLinkToggle) {
 			present(cms.createReference(marker, Integer.parseInt(productIdField.getText()), CMS.ReferenceType.DESCRIPTION), false);
-		} else if (option == tagsLinkToggle){
+		} else if (option == tagsLinkToggle) {
 			present(cms.createReference(marker, Integer.parseInt(productIdField.getText()), CMS.ReferenceType.TAGS), false);
 		}
 	}
@@ -187,7 +181,7 @@ public class CMSViewController implements Initializable {
 	}
 
 	/**
-	 * Called when a double click is performed on the editor
+	 * Called when a double click is performed on the editor.
 	 */
 	private void editorDoubleClick() {
 		//Get current selection. This should be the one that the user double clicked
@@ -286,14 +280,14 @@ public class CMSViewController implements Initializable {
 					Alert.AlertType.ERROR,
 					"Error",
 					"CMS error",
-					"Incorrect number format")
+					"Invalid page id")
 					.showAndWait();
 		} catch (IOException e) {
 			AlertUtil.newAlertDialog(
 					Alert.AlertType.ERROR,
 					"Error",
 					"CMS error",
-					"Database could not be reached properly")
+					"Unable to load page")
 					.showAndWait();
 		}
 
@@ -359,14 +353,14 @@ public class CMSViewController implements Initializable {
 					Alert.AlertType.ERROR,
 					"Error",
 					"CMS error",
-					"No content of the page has been saved to the database")
+					"Unable to save changes! Try again later")
 					.showAndWait();
 		}
 	}
 
 	@FXML
 	private void pageBrowserOnClick(MouseEvent event) {
-		if(event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
+		if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
 			openPage();
 		}
 	}

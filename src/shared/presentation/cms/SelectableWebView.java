@@ -77,11 +77,6 @@ public class SelectableWebView extends StackPane {
 	private static final String stylesheet =
 			"<link rel=\"stylesheet\" type=\"text/css\" href=\"" + SelectableWebView.class.getResource("selectablewebview.css") + "\"/>";
 
-	/**
-	 * The name of the class to apply to selected elements to highlight them.
-	 */
-	private static final String selectedClass = "selectedElement";
-
 	private final Consumer<DocumentMarker> insertListener;
 	private final Consumer<DocumentMarker> deleteListener;
 	private final ObjectProperty<HTMLElement> currentSelection;
@@ -123,7 +118,7 @@ public class SelectableWebView extends StackPane {
 		XMLElement style = new XMLParser().parse(stylesheet);
 		head.addChild(style);
 
-		//Reset the state listener (this i required to prevent duplicating method calls in the listener)
+		//Reset the state listener (this is required to prevent duplicating method calls in the listener)
 		if (currentListener != null) {
 			webView.getEngine().getLoadWorker().stateProperty().removeListener(currentListener);
 		}

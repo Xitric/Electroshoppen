@@ -1,7 +1,7 @@
 package cms.business;
 
-import pim.business.Product;
 import pim.business.Image;
+import pim.business.Product;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -39,7 +39,7 @@ public interface CMS {
 	 * @return Returns a Map where ID is the key and Name of a page is the Value
 	 * @throws IOException if the operation failed
 	 */
-	Map<Integer, String> getGuidePages () throws IOException;
+	Map<Integer, String> getGuidePages() throws IOException;
 
 	/**
 	 * Getting IDs and Names of all article pages
@@ -47,9 +47,9 @@ public interface CMS {
 	 * @return Returns a Map where ID is the key and Name of a page is the Value
 	 * @throws IOException if the operation failed
 	 */
-	Map<Integer, String> getArticlePages () throws IOException;
+	Map<Integer, String> getArticlePages() throws IOException;
 
-	 /**
+	/**
 	 * Get e product page for the product with the specified id.
 	 *
 	 * @param productID the id of the product
@@ -189,6 +189,7 @@ public interface CMS {
 
 	/**
 	 * Getting all products from the PIM
+	 *
 	 * @return a list of all products in the system
 	 */
 	List<Product> getAllProducts() throws IOException;

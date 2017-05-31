@@ -108,21 +108,6 @@ public class DocumentMarker {
 		return direction;
 	}
 
-	@Override
-	public String toString() {
-		String s = "Selection of element with id " + id + " and ";
-
-		if (range == null) {
-			s += "no selection";
-		} else {
-			s += "selecting '" + range + "' beginning at index " + startIndex;
-		}
-
-		s += " and pointing in the direction: " + direction;
-
-		return s;
-	}
-
 	/**
 	 * A position relative to the selected element.
 	 */

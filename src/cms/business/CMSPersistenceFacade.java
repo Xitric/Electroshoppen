@@ -60,7 +60,7 @@ public interface CMSPersistenceFacade {
 	/**
 	 * Save the specified page. If the page has no id, a new one will be generated.
 	 *
-	 * @param page the page to save
+	 * @param page     the page to save
 	 * @param template the template associated with the page
 	 * @throws IOException if the operation fails
 	 */

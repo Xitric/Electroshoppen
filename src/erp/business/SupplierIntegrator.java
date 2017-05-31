@@ -25,8 +25,8 @@ public class SupplierIntegrator {
 	 * @throws TimeoutException if a connection could not be "established"
 	 */
 	public static SupplierIntegrator getInstance() throws TimeoutException {
-		//Connection error in 1% of all cases
-		if (Math.random() > .99) throw new TimeoutException("Connection could not be established, try again later");
+		//Connection error in 20% of all cases
+		if (Math.random() > .8) throw new TimeoutException("Connection could not be established, try again later");
 
 		//Otherwise, lazily initialize supplier integrator and return instance
 		if (instance == null) {

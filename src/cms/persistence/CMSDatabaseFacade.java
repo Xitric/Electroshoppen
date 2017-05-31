@@ -22,7 +22,7 @@ import java.util.Set;
 class CMSDatabaseFacade implements CMSPersistenceFacade {
 
 	/* Variables for database connection */
-//	private final static String url = "jdbc:postgresql://46.101.142.251:5432/cms";
+	//	private final static String url = "jdbc:postgresql://46.101.142.251:5432/cms";
 	private final static String url = "jdbc:postgresql://localhost:5432/ElectroshopLocalTestCMS";
 	private final static String user = "postgres";
 	private final static String password = "1234";

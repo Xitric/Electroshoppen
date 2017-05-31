@@ -1,9 +1,9 @@
 package cms.business;
 
 import cms.persistence.CMSPersistenceFactory;
+import pim.business.Image;
 import pim.business.PIM;
 import pim.business.Product;
-import pim.business.Image;
 
 import java.io.IOException;
 import java.util.*;
@@ -52,7 +52,7 @@ public class CMSImpl implements CMS {
 		// but there's no proper user interface to change such things, so it was left out for now.
 		Set<Product> popularProducts = pim.getPopularProducts(5);
 		Map<Integer, Product> products = new HashMap<>();
-		for(Product product : popularProducts){
+		for (Product product : popularProducts) {
 			products.put(product.getID(), product);
 		}
 		return pageManager.constructPage(8, products);
@@ -64,7 +64,7 @@ public class CMSImpl implements CMS {
 		Map<Integer, Product> product = new HashMap<>();
 		product.put(productID, pim.getProductInformation(productID));
 
-		//Construct the page | We know the pageID probably should've been retrieved from the database,
+		//Construct the page. We know the pageID probably should've been retrieved from the database,
 		// but there's no proper user interface to change such things, so it was left out for now.
 		return pageManager.constructPage(7, product);
 	}
@@ -148,5 +148,4 @@ public class CMSImpl implements CMS {
 	public List<Product> getAllProducts() throws IOException {
 		return pim.getProducts();
 	}
-
 }
