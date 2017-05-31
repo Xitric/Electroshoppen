@@ -81,6 +81,15 @@ public class Category implements Comparable<Category> {
 	}
 
 	/**
+	 * Get the attributes of this category. This returns a copy of the internal set.
+	 *
+	 * @return the attributes of this category
+	 */
+	public Set<Attribute> getAttributes() {
+		return new HashSet<>(attributes);
+	}
+
+	/**
 	 * Set the attributes of this category to the ones in the specified collection.
 	 *
 	 * @param attributes the attributes to set
@@ -89,29 +98,20 @@ public class Category implements Comparable<Category> {
 		//Remove attributes
 		//Prevent concurrent modification
 		List<Attribute> toRemove = new ArrayList<>();
-		for (Attribute a: this.attributes) {
-			if (! attributes.contains(a)) {
+		for (Attribute a : this.attributes) {
+			if (!attributes.contains(a)) {
 				toRemove.add(a);
 			}
 		}
 
-		for (Attribute a: toRemove) {
+		for (Attribute a : toRemove) {
 			removeAttribute(a);
 		}
 
 		//Add attributes
-		for (Attribute a: attributes) {
+		for (Attribute a : attributes) {
 			addAttribute(a);
 		}
-	}
-
-	/**
-	 * Get the attributes of this category. This returns a copy of the internal set.
-	 *
-	 * @return the attributes of this category
-	 */
-	public Set<Attribute> getAttributes() {
-		return new HashSet<>(attributes);
 	}
 
 	/**

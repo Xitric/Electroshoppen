@@ -52,10 +52,11 @@ public interface PIMPersistenceFacade {
 
 	/**
 	 * Get all the product reviews from the database
+	 *
 	 * @return set of ProductReviews
 	 * @throws IOException if the operation fails
 	 */
-	Set<ProductReview> getProductReviews() throws  IOException;
+	Set<ProductReview> getProductReviews() throws IOException;
 
 	/**
 	 * Get all products.

@@ -10,6 +10,7 @@ import java.util.*;
  */
 public class Product implements CategoryChangeListener {
 
+	private final Set<ProductChangeListener> changeListeners;
 	private int id;
 	private String name;
 	private String description;
@@ -18,7 +19,6 @@ public class Product implements CategoryChangeListener {
 	private Set<Attribute.AttributeValue> attributes;
 	private Set<Tag> tags;
 	private Set<Image> images;
-	private final Set<ProductChangeListener> changeListeners;
 
 	/**
 	 * Constructs a new product.
@@ -168,6 +168,15 @@ public class Product implements CategoryChangeListener {
 	}
 
 	/**
+	 * Get the categories of this product. This will return a copy of the internal collection.
+	 *
+	 * @return the categories of this product
+	 */
+	public List<Category> getCategories() {
+		return new ArrayList<>(categories);
+	}
+
+	/**
 	 * Set the categories of this product to the ones in the specified collection.
 	 *
 	 * @param categories the categories to set
@@ -176,29 +185,20 @@ public class Product implements CategoryChangeListener {
 		//Remove categories
 		//Prevent concurrent modification
 		List<Category> toRemove = new ArrayList<>();
-		for (Category c: this.categories) {
-			if (! categories.contains(c)) {
+		for (Category c : this.categories) {
+			if (!categories.contains(c)) {
 				toRemove.add(c);
 			}
 		}
 
-		for (Category c: toRemove) {
+		for (Category c : toRemove) {
 			removeCategory(c);
 		}
 
 		//Add attributes
-		for (Category c: categories) {
+		for (Category c : categories) {
 			addCategory(c);
 		}
-	}
-
-	/**
-	 * Get the categories of this product. This will return a copy of the internal collection.
-	 *
-	 * @return the categories of this product
-	 */
-	public List<Category> getCategories() {
-		return new ArrayList<>(categories);
 	}
 
 	/**
@@ -299,16 +299,6 @@ public class Product implements CategoryChangeListener {
 	}
 
 	/**
-	 * Test whether this product contains the specified tag.
-	 *
-	 * @param tag the tag to test for
-	 * @return true if this product contains the tag, false otherwise
-	 */
-	public boolean containsTag(Tag tag) {
-		return tags.contains(tag);
-	}
-
-	/**
 	 * Set the tags of this product to the ones in the specified collection.
 	 *
 	 * @param tags the tags to set
@@ -319,6 +309,16 @@ public class Product implements CategoryChangeListener {
 
 		//Add tags
 		this.tags.addAll(tags);
+	}
+
+	/**
+	 * Test whether this product contains the specified tag.
+	 *
+	 * @param tag the tag to test for
+	 * @return true if this product contains the tag, false otherwise
+	 */
+	public boolean containsTag(Tag tag) {
+		return tags.contains(tag);
 	}
 
 	/**
@@ -347,6 +347,15 @@ public class Product implements CategoryChangeListener {
 	}
 
 	/**
+	 * Get the set of images for this product. This returns a copy of the internal set.
+	 *
+	 * @return the set of images
+	 */
+	public Set<Image> getImages() {
+		return new HashSet<>(images);
+	}
+
+	/**
 	 * Set the images of this product to the ones in the specified collection.
 	 *
 	 * @param images the images to set
@@ -357,15 +366,6 @@ public class Product implements CategoryChangeListener {
 
 		//Add images
 		this.images.addAll(images);
-	}
-
-	/**
-	 * Get the set of images for this product. This returns a copy of the internal set.
-	 *
-	 * @return the set of images
-	 */
-	public Set<Image> getImages() {
-		return new HashSet<>(images);
 	}
 
 	/**

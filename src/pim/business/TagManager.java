@@ -3,7 +3,7 @@ package pim.business;
 import java.util.HashMap;
 
 /**
- * Manages tags (creation, deletion) and prevents duplication
+ * Manages tags and prevents duplication
  *
  * @author Mikkel
  * @author Kasper
@@ -11,16 +11,12 @@ import java.util.HashMap;
 class TagManager {
 
 	private HashMap<String, Tag> tags;
-	private final PIMPersistenceFacade persistence;
 
 	/**
 	 * Constructs a new tag manager.
-	 *
-	 * @param persistence the persistence facade
 	 */
-	public TagManager(PIMPersistenceFacade persistence) {
+	public TagManager() {
 		tags = new HashMap<>();
-		this.persistence = persistence;
 	}
 
 	/**

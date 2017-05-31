@@ -80,7 +80,9 @@ public class CategoryController implements Initializable {
 			Collections.sort(categories);
 			categoryList.setAll(categories);
 		} catch (IOException e) {
-			e.printStackTrace();
+			AlertUtil.newErrorAlert("Error", "PIM Error",
+					"Unable to load categories")
+					.showAndWait();
 		}
 	}
 
@@ -88,11 +90,15 @@ public class CategoryController implements Initializable {
 		Category selected = listViewCategory.getSelectionModel().getSelectedItem();
 		if (selected != null) {
 			nameOutput.setText(selected.getName());
+			attributeAddList.clear();
+			attributeRemoveList.clear();
 			try {
-				attributeAddList.setAll(pim.getAttributesFromCategory(selected.getName()));
-				attributeRemoveList.setAll(pim.getAttributesNotInTheCategory(selected.getName()));
+				attributeAddList.addAll(pim.getAttributesFromCategory(selected.getName()));
+				attributeRemoveList.addAll(pim.getAttributesNotInTheCategory(selected.getName()));
 			} catch (IOException e) {
-				e.printStackTrace();
+				AlertUtil.newErrorAlert("Error", "PIM Error",
+						"Unable to load category attributes")
+						.showAndWait();
 			}
 		}
 	}
@@ -111,9 +117,9 @@ public class CategoryController implements Initializable {
 				categoryList.add(pim.getCategory(name));
 				Collections.sort(categoryList);
 			} catch (IOException e) {
-				AlertUtil.newErrorAlert("Changes are not accepted!",
-						"Error when creating a category",
-						"Something went wrong when creating a category")
+				AlertUtil.newErrorAlert("Error",
+						"Error creating category",
+						"Something went wrong when creating the category")
 						.showAndWait();
 			}
 		});
@@ -126,8 +132,8 @@ public class CategoryController implements Initializable {
 			pim.removeCategory(selected.getName());
 			categoryList.remove(selected);
 		} catch (IOException e) {
-			AlertUtil.newErrorAlert("Changes are not accepted!",
-					"Error when removing category",
+			AlertUtil.newErrorAlert("Error",
+					"Error removing category",
 					"Could not remove selected category")
 					.showAndWait();
 		}
@@ -160,9 +166,9 @@ public class CategoryController implements Initializable {
 		try {
 			pim.saveCategory(selection);
 		} catch (IOException e) {
-			AlertUtil.newErrorAlert("Changes are not accepted!",
-					"Error when saving",
-					"Something went wrong when saving")
+			AlertUtil.newErrorAlert("Error",
+					"Error saving category",
+					"Something went wrong when saving the category")
 					.showAndWait();
 		}
 	}

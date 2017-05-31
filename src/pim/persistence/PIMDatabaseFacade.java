@@ -19,7 +19,7 @@ import java.util.Set;
 class PIMDatabaseFacade implements PIMPersistenceFacade {
 
 	/* Variables for database connection */
-//	private final static String url = "jdbc:postgresql://46.101.142.251:5432/electroshop";
+	//	private final static String url = "jdbc:postgresql://46.101.142.251:5432/electroshop";
 	private final static String url = "jdbc:postgresql://localhost:5432/ElectroshopLocalTestPIM";
 	private final static String user = "postgres";
 	private final static String password = "1234";
@@ -44,25 +44,6 @@ class PIMDatabaseFacade implements PIMPersistenceFacade {
 		categoryPersistor = new CategoryPersistor(this);
 		attributePersistor = new AttributePersistor(this);
 		tagPersistor = new TagPersistor(this);
-	}
-
-	/**
-	 * Get the connection to the database. If the connection has been closed because of inactivity, it will be
-	 * automatically reopened.
-	 *
-	 * @return the connection to the database
-	 * @throws IOException if a connection could not be established
-	 */
-	public Connection getConnection() throws IOException {
-		try {
-			if (connection == null || connection.isClosed()) {
-				return connection = DriverManager.getConnection(url, user, password);
-			} else {
-				return connection;
-			}
-		} catch (SQLException e) {
-			throw new IOException(String.format("Could not establish a database connection on\n\t%s\n\tUser: %s\n\tPassword: %s", url, user, password), e);
-		}
 	}
 
 	/**
@@ -110,6 +91,26 @@ class PIMDatabaseFacade implements PIMPersistenceFacade {
 
 		//Something went wrong, return null
 		return null;
+	}
+
+	/**
+	 * Get the connection to the database. If the connection has been closed because of inactivity, it will be
+	 * automatically reopened.
+	 *
+	 * @return the connection to the database
+	 * @throws IOException if a connection could not be established
+	 */
+	@SuppressWarnings("Duplicates")
+	public Connection getConnection() throws IOException {
+		try {
+			if (connection == null || connection.isClosed()) {
+				return connection = DriverManager.getConnection(url, user, password);
+			} else {
+				return connection;
+			}
+		} catch (SQLException e) {
+			throw new IOException(String.format("Could not establish a database connection on\n\t%s\n\tUser: %s\n\tPassword: %s", url, user, password), e);
+		}
 	}
 
 	@Override

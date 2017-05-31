@@ -97,7 +97,7 @@ public class AttributeController implements Initializable {
 						Alert.AlertType.ERROR,
 						"Error",
 						"PIM Error",
-						"Unable to retrieve attributes from database")
+						"Unable to load attributes")
 						.showAndWait();
 			}
 		}
@@ -168,7 +168,7 @@ public class AttributeController implements Initializable {
 				pim.removeAttribute(selection.getID());
 				attributeList.remove(selection);
 			} catch (IOException e) {
-				AlertUtil.newErrorAlert("Changes are not accepted!",
+				AlertUtil.newErrorAlert("Error",
 						"Could not remove attribute",
 						"Something went wrong when removing the attribute")
 						.showAndWait();
@@ -188,7 +188,7 @@ public class AttributeController implements Initializable {
 			pim.saveAttribute(selection);
 			attributeListView.refresh();
 		} catch (IOException e) {
-			AlertUtil.newErrorAlert("Changes are not accepted!",
+			AlertUtil.newErrorAlert("Error",
 					"Could not save attribute",
 					"Something went wrong when saving the attribute")
 					.showAndWait();

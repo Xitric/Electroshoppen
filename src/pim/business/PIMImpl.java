@@ -11,7 +11,7 @@ import java.util.concurrent.TimeoutException;
  * Implementation of the PIM interface.
  *
  * @author Kasper
- * @author Emil 
+ * @author Emil
  */
 class PIMImpl implements PIM {
 
@@ -34,7 +34,7 @@ class PIMImpl implements PIM {
 		productManager = new ProductManager(persistence);
 		attributeManager = new AttributeManager(persistence);
 		categoryManager = new CategoryManager(persistence);
-		tagManager = new TagManager(persistence);
+		tagManager = new TagManager();
 		persistence.setCache(new DataCacheImpl(productManager, attributeManager, categoryManager, tagManager));
 	}
 
@@ -162,7 +162,7 @@ class PIMImpl implements PIM {
 	}
 
 	@Override
-	public Attribute createAttribute(String name, Object defaultValue, Set<Object>legalValues) throws IOException {
+	public Attribute createAttribute(String name, Object defaultValue, Set<Object> legalValues) throws IOException {
 		return attributeManager.createAttribute(name, defaultValue, legalValues);
 	}
 

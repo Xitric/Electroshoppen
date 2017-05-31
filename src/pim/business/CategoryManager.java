@@ -119,7 +119,7 @@ class CategoryManager {
 	 * @param attribute the attribute to remove
 	 */
 	public void removeAttributeFromCategories(Attribute attribute) {
-		for (Category c: categories.values()) {
+		for (Category c : categories.values()) {
 			c.removeAttribute(attribute);
 		}
 	}

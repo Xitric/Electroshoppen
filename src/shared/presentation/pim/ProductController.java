@@ -136,7 +136,7 @@ public class ProductController implements Initializable {
 						Alert.AlertType.ERROR,
 						"Error",
 						"PIM Error",
-						"Unable to retrieve information for TreeView")
+						"Unable to load products")
 						.showAndWait();
 			}
 		}
@@ -240,23 +240,23 @@ public class ProductController implements Initializable {
 			product.setCategories(containedCategories);
 
 			//Attribute values
-			for (Map.Entry<Button, Pair<Attribute.AttributeValue, Label>> entry: attributeValues.entrySet()) {
+			for (Map.Entry<Button, Pair<Attribute.AttributeValue, Label>> entry : attributeValues.entrySet()) {
 				Attribute.AttributeValue value = entry.getValue().getKey();
 				product.setAttribute(value.getParent(), value.getValue());
 			}
 
 			//Tags
 			ArrayList<Tag> allTags = new ArrayList<>();
-			if (! tagTextArea.getText().isEmpty()) {
+			if (!tagTextArea.getText().isEmpty()) {
 				String[] tagArray = tagTextArea.getText().split(", ");
-				for(String tag : tagArray){
+				for (String tag : tagArray) {
 					allTags.add(pim.createTag(tag));
 				}
 			}
 			product.setTags(allTags);
 
 			List<pim.business.Image> images = new ArrayList<>();
-			for (Node n: productImagePane.getChildren()) {
+			for (Node n : productImagePane.getChildren()) {
 				if (n instanceof RemoveableImage) {
 					RemoveableImage image = (RemoveableImage) n;
 					images.add(image.getImage());
@@ -283,7 +283,7 @@ public class ProductController implements Initializable {
 					Alert.AlertType.ERROR,
 					"Error",
 					"PIM Error",
-					"Unable to retrieve image from database")
+					"Unable to upload image to PIM")
 					.showAndWait();
 		}
 	}
@@ -310,7 +310,7 @@ public class ProductController implements Initializable {
 						Alert.AlertType.ERROR,
 						"Error",
 						"PIM Error",
-						"Unable to retrieve categories from database")
+						"Unable to load categories")
 						.showAndWait();
 			}
 			containedCategories.setAll(product.getCategories());
@@ -390,7 +390,7 @@ public class ProductController implements Initializable {
 						attributeValues.put(button, new Pair<>(newValue, attributeLabel));
 						attributeLabel.setText(newValue.toString());
 					} catch (IllegalArgumentException e) {
-						AlertUtil.newErrorAlert("Changes are not accepted!",
+						AlertUtil.newErrorAlert("Error",
 								"Illegal Value!",
 								"Please choose a legal value as input")
 								.showAndWait();
@@ -457,7 +457,7 @@ public class ProductController implements Initializable {
 					Alert.AlertType.ERROR,
 					"Error",
 					"PIM Error",
-					"Unable to populate TreeView")
+					"Unable to load all categories")
 					.showAndWait();
 		}
 	}

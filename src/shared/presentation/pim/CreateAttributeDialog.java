@@ -100,7 +100,7 @@ public class CreateAttributeDialog extends Dialog<Attribute> implements Initiali
 			getDialogPane().getScene().getWindow().sizeToScene();
 		} catch (IOException e) {
 			e.printStackTrace();
-			AlertUtil.newErrorAlert("Error opening dialog!",
+			AlertUtil.newErrorAlert("Fatal error", "Error opening dialog!",
 					"There was an error opening the \"create attribute\" dialog. Contact the system administrator.")
 					.showAndWait();
 		}
@@ -178,7 +178,7 @@ public class CreateAttributeDialog extends Dialog<Attribute> implements Initiali
 		currentSelector = vs;
 		valueSelectionPane.setCenter((Node) vs); //This should be safe
 
-		//We only resize the window if the content had been added to a dialog window
+		//We only resize the window if the content has been added to a dialog window
 		if (valueSelectionPane.getScene() != null)
 			valueSelectionPane.getScene().getWindow().sizeToScene(); //Resize to fit content
 

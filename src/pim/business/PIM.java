@@ -30,6 +30,13 @@ public interface PIM {
 	 */
 	Product getProductInformation(int id) throws IOException;
 
+	/**
+	 * Get the most popular products from the PIM.
+	 *
+	 * @param amount the amount of popular products to retrieve
+	 * @return the most popular products
+	 * @throws IOException if the operation failed
+	 */
 	Set<Product> getPopularProducts(int amount) throws IOException;
 
 	/**
@@ -89,7 +96,7 @@ public interface PIM {
 	 * @param legalValues  allowed values for the attribute
 	 * @throws IOException if the operation failed
 	 */
-	Attribute createAttribute(String name, Object defaultValue, Set<Object>legalValues) throws IOException;
+	Attribute createAttribute(String name, Object defaultValue, Set<Object> legalValues) throws IOException;
 
 	/**
 	 * Get a list of all attributes from the PIM.
@@ -162,7 +169,7 @@ public interface PIM {
 	 * Create a new category with the specified name, if such a category does not already exist.
 	 *
 	 * @param categoryName the name of the category
-	 * @throws IOException if the operation failed
+	 * @throws IOException              if the operation failed
 	 * @throws IllegalArgumentException if a category with the specified name already exists
 	 */
 	Category createCategory(String categoryName) throws IOException;
@@ -177,6 +184,7 @@ public interface PIM {
 
 	/**
 	 * Create a new tag
+	 *
 	 * @param name name of the tag
 	 * @return the tag that was created
 	 */

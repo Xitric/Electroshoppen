@@ -76,6 +76,9 @@ public class ValueSelectorFactory {
 		return dialog;
 	}
 
+	/**
+	 * Enum describing a supported type of attribute.
+	 */
 	public enum AttributeType {
 		STRING("String", String.class),
 		SEPARATED_STRINGS("Separated Strings", String.class),
@@ -125,6 +128,7 @@ public class ValueSelectorFactory {
 			super();
 
 			setSpacing(8);
+			setAlignment(Pos.CENTER_LEFT);
 
 			//Add label
 			getChildren().add(new Label("Value:"));
@@ -167,6 +171,7 @@ public class ValueSelectorFactory {
 			setSpacing(8);
 
 			HBox inputRow = new HBox(8);
+			inputRow.setAlignment(Pos.CENTER_LEFT);
 
 			//Add label
 			inputRow.getChildren().add(new Label("Value:"));
@@ -212,6 +217,7 @@ public class ValueSelectorFactory {
 			super();
 
 			setSpacing(8);
+			setAlignment(Pos.CENTER_LEFT);
 
 			//Add label
 			getChildren().add(new Label("Value:"));
@@ -258,6 +264,7 @@ public class ValueSelectorFactory {
 
 			//Min row
 			HBox minRow = new HBox(8);
+			minRow.setAlignment(Pos.CENTER_LEFT);
 			minRow.getChildren().add(new Label("Min (inclusive):"));
 			minField = new TextField();
 			HBox.setHgrow(minField, Priority.ALWAYS);
@@ -266,11 +273,23 @@ public class ValueSelectorFactory {
 
 			//Max row
 			HBox maxRow = new HBox(8);
+			maxRow.setAlignment(Pos.CENTER_LEFT);
 			maxRow.getChildren().add(new Label("Max (exclusive):"));
 			maxField = new TextField();
 			HBox.setHgrow(maxField, Priority.ALWAYS);
 			maxRow.getChildren().add(maxField);
 			getChildren().add(maxRow);
+		}
+
+		private void alert(String text) {
+			if (!text.isEmpty()) {
+				AlertUtil.newAlertDialog(
+						Alert.AlertType.ERROR,
+						"Error",
+						"Number format error",
+						"Use the proper format")
+						.showAndWait();
+			}
 		}
 
 		@Override
@@ -285,24 +304,14 @@ public class ValueSelectorFactory {
 				min = Integer.parseInt(minField.getText());
 				isMinSpecified = true; //Skipped if above throws an exception
 			} catch (NumberFormatException e) {
-				AlertUtil.newAlertDialog(
-						Alert.AlertType.ERROR,
-						"Error",
-						"Number format error",
-						"Use the proper format")
-						.showAndWait();
+				alert(minField.getText());
 			}
 
 			try {
 				max = Integer.parseInt(maxField.getText());
 				isMaxSpecified = true; //Skipped if above throws an exception
 			} catch (NumberFormatException e) {
-				AlertUtil.newAlertDialog(
-						Alert.AlertType.ERROR,
-						"Error",
-						"Number format error",
-						"Use the proper format")
-						.showAndWait();
+				alert(maxField.getText());
 			}
 
 			if (!isMaxSpecified) {
@@ -315,12 +324,22 @@ public class ValueSelectorFactory {
 				}
 			} else if (isMinSpecified) {
 				//If both max and min are specified, return array of all integers between min and max
-				Integer[] values = new Integer[max - min];
-				for (int i = min; i < max; i++) {
-					values[i - min] = i;
-				}
+				if (min <= max) {
+					Integer[] values = new Integer[max - min];
+					for (int i = min; i < max; i++) {
+						values[i - min] = i;
+					}
 
-				return values;
+					return values;
+				} else {
+					AlertUtil.newAlertDialog(
+							Alert.AlertType.ERROR,
+							"Error",
+							"Range error",
+							"Minimum must be less than maximum!")
+							.showAndWait();
+					return new Integer[0];
+				}
 			} else {
 				//Max is specified, but minimum is not, so return empty array
 				return new Integer[0];
@@ -349,6 +368,7 @@ public class ValueSelectorFactory {
 			super();
 
 			setSpacing(8);
+			setAlignment(Pos.CENTER_LEFT);
 
 			//Add label
 			getChildren().add(new Label("Value:"));
@@ -399,7 +419,7 @@ public class ValueSelectorFactory {
 		private ColorValueSelector() {
 			super();
 
-			setAlignment(Pos.CENTER);
+			setAlignment(Pos.TOP_CENTER);
 
 			//Add color picker
 			colorPicker = new ColorPicker();

@@ -3,15 +3,26 @@ package pim.business;
 import java.util.Date;
 
 /**
- * Created by Bruger on 17-05-2017.
+ * Representation of a user review on a product.
+ *
+ * @author Niels
  */
 public class ProductReview {
+
 	private int productid;
 	private int userid;
 	private int rating;
 	private Date time;
 
-	public ProductReview(int productid, int userid, int rating, Date time){
+	/**
+	 * Constructs a new product review.
+	 *
+	 * @param productid the id of the product that this review is made on
+	 * @param userid    the id of the user who made this review
+	 * @param rating    the rating of the product
+	 * @param time      the time when the review was made
+	 */
+	public ProductReview(int productid, int userid, int rating, Date time) {
 		this.productid = productid;
 		this.userid = userid;
 		this.rating = rating;
@@ -30,15 +41,15 @@ public class ProductReview {
 		return rating;
 	}
 
+	public void setRating(int rating) {
+		this.rating = rating;
+	}
+
 	public Date getTime() {
 		return time;
 	}
 
-	public void setRating(int rating){
-		this.rating = rating;
-	}
-
-	public String toString(){
+	public String toString() {
 		return "ProductID: " + productid + " Rating: " + rating;
 	}
 }

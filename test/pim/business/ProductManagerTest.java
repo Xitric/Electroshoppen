@@ -29,7 +29,7 @@ class ProductManagerTest {
 		ProductManager pManager = new ProductManager(persistence);
 		AttributeManager aManager = new AttributeManager(persistence);
 		CategoryManager cManager = new CategoryManager(persistence);
-		TagManager tManager = new TagManager(persistence);
+		TagManager tManager = new TagManager();
 		persistence.setCache(new DataCacheImpl(pManager, aManager, cManager, tManager));
 
 		//Try reading the product with id 30 (Omen laptop)

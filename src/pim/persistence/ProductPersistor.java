@@ -7,9 +7,11 @@ import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
-import java.util.Date;
 
 /**
  * Class used for performing operations on products in the database. Images are also handled by this class, as they are
@@ -35,9 +37,9 @@ class ProductPersistor {
 	public Product getProductByID(int id) throws IOException {
 		Connection connection = dbf.getConnection();
 		try (PreparedStatement getProduct = connection.prepareStatement("SELECT * FROM product WHERE productid = ?;");
-			 PreparedStatement getProductCategories = connection.prepareStatement("SELECT * FROM productcategory WHERE productid = ?;");
-			 PreparedStatement getProductValues = connection.prepareStatement("SELECT * FROM attributevalue WHERE productid = ?;");
-			 PreparedStatement getProductTags = connection.prepareStatement("SELECT * FROM producttag WHERE productid = ?")) {
+		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT * FROM productcategory WHERE productid = ?;");
+		     PreparedStatement getProductValues = connection.prepareStatement("SELECT * FROM attributevalue WHERE productid = ?;");
+		     PreparedStatement getProductTags = connection.prepareStatement("SELECT * FROM producttag WHERE productid = ?")) {
 
 			getProduct.setInt(1, id);
 			ResultSet productData = getProduct.executeQuery();
@@ -70,12 +72,12 @@ class ProductPersistor {
 		try (PreparedStatement getReviews = connection.prepareStatement("SELECT * FROM productreview")) {
 			ResultSet productReviewsData = getReviews.executeQuery();
 			Set<ProductReview> productReviews = new HashSet<>();
-			while(productReviewsData.next()){
+			while (productReviewsData.next()) {
 				int productid = productReviewsData.getInt("productid");
 				int userid = productReviewsData.getInt("userid");
 				int rating = productReviewsData.getInt("rating");
 				Date time = productReviewsData.getTimestamp("time");
-				productReviews.add(new ProductReview(productid,userid,rating,time));
+				productReviews.add(new ProductReview(productid, userid, rating, time));
 			}
 			return productReviews;
 		} catch (SQLException e) {
@@ -88,9 +90,9 @@ class ProductPersistor {
 		Connection connection = dbf.getConnection();
 
 		try (PreparedStatement getProducts = connection.prepareStatement("SELECT * FROM product WHERE name = ?;");
-			 PreparedStatement getProductCategories = connection.prepareStatement("SELECT productid, categoryName FROM productcategory NATURAL JOIN product WHERE name = ?;");
-			 PreparedStatement getProductValues = connection.prepareStatement("SELECT attributeid, productid, value FROM attributevalue NATURAL JOIN product WHERE name = ?;");
-			 PreparedStatement getProductTags = connection.prepareStatement("SELECT tagname, productid FROM producttag NATURAL JOIN product WHERE name = ?;")) {
+		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT productid, categoryName FROM productcategory NATURAL JOIN product WHERE name = ?;");
+		     PreparedStatement getProductValues = connection.prepareStatement("SELECT attributeid, productid, value FROM attributevalue NATURAL JOIN product WHERE name = ?;");
+		     PreparedStatement getProductTags = connection.prepareStatement("SELECT tagname, productid FROM producttag NATURAL JOIN product WHERE name = ?;")) {
 
 			return runStringQueries(name, getProducts, getProductCategories, getProductValues, getProductTags);
 		} catch (SQLException e) {
@@ -102,9 +104,9 @@ class ProductPersistor {
 		Connection connection = dbf.getConnection();
 
 		try (PreparedStatement getProducts = connection.prepareStatement("SELECT * FROM product WHERE productid IN (SELECT productid FROM productcategory WHERE categoryname = ?);");
-			 PreparedStatement getProductCategories = connection.prepareStatement("SELECT productid, categoryName FROM productcategory NATURAL JOIN product WHERE productid IN (SELECT productid FROM productcategory WHERE categoryname = ?);");
-			 PreparedStatement getProductValues = connection.prepareStatement("SELECT attributeid, productid, value FROM attributevalue NATURAL JOIN product WHERE productid IN (SELECT productid FROM productcategory WHERE categoryname = ?);");
-			 PreparedStatement getProductTags = connection.prepareStatement("SELECT tagname, productid FROM producttag NATURAL JOIN product WHERE productid IN (SELECT productid FROM productcategory WHERE categoryname = ?);")) {
+		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT productid, categoryName FROM productcategory NATURAL JOIN product WHERE productid IN (SELECT productid FROM productcategory WHERE categoryname = ?);");
+		     PreparedStatement getProductValues = connection.prepareStatement("SELECT attributeid, productid, value FROM attributevalue NATURAL JOIN product WHERE productid IN (SELECT productid FROM productcategory WHERE categoryname = ?);");
+		     PreparedStatement getProductTags = connection.prepareStatement("SELECT tagname, productid FROM producttag NATURAL JOIN product WHERE productid IN (SELECT productid FROM productcategory WHERE categoryname = ?);")) {
 
 			return runStringQueries(name, getProducts, getProductCategories, getProductValues, getProductTags);
 		} catch (SQLException e) {
@@ -116,9 +118,9 @@ class ProductPersistor {
 		Connection connection = dbf.getConnection();
 
 		try (PreparedStatement getProducts = connection.prepareStatement("SELECT * FROM product WHERE productid IN (SELECT productid FROM producttag WHERE tagname = ?);");
-			 PreparedStatement getProductCategories = connection.prepareStatement("SELECT productid, categoryName FROM productcategory NATURAL JOIN product WHERE productid IN (SELECT productid FROM producttag WHERE tagname = ?);");
-			 PreparedStatement getProductValues = connection.prepareStatement("SELECT attributeid, productid, value FROM attributevalue NATURAL JOIN product WHERE productid IN (SELECT productid FROM producttag WHERE tagname = ?);");
-			 PreparedStatement getProductTags = connection.prepareStatement("SELECT tagname, productid FROM producttag NATURAL JOIN product WHERE productid IN (SELECT productid FROM producttag WHERE tagname = ?);")) {
+		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT productid, categoryName FROM productcategory NATURAL JOIN product WHERE productid IN (SELECT productid FROM producttag WHERE tagname = ?);");
+		     PreparedStatement getProductValues = connection.prepareStatement("SELECT attributeid, productid, value FROM attributevalue NATURAL JOIN product WHERE productid IN (SELECT productid FROM producttag WHERE tagname = ?);");
+		     PreparedStatement getProductTags = connection.prepareStatement("SELECT tagname, productid FROM producttag NATURAL JOIN product WHERE productid IN (SELECT productid FROM producttag WHERE tagname = ?);")) {
 
 			return runStringQueries(name, getProducts, getProductCategories, getProductValues, getProductTags);
 		} catch (SQLException e) {
@@ -158,9 +160,9 @@ class ProductPersistor {
 		Connection connection = dbf.getConnection();
 
 		try (PreparedStatement getProducts = connection.prepareStatement("SELECT * FROM product;");
-			 PreparedStatement getProductCategories = connection.prepareStatement("SELECT * FROM productcategory;");
-			 PreparedStatement getProductValues = connection.prepareStatement("SELECT * FROM attributevalue;");
-			 PreparedStatement getProductTags = connection.prepareStatement("SELECT * FROM producttag;")) {
+		     PreparedStatement getProductCategories = connection.prepareStatement("SELECT * FROM productcategory;");
+		     PreparedStatement getProductValues = connection.prepareStatement("SELECT * FROM attributevalue;");
+		     PreparedStatement getProductTags = connection.prepareStatement("SELECT * FROM producttag;")) {
 
 			ResultSet productData = getProducts.executeQuery();
 			ResultSet productCategoryData = getProductCategories.executeQuery();
@@ -188,14 +190,14 @@ class ProductPersistor {
 		Connection connection = dbf.getConnection();
 
 		try (PreparedStatement storeProductData = connection.prepareStatement("INSERT INTO product VALUES (?, ?, ?, ?) ON CONFLICT (productid) DO UPDATE SET name = Excluded.name, price = EXCLUDED.price, description = Excluded.description;");
-			 PreparedStatement storeProductDataNew = connection.prepareStatement("INSERT INTO product VALUES (DEFAULT, ?, ?, ?) RETURNING productid;");
-			 PreparedStatement removeProductCategories = connection.prepareStatement("DELETE FROM productcategory WHERE productid = ?;");
-			 PreparedStatement addProductCategory = connection.prepareStatement("INSERT INTO productcategory VALUES(?, ?);");
-			 PreparedStatement addAttributeValue = connection.prepareStatement("INSERT INTO attributevalue VALUES(?, ?, ?) ON CONFLICT (attributeid, productid) DO UPDATE SET value = Excluded.value;");
-			 PreparedStatement removeProductTags = connection.prepareStatement("DELETE FROM producttag WHERE productid = ?");
-			 PreparedStatement saveProductTags = connection.prepareStatement("INSERT INTO producttag VALUES(?, ?)");
-			 PreparedStatement removeProductImages = connection.prepareStatement("DELETE FROM productimage WHERE productid = ?");
-			 PreparedStatement saveProductImages = connection.prepareStatement("INSERT INTO productimage VALUES(?, ?)")) {
+		     PreparedStatement storeProductDataNew = connection.prepareStatement("INSERT INTO product VALUES (DEFAULT, ?, ?, ?) RETURNING productid;");
+		     PreparedStatement removeProductCategories = connection.prepareStatement("DELETE FROM productcategory WHERE productid = ?;");
+		     PreparedStatement addProductCategory = connection.prepareStatement("INSERT INTO productcategory VALUES(?, ?);");
+		     PreparedStatement addAttributeValue = connection.prepareStatement("INSERT INTO attributevalue VALUES(?, ?, ?) ON CONFLICT (attributeid, productid) DO UPDATE SET value = Excluded.value;");
+		     PreparedStatement removeProductTags = connection.prepareStatement("DELETE FROM producttag WHERE productid = ?");
+		     PreparedStatement saveProductTags = connection.prepareStatement("INSERT INTO producttag VALUES(?, ?)");
+		     PreparedStatement removeProductImages = connection.prepareStatement("DELETE FROM productimage WHERE productid = ?");
+		     PreparedStatement saveProductImages = connection.prepareStatement("INSERT INTO productimage VALUES(?, ?)")) {
 
 			//Turn of auto commit to ensure each product is saved fully
 			connection.setAutoCommit(false);
@@ -330,7 +332,7 @@ class ProductPersistor {
 		Connection connection = dbf.getConnection();
 
 		try (PreparedStatement storeImageData = connection.prepareStatement("INSERT INTO image VALUES (?, ?) ON CONFLICT (imageid) DO UPDATE SET imagedata = EXCLUDED.imagedata;");
-			 PreparedStatement storeImageDataNew = connection.prepareStatement("INSERT INTO image VALUES (DEFAULT, ?) RETURNING imageid;")) {
+		     PreparedStatement storeImageDataNew = connection.prepareStatement("INSERT INTO image VALUES (DEFAULT, ?) RETURNING imageid;")) {
 
 			for (Image image : images) {
 				//Store image data
